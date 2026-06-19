@@ -1,0 +1,38 @@
+spring:
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: Redis@dhcc123.com
+      database: 7
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: -1ms
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/apboa_next?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&allowPublicKeyRetrieval=true
+    username: root
+    password: root123123
+    hikari:
+      minimum-idle: 2
+      maximum-pool-size: 5
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+# 技能文件同步服务配置
+skill-sync:
+  console-url: http://localhost:3060
+  download-timeout-seconds: 120
+  local-base-dir: .apboa
+
+# 心跳上报配置
+heartbeat:
+  enabled: true
+  console-url: http://localhost:3060
+  service-type: FILE
+  port: ${server.port}
