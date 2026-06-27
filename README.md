@@ -34,6 +34,7 @@ Apboa Next 是基于ReAct理念的智能体开发与管理平台，旨在简化A
 - [项目结构](#项目结构)
 - [贡献指南](#贡献指南)
 - [交流与赞助](#交流与赞助)
+- [版权与再发布说明](#版权与再发布说明)
 - [开源协议](#开源协议)
 
 ## 快速开始
@@ -41,7 +42,7 @@ Apboa Next 是基于ReAct理念的智能体开发与管理平台，旨在简化A
 前置条件：Docker Engine 20+ & Docker Compose v2+
 
 ```bash
-git clone https://gitee.com/studious_tiger/apboa-next.git
+git clone https://gitee.com/studioustiger/apboa-next.git
 cd apboa-next/docker
 bash start-simple.sh
 ```
@@ -333,7 +334,7 @@ apboa-next/
 ```bash
 git clone https://gitee.com/<your-username>/apboa-next.git
 cd apboa-next
-git remote add upstream https://gitee.com/studious_tiger/apboa-next.git
+git remote add upstream https://gitee.com/studioustiger/apboa-next.git
 ```
 
 ### 2. 创建分支
@@ -435,9 +436,25 @@ feat(mcp): 添加 MCP 连接超时自动重试机制
 
 ---
 
+## 版权与再发布说明
+
+本 GitHub 仓库是为了便于代码索引、AI 辅助解析和相关开发流程而建立的 Apboa Next 再发布/镜像仓库。原始上游项目来源参考：<https://gitee.com/studioustiger/apboa-next>。
+
+本仓库保留原项目的 MIT License、原始版权声明和源文件中的作者署名。除非原作者或上游项目明确确认，本仓库不代表原作者的官方 GitHub 仓库。
+
+本仓库维护者对本仓库新增的仓库级文档、元数据、整理说明、适配内容以及后续修改在适用范围内保留相应版权：
+
+Copyright (c) 2026 huowanliang <453203490@qq.com>
+
+该维护者版权声明不表示对原始上游作品主张所有权。更多说明见 [NOTICE](NOTICE.md) 和 [DISCLAIMER](DISCLAIMER.md)。
+
+---
+
 ## 开源协议
 
 [MIT](LICENSE) — Copyright (c) 2026 StudiousTiger
+
+再发布、维护者版权和免责声明见 [NOTICE](NOTICE.md) 与 [DISCLAIMER](DISCLAIMER.md)。
 
 ---
 
