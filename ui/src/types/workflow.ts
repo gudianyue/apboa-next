@@ -203,12 +203,14 @@ export type WorkflowFieldControl =
   | 'matchList'
   | 'readonlyJson'
 
+/** @deprecated 配置表单定义已下沉到各节点专属面板组件，保留仅用于兼容 */
 export interface WorkflowFieldOption {
   label: string
   value: string | number | boolean
   description?: string
 }
 
+/** @deprecated 配置表单定义已下沉到各节点专属面板组件，保留仅用于兼容 */
 export interface WorkflowFieldSchema {
   name: string
   label: string
@@ -225,6 +227,16 @@ export interface WorkflowFieldSchema {
   rows?: number
 }
 
+/** 节点卡片 Summary 项类型 */
+export type SummaryItemType = 'text' | 'badge' | 'tag' | 'code-snippet'
+
+export interface SummaryItem {
+  type: SummaryItemType
+  label?: string
+  value: unknown
+  color?: string
+}
+
 export interface WorkflowNodeSchema {
   type: string
   title: string
@@ -234,11 +246,14 @@ export interface WorkflowNodeSchema {
   icon: string
   color: string
   defaultConfig: Record<string, unknown>
+  /** 节点专属配置面板组件名，对应 panels/nodes/ 下的 .vue 文件 */
+  panelComponent: string
+  /** @deprecated 配置表单定义已下沉到各节点专属面板组件 */
   fields: WorkflowFieldSchema[]
   inputConfigs: WorkflowInputConfig[]
   outputConfigs: WorkflowOutputConfig[]
   branchHandles?: Array<{ id: string; label: string }>
-  summary?: (config: Record<string, unknown>, resources?: WorkflowResourceMaps) => Record<string, unknown>[]
+  summary?: (config: Record<string, unknown>, resources?: WorkflowResourceMaps) => SummaryItem[]
 }
 
 export interface WorkflowResourceMaps {

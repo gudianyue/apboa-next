@@ -1,0 +1,80 @@
+<script setup lang="ts">
+import PanelSection from '../shared/PanelSection.vue'
+import NodeNameInput from '../shared/NodeNameInput.vue'
+import InputBindingSection from '../shared/InputBindingSection.vue'
+import OutputDisplay from '../shared/OutputDisplay.vue'
+import SmartCodeEditor from '@/components/editor/SmartCodeEditor.vue'
+import type { WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
+
+const props = defineProps<{
+  node: WorkflowFlowNode
+  nodes: WorkflowFlowNode[]
+  resources: WorkflowResourceMaps
+}>()
+const emit = defineEmits<{ update: [node: WorkflowFlowNode] }>()
+
+function updateNode(patch: Partial<WorkflowFlowNode['data']>) {
+  emit('update', { ...props.node, data: { ...props.node.data, ...patch } })
+}
+function updateConfig(key: string, value: unknown) {
+  updateNode({ config: { ...(props.node.data.config || {}), [key]: value } })
+}
+</script>
+
+<template>
+  <AForm layout="vertical">
+    <PanelSection title="节点名称">
+      <NodeNameInput
+        :model-value="node.data.label"
+        @update:model-value="(v) => updateNode({ label: v })"
+      />
+    </PanelSection>
+    <InputBindingSection
+      :model-value="node.data.inputConfigs"
+      :nodes="nodes"
+      :current-node-id="node.id"
+      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+    />
+    <PanelSection title="节点配置">
+      <div class="config-desc">对集合输入逐项执行迭代处理代码。</div>
+      <AFormItem label="语言">
+        <ASegmented
+          :value="node.data.config?.language || 'JAVA'"
+          :options="[
+            { label: 'Java', value: 'JAVA' },
+            { label: 'JavaScript', value: 'JAVASCRIPT' },
+          ]"
+          @update:value="(v) => updateConfig('language', v)"
+        />
+      </AFormItem>
+      <AFormItem label="迭代代码" required>
+        <SmartCodeEditor
+          :model-value="String(node.data.config?.iterateCode || '')"
+          :language="node.data.config?.language === 'JAVASCRIPT' ? 'javascript' : 'java'"
+          theme="light"
+          height="280px"
+          :show-change-language="false"
+          :show-theme-toggle="false"
+          :show-fullscreen="true"
+          placeholder="编写迭代处理逻辑..."
+          @update:model-value="(v) => updateConfig('iterateCode', v)"
+        />
+      </AFormItem>
+    </PanelSection>
+    <PanelSection title="输出说明">
+      <OutputDisplay :outputs="node.data.outputConfigs || []" />
+    </PanelSection>
+  </AForm>
+</template>
+
+<style scoped lang="scss">
+.config-desc {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #f6f8fa;
+  color: #8c8c8c;
+  font-size: 12px;
+  line-height: 1.6;
+}
+</style>
