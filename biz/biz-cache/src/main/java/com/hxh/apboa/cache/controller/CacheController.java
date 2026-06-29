@@ -1,7 +1,10 @@
 package com.hxh.apboa.cache.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hxh.apboa.cache.service.CacheService;
 import com.hxh.apboa.common.entity.Cache;
+import com.hxh.apboa.common.mp.support.MP;
+import com.hxh.apboa.common.mp.support.PageParams;
 import com.hxh.apboa.common.r.R;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +24,17 @@ public class CacheController {
 
     @PutMapping
     public R<?> update(@RequestBody Cache cache) {
-        return R.data(cacheService.updateById(cache));
+        return R.data(cacheService.updateCache(cache));
     }
 
     @DeleteMapping("{force}")
     public R<?> deleteCache(@PathVariable("force") Integer force, @RequestBody List<String> cacheIds) {
         return R.data(cacheService.deleteCache(force, cacheIds));
+    }
+
+    @GetMapping("/page")
+    public R<IPage<Cache>> page(PageParams pageParams, Cache query) {
+        return R.data(cacheService.page(MP.getPage(pageParams), MP.getQueryWrapper(query)));
     }
 
     @GetMapping
@@ -47,5 +55,10 @@ public class CacheController {
     @PostMapping("/check/connect")
     public R<?> checkConnect(@RequestBody Cache cache) {
         return R.data(cacheService.checkConnect(cache));
+    }
+
+    @PostMapping("/{cacheId}/check/connect")
+    public R<?> checkSavedConnect(@PathVariable("cacheId") String cacheId) {
+        return R.data(cacheService.checkSavedConnect(cacheId));
     }
 }

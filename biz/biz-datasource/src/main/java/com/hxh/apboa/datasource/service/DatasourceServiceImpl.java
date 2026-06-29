@@ -2,6 +2,7 @@ package com.hxh.apboa.datasource.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hxh.apboa.common.entity.Datasource;
+import com.hxh.apboa.common.enums.HealthStatus;
 import com.hxh.apboa.common.enums.datasource.DatasourceType;
 import com.hxh.apboa.datasource.mapper.DatasourceMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -40,6 +42,12 @@ public class DatasourceServiceImpl extends ServiceImpl<DatasourceMapper, Datasou
     }
 
     @Override
+    public boolean updateDatasource(Datasource datasource) {
+        keepPasswordWhenBlank(datasource);
+        return updateById(datasource);
+    }
+
+    @Override
     public boolean updateEnable(String datasourceId, Integer enable) {
         return lambdaUpdate().set(Datasource::getEnabled, toBoolean(enable)).eq(Datasource::getId, datasourceId).update();
     }
@@ -59,11 +67,56 @@ public class DatasourceServiceImpl extends ServiceImpl<DatasourceMapper, Datasou
     }
 
     @Override
+    public boolean checkSavedConnect(String datasourceId) {
+        Datasource datasource = getById(datasourceId);
+        if (datasource == null) {
+            throw new RuntimeException("Datasource not found");
+        }
+        try {
+            boolean connected = checkConnect(datasource);
+            markHealth(datasourceId, HealthStatus.HEALTHY, null);
+            return connected;
+        } catch (Exception e) {
+            markHealth(datasourceId, HealthStatus.UNHEALTHY, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
     public List<Datasource> listByEnabled(Integer enabled) {
         if (enabled == null) {
             return list();
         }
         return lambdaQuery().eq(Datasource::getEnabled, toBoolean(enabled)).list();
+    }
+
+    private void keepPasswordWhenBlank(Datasource datasource) {
+        if (datasource == null || datasource.getId() == null) {
+            return;
+        }
+        if (datasource.getPassword() != null && !datasource.getPassword().isBlank()) {
+            return;
+        }
+        Datasource old = getById(datasource.getId());
+        if (old != null) {
+            datasource.setPassword(old.getPassword());
+        }
+    }
+
+    private void markHealth(String datasourceId, HealthStatus status, String message) {
+        lambdaUpdate()
+                .set(Datasource::getHealthStatus, status)
+                .set(Datasource::getLastHealthCheck, LocalDateTime.now())
+                .set(Datasource::getLastCheckMessage, trimMessage(message))
+                .eq(Datasource::getId, datasourceId)
+                .update();
+    }
+
+    private String trimMessage(String message) {
+        if (message == null) {
+            return null;
+        }
+        return message.length() <= 500 ? message : message.substring(0, 500);
     }
 
     private Boolean toBoolean(Integer enabled) {

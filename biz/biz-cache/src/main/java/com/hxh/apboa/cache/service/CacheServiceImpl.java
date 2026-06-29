@@ -3,12 +3,14 @@ package com.hxh.apboa.cache.service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hxh.apboa.cache.mapper.CacheMapper;
 import com.hxh.apboa.common.entity.Cache;
+import com.hxh.apboa.common.enums.HealthStatus;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -35,6 +37,12 @@ public class CacheServiceImpl extends ServiceImpl<CacheMapper, Cache> implements
             jdbcTemplate.update("delete from workflow_cache where cache_id in (" + placeholders(cacheIds.size()) + ")", cacheIds.toArray());
         }
         return removed;
+    }
+
+    @Override
+    public boolean updateCache(Cache cache) {
+        keepPasswordWhenBlank(cache);
+        return updateById(cache);
     }
 
     @Override
@@ -68,11 +76,56 @@ public class CacheServiceImpl extends ServiceImpl<CacheMapper, Cache> implements
     }
 
     @Override
+    public boolean checkSavedConnect(String cacheId) {
+        Cache cache = getById(cacheId);
+        if (cache == null) {
+            throw new RuntimeException("Cache not found");
+        }
+        try {
+            boolean connected = checkConnect(cache);
+            markHealth(cacheId, HealthStatus.HEALTHY, null);
+            return connected;
+        } catch (Exception e) {
+            markHealth(cacheId, HealthStatus.UNHEALTHY, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
     public List<Cache> listByEnabled(Integer enabled) {
         if (enabled == null) {
             return list();
         }
         return lambdaQuery().eq(Cache::getEnabled, toBoolean(enabled)).list();
+    }
+
+    private void keepPasswordWhenBlank(Cache cache) {
+        if (cache == null || cache.getId() == null) {
+            return;
+        }
+        if (cache.getPassword() != null && !cache.getPassword().isBlank()) {
+            return;
+        }
+        Cache old = getById(cache.getId());
+        if (old != null) {
+            cache.setPassword(old.getPassword());
+        }
+    }
+
+    private void markHealth(String cacheId, HealthStatus status, String message) {
+        lambdaUpdate()
+                .set(Cache::getHealthStatus, status)
+                .set(Cache::getLastHealthCheck, LocalDateTime.now())
+                .set(Cache::getLastCheckMessage, trimMessage(message))
+                .eq(Cache::getId, cacheId)
+                .update();
+    }
+
+    private String trimMessage(String message) {
+        if (message == null) {
+            return null;
+        }
+        return message.length() <= 500 ? message : message.substring(0, 500);
     }
 
     private Boolean toBoolean(Integer enabled) {

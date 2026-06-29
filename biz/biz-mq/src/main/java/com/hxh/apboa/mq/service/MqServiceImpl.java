@@ -1,6 +1,7 @@
 package com.hxh.apboa.mq.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hxh.apboa.common.enums.HealthStatus;
 import com.hxh.apboa.mq.entity.Mq;
 import com.hxh.apboa.mq.enums.MqType;
 import com.hxh.apboa.mq.mapper.MqMapper;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -39,6 +41,12 @@ public class MqServiceImpl extends ServiceImpl<MqMapper, Mq> implements MqServic
     }
 
     @Override
+    public boolean updateMq(Mq mq) {
+        keepPasswordWhenBlank(mq);
+        return updateById(mq);
+    }
+
+    @Override
     public boolean updateEnable(String mqId, Integer enable) {
         return lambdaUpdate().set(Mq::getEnabled, toBoolean(enable)).eq(Mq::getId, mqId).update();
     }
@@ -55,11 +63,56 @@ public class MqServiceImpl extends ServiceImpl<MqMapper, Mq> implements MqServic
     }
 
     @Override
+    public boolean checkSavedConnect(String mqId) {
+        Mq mq = getById(mqId);
+        if (mq == null) {
+            throw new RuntimeException("MQ not found");
+        }
+        try {
+            boolean connected = checkConnect(mq);
+            markHealth(mqId, HealthStatus.HEALTHY, null);
+            return connected;
+        } catch (Exception e) {
+            markHealth(mqId, HealthStatus.UNHEALTHY, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
     public List<Mq> listByEnabled(Integer enabled) {
         if (enabled == null) {
             return list();
         }
         return lambdaQuery().eq(Mq::getEnabled, toBoolean(enabled)).list();
+    }
+
+    private void keepPasswordWhenBlank(Mq mq) {
+        if (mq == null || mq.getId() == null) {
+            return;
+        }
+        if (mq.getPassword() != null && !mq.getPassword().isBlank()) {
+            return;
+        }
+        Mq old = getById(mq.getId());
+        if (old != null) {
+            mq.setPassword(old.getPassword());
+        }
+    }
+
+    private void markHealth(String mqId, HealthStatus status, String message) {
+        lambdaUpdate()
+                .set(Mq::getHealthStatus, status)
+                .set(Mq::getLastHealthCheck, LocalDateTime.now())
+                .set(Mq::getLastCheckMessage, trimMessage(message))
+                .eq(Mq::getId, mqId)
+                .update();
+    }
+
+    private String trimMessage(String message) {
+        if (message == null) {
+            return null;
+        }
+        return message.length() <= 500 ? message : message.substring(0, 500);
     }
 
     private Boolean toBoolean(Integer enabled) {

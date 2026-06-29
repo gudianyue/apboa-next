@@ -1,6 +1,9 @@
 package com.hxh.apboa.datasource.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.hxh.apboa.common.entity.Datasource;
+import com.hxh.apboa.common.mp.support.MP;
+import com.hxh.apboa.common.mp.support.PageParams;
 import com.hxh.apboa.common.r.R;
 import com.hxh.apboa.datasource.service.DatasourceService;
 import lombok.RequiredArgsConstructor;
@@ -21,12 +24,17 @@ public class DatasourceController {
 
     @PutMapping
     public R<?> update(@RequestBody Datasource datasource) {
-        return R.data(datasourceService.updateById(datasource));
+        return R.data(datasourceService.updateDatasource(datasource));
     }
 
     @DeleteMapping("{force}")
     public R<?> deleteDatasource(@PathVariable("force") Integer force, @RequestBody List<String> datasourceIds) {
         return R.data(datasourceService.deleteDatasource(force, datasourceIds));
+    }
+
+    @GetMapping("/page")
+    public R<IPage<Datasource>> page(PageParams pageParams, Datasource query) {
+        return R.data(datasourceService.page(MP.getPage(pageParams), MP.getQueryWrapper(query)));
     }
 
     @GetMapping
@@ -47,5 +55,10 @@ public class DatasourceController {
     @PostMapping("/check/connect")
     public R<?> checkConnect(@RequestBody Datasource datasource) {
         return R.data(datasourceService.checkConnect(datasource));
+    }
+
+    @PostMapping("/{datasourceId}/check/connect")
+    public R<?> checkSavedConnect(@PathVariable("datasourceId") String datasourceId) {
+        return R.data(datasourceService.checkSavedConnect(datasourceId));
     }
 }

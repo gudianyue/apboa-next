@@ -3,11 +3,14 @@ package com.hxh.apboa.mq.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.hxh.apboa.common.consts.TableConst;
 import com.hxh.apboa.common.entity.BaseTenantEntity;
+import com.hxh.apboa.common.enums.HealthStatus;
 import com.hxh.apboa.common.mp.annotation.QueryDefine;
 import com.hxh.apboa.common.mp.support.QueryCondition;
 import com.hxh.apboa.mq.enums.MqType;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 /**
  * 描述：消息队列表
@@ -56,4 +59,20 @@ public class Mq extends BaseTenantEntity {
      * 扩展配置（JSON格式，用于存储额外参数如虚拟主机、分区策略等）
      */
     private String config;
+
+    /**
+     * 健康状态
+     */
+    @QueryDefine(condition = QueryCondition.EQ)
+    private HealthStatus healthStatus;
+
+    /**
+     * 最后一次健康检查时间
+     */
+    private LocalDateTime lastHealthCheck;
+
+    /**
+     * 最后一次健康检查消息
+     */
+    private String lastCheckMessage;
 }

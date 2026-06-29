@@ -4,18 +4,21 @@
  * @author huxuehao
  */
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Modal, message } from 'ant-design-vue'
-import { SearchOutlined } from '@ant-design/icons-vue'
+import { DatabaseOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import { storeToRefs } from 'pinia'
 import { useWorkflowStore } from '@/stores'
 import * as workflowApi from '@/api/workflow'
+import * as workflowResourcesApi from '@/api/workflowResources'
 import WorkflowCard from '@/components/workflow/list/WorkflowCard.vue'
 import WorkflowCreateCard from '@/components/workflow/list/WorkflowCreateCard.vue'
+import WorkflowResourceModal from '@/components/workflow/resources/WorkflowResourceModal.vue'
 import ApboaInfiniteLoading from '@/components/common/ApboaInfiniteLoading.vue'
 import { cloneDefaultConfig, cloneDefaultInputs, cloneDefaultOutputs, getWorkflowNodeSchema } from '@/config/workflow/nodeSchemas'
 import type { Workflow, WorkflowDefinition, WorkflowNodeDefinition } from '@/types/workflow'
+import type { WorkflowResourceSummary } from '@/types/workflowResources'
 
 const router = useRouter()
 const store = useWorkflowStore()
@@ -24,6 +27,16 @@ const { workflows, loading, hasMore } = storeToRefs(store)
 const filterName = ref('')
 const filterStatus = ref<'DRAFT' | 'PUBLISHED' | undefined>(undefined)
 const filterEnabled = ref<boolean | undefined>(undefined)
+const resourceModalVisible = ref(false)
+const resourceSummary = ref<WorkflowResourceSummary>({
+  total: 0,
+  datasourceTotal: 0,
+  cacheTotal: 0,
+  mqTotal: 0,
+  datasourceEnabled: 0,
+  cacheEnabled: 0,
+  mqEnabled: 0,
+})
 
 /** 用于强制重建 InfiniteLoading 组件的 key */
 const infiniteLoadingKey = ref(0)
@@ -44,13 +57,26 @@ function resetListAndRebuild() {
  * 执行搜索
  */
 function search() {
-  store.query.value = {
-    ...store.query.value,
+  store.query = {
+    ...store.query,
     name: filterName.value || undefined,
     status: filterStatus.value,
     enabled: filterEnabled.value,
   }
   resetListAndRebuild()
+}
+
+async function loadResourceSummary() {
+  const response = await workflowResourcesApi.summary()
+  resourceSummary.value = response.data.data || resourceSummary.value
+}
+
+function handleResourceChanged(summary?: WorkflowResourceSummary) {
+  if (summary) {
+    resourceSummary.value = summary
+    return
+  }
+  loadResourceSummary()
 }
 
 async function createWorkflow() {
@@ -200,6 +226,10 @@ async function handleInfiniteLoading($state: {
 watch([filterStatus, filterEnabled], () => {
   search()
 })
+
+onMounted(() => {
+  loadResourceSummary()
+})
 </script>
 
 <template>
@@ -253,6 +283,12 @@ watch([filterStatus, filterEnabled], () => {
           ]"
           @change="search()"
         />
+        <ABadge :count="resourceSummary.total" :overflow-count="999">
+          <AButton @click="resourceModalVisible = true">
+            <DatabaseOutlined />
+            资源维护
+          </AButton>
+        </ABadge>
       </div>
     </section>
 
@@ -280,6 +316,16 @@ watch([filterStatus, filterEnabled], () => {
         @infinite="handleInfiniteLoading"
       />
     </section>
+
+    <AModal
+      v-model:open="resourceModalVisible"
+      wrap-class-name="full-modal"
+      :footer="null"
+      :destroyOnClose="true"
+      :width="'100%'"
+    >
+      <WorkflowResourceModal @changed="handleResourceChanged" />
+    </AModal>
   </div>
 </template>
 

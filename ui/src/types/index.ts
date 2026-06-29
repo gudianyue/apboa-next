@@ -34,3 +34,6 @@ export * from './chat-mention'
 export * from './plan'
 
 export * from './workflow'
+
+// Workflow resource maintenance types
+export * from './workflowResources'

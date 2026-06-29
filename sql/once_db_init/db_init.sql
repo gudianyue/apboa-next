@@ -749,13 +749,19 @@ CREATE TABLE `cache` (
   `config` json DEFAULT NULL COMMENT 'Extended config',
   `username` varchar(100) DEFAULT NULL COMMENT 'Username',
   `password` varchar(255) DEFAULT NULL COMMENT 'Password',
+  `health_status` enum('HEALTHY','UNHEALTHY','UNKNOWN') DEFAULT 'UNKNOWN' COMMENT 'Health status',
+  `last_health_check` datetime DEFAULT NULL COMMENT 'Last health check time',
+  `last_check_message` varchar(500) DEFAULT NULL COMMENT 'Last health check message',
   `enabled` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Enabled',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` bigint DEFAULT NULL,
   `updated_by` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_cache_tenant_enabled` (`tenant_id`, `enabled`)
+  KEY `idx_cache_tenant_enabled` (`tenant_id`, `enabled`),
+  KEY `idx_cache_tenant_name` (`tenant_id`, `name`),
+  KEY `idx_cache_tenant_type_enabled` (`tenant_id`, `type`, `enabled`),
+  KEY `idx_cache_tenant_health` (`tenant_id`, `health_status`)
 ) COMMENT='Workflow cache resource';
 
 DROP TABLE IF EXISTS `datasource`;
@@ -771,13 +777,19 @@ CREATE TABLE `datasource` (
   `config` json DEFAULT NULL COMMENT 'Extended config',
   `username` varchar(100) DEFAULT NULL COMMENT 'Username',
   `password` varchar(255) DEFAULT NULL COMMENT 'Password',
+  `health_status` enum('HEALTHY','UNHEALTHY','UNKNOWN') DEFAULT 'UNKNOWN' COMMENT 'Health status',
+  `last_health_check` datetime DEFAULT NULL COMMENT 'Last health check time',
+  `last_check_message` varchar(500) DEFAULT NULL COMMENT 'Last health check message',
   `enabled` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Enabled',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` bigint DEFAULT NULL,
   `updated_by` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_datasource_tenant_enabled` (`tenant_id`, `enabled`)
+  KEY `idx_datasource_tenant_enabled` (`tenant_id`, `enabled`),
+  KEY `idx_datasource_tenant_name` (`tenant_id`, `name`),
+  KEY `idx_datasource_tenant_type_enabled` (`tenant_id`, `type`, `enabled`),
+  KEY `idx_datasource_tenant_health` (`tenant_id`, `health_status`)
 ) COMMENT='Workflow datasource resource';
 
 DROP TABLE IF EXISTS `mq`;
@@ -792,13 +804,19 @@ CREATE TABLE `mq` (
   `username` varchar(100) DEFAULT NULL COMMENT 'Username',
   `password` varchar(255) DEFAULT NULL COMMENT 'Password',
   `config` json DEFAULT NULL COMMENT 'Extended config',
+  `health_status` enum('HEALTHY','UNHEALTHY','UNKNOWN') DEFAULT 'UNKNOWN' COMMENT 'Health status',
+  `last_health_check` datetime DEFAULT NULL COMMENT 'Last health check time',
+  `last_check_message` varchar(500) DEFAULT NULL COMMENT 'Last health check message',
   `enabled` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Enabled',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_by` bigint DEFAULT NULL,
   `updated_by` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `idx_mq_tenant_enabled` (`tenant_id`, `enabled`)
+  KEY `idx_mq_tenant_enabled` (`tenant_id`, `enabled`),
+  KEY `idx_mq_tenant_name` (`tenant_id`, `name`),
+  KEY `idx_mq_tenant_type_enabled` (`tenant_id`, `type`, `enabled`),
+  KEY `idx_mq_tenant_health` (`tenant_id`, `health_status`)
 ) COMMENT='Workflow MQ resource';
 
 DROP TABLE IF EXISTS `workflow`;

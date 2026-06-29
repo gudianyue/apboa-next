@@ -1,5 +1,8 @@
 package com.hxh.apboa.mq.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.hxh.apboa.common.mp.support.MP;
+import com.hxh.apboa.common.mp.support.PageParams;
 import com.hxh.apboa.common.r.R;
 import com.hxh.apboa.mq.entity.Mq;
 import com.hxh.apboa.mq.service.MqService;
@@ -21,12 +24,17 @@ public class MqController {
 
     @PutMapping
     public R<?> update(@RequestBody Mq mq) {
-        return R.data(mqService.updateById(mq));
+        return R.data(mqService.updateMq(mq));
     }
 
     @DeleteMapping("{force}")
     public R<?> deleteMq(@PathVariable("force") Integer force, @RequestBody List<String> mqIds) {
         return R.data(mqService.deleteMq(force, mqIds));
+    }
+
+    @GetMapping("/page")
+    public R<IPage<Mq>> page(PageParams pageParams, Mq query) {
+        return R.data(mqService.page(MP.getPage(pageParams), MP.getQueryWrapper(query)));
     }
 
     @GetMapping
@@ -47,5 +55,10 @@ public class MqController {
     @PostMapping("/check/connect")
     public R<?> checkConnect(@RequestBody Mq mq) {
         return R.data(mqService.checkConnect(mq));
+    }
+
+    @PostMapping("/{mqId}/check/connect")
+    public R<?> checkSavedConnect(@PathVariable("mqId") String mqId) {
+        return R.data(mqService.checkSavedConnect(mqId));
     }
 }
