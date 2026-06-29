@@ -28,4 +28,6 @@ public interface WorkflowService extends IService<Workflow> {
     List<WorkflowVersion> versions(Long id);
 
     Workflow rollback(Long id, String version);
+
+    boolean deleteVersion(Long id, String version);
 }

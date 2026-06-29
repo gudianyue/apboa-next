@@ -163,6 +163,7 @@ public class WorkflowServiceImpl extends ServiceImpl<WorkflowMapper, Workflow> i
     public List<WorkflowVersion> versions(Long id) {
         return workflowVersionMapper.selectList(new LambdaQueryWrapper<WorkflowVersion>()
                 .eq(WorkflowVersion::getWorkflowId, String.valueOf(id))
+                .orderByDesc(WorkflowVersion::getCreatedAt)
                 .orderByDesc(WorkflowVersion::getId));
     }
 
@@ -179,10 +180,31 @@ public class WorkflowServiceImpl extends ServiceImpl<WorkflowMapper, Workflow> i
         Workflow workflow = getById(id);
         workflow.setConfig(snapshot.getConfig());
         workflow.setStatus(WorkflowStatus.DRAFT);
+        workflow.setVersion(version);
         updateById(workflow);
         resourceBindingService.sync(String.valueOf(id), snapshot.getConfig());
         RunWorkflowCache.remove(String.valueOf(id));
         return workflow;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteVersion(Long id, String version) {
+        Workflow workflow = getById(id);
+        if (workflow == null) {
+            throw new RuntimeException("workflow not found");
+        }
+        if (WorkflowStatus.PUBLISHED.equals(workflow.getStatus()) && version.equals(workflow.getVersion())) {
+            throw new RuntimeException("current published version cannot be deleted");
+        }
+        WorkflowVersion snapshot = workflowVersionMapper.selectOne(new LambdaQueryWrapper<WorkflowVersion>()
+                .eq(WorkflowVersion::getWorkflowId, String.valueOf(id))
+                .eq(WorkflowVersion::getVersion, version)
+                .last("limit 1"));
+        if (snapshot == null) {
+            throw new RuntimeException("workflow version not found");
+        }
+        return workflowVersionMapper.deleteById(snapshot.getId()) > 0;
     }
 
     private String nextVersion(Long id) {

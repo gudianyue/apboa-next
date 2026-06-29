@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
@@ -28,13 +28,13 @@ const isString = computed(() => (props.node.data.config?.strategy as string) ===
     <PanelSection title="节点名称"
       ><NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
     /></PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <AFormItem label="聚合策略"
@@ -45,17 +45,17 @@ const isString = computed(() => (props.node.data.config?.strategy as string) ===
             { label: 'Map', value: 'MAP' },
             { label: '字符串', value: 'STRING' },
           ]"
-          @update:value="(v) => updateConfig('strategy', v)"
+          @update:value="(v: any) => updateConfig('strategy', v)"
       /></AFormItem>
       <AFormItem label="排除空值"
         ><ASwitch
           :checked="Boolean(node.data.config?.excludeNull)"
-          @update:checked="(v) => updateConfig('excludeNull', v)"
+          @update:checked="(v: any) => updateConfig('excludeNull', v)"
       /></AFormItem>
       <AFormItem v-if="isString" label="字符串拼接符"
         ><AInput
           :value="String(node.data.config?.splicingSymbol || '')"
-          @update:value="(v) => updateConfig('splicingSymbol', v)"
+          @update:value="(v: any) => updateConfig('splicingSymbol', v)"
       /></AFormItem>
     </PanelSection>
     <PanelSection title="输出说明"

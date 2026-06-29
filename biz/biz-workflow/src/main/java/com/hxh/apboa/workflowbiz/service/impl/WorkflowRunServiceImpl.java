@@ -31,7 +31,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -140,8 +139,7 @@ public class WorkflowRunServiceImpl extends ServiceImpl<WorkflowRunMapper, Workf
 
     private List<WorkflowNodeExecution> persistNodeExecutions(Workflow workflow, WorkflowRun run, NodeContext context) {
         List<WorkflowNodeExecution> executions = new ArrayList<>();
-        for (Map.Entry<String, NodeOutput> entry : context.getVariables().getNodeOutputs().entrySet()) {
-            NodeOutput output = entry.getValue();
+        for (NodeOutput output : context.getExecutionTrace()) {
             WorkflowNodeExecution execution = new WorkflowNodeExecution();
             execution.setRouteId(workflow.getRouteId());
             execution.setWorkflowId(String.valueOf(workflow.getId()));

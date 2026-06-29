@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
@@ -33,14 +33,14 @@ const formatterOptions = [
     <PanelSection title="节点名称">
       <NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
       />
     </PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <div class="config-desc">向 Kafka、RabbitMQ 或 RocketMQ 推送消息。</div>
@@ -49,21 +49,21 @@ const formatterOptions = [
           :model-value="String(node.data.config?.mqId || '')"
           resource-type="mq"
           :resources="resources"
-          @update:model-value="(v) => updateConfig('mqId', v)"
+          @update:model-value="(v: any) => updateConfig('mqId', v)"
         />
       </AFormItem>
       <AFormItem label="Topic / Queue" required>
         <AInput
           :value="String(node.data.config?.topicOrQueue || '')"
           placeholder="Kafka/RocketMQ 为 topic，RabbitMQ 为 queue"
-          @update:value="(v) => updateConfig('topicOrQueue', v)"
+          @update:value="(v: any) => updateConfig('topicOrQueue', v)"
         />
       </AFormItem>
       <AFormItem label="消息 Key">
         <AInput
           :value="String(node.data.config?.key || '')"
           placeholder="Kafka 分区键、RabbitMQ routing key、RocketMQ tag"
-          @update:value="(v) => updateConfig('key', v)"
+          @update:value="(v: any) => updateConfig('key', v)"
         />
       </AFormItem>
       <AFormItem label="消息内容">
@@ -76,7 +76,7 @@ const formatterOptions = [
           :show-theme-toggle="false"
           :show-fullscreen="true"
           placeholder='如 {"key":"value"}'
-          @update:model-value="(v) => updateConfig('message', v)"
+          @update:model-value="(v: any) => updateConfig('message', v)"
         />
       </AFormItem>
       <AFormItem label="消息模板">
@@ -89,14 +89,14 @@ const formatterOptions = [
           :show-theme-toggle="false"
           :show-fullscreen="true"
           placeholder="优先级高于消息内容"
-          @update:model-value="(v) => updateConfig('messageTemplate', v)"
+          @update:model-value="(v: any) => updateConfig('messageTemplate', v)"
         />
       </AFormItem>
       <AFormItem label="模板格式">
         <ASelect
           :value="node.data.config?.templateType || 'STRING'"
           :options="formatterOptions"
-          @update:value="(v) => updateConfig('templateType', v)"
+          @update:value="(v: any) => updateConfig('templateType', v)"
         />
       </AFormItem>
     </PanelSection>

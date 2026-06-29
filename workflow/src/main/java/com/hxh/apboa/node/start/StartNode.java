@@ -5,10 +5,12 @@ import com.hxh.apboa.node.base.NodeOutput;
 import com.hxh.apboa.node.base.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.feature.StartableNode;
-import com.hxh.apboa.node.base.verify.VerifyFail;
+import com.hxh.apboa.node.base.inputout.OutputConfig;
 import com.hxh.apboa.node.base.verify.VerifyResult;
+import com.hxh.apboa.common.util.JsonUtils;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,7 +65,7 @@ public class StartNode extends EnhancedNode implements StartableNode {
      */
     private void putOutput(NodeOutput output) {
         // 将请求的参数添加到输出中
-        config.getParams().forEach(param ->
+        safeParams().forEach(param ->
                 output.addOutput(createOutputName(param), createOutputValue(param))
         );
     }
@@ -85,31 +87,63 @@ public class StartNode extends EnhancedNode implements StartableNode {
      * @return 转换后的参数值
      */
     private Object createOutputValue(Param  param) {
-        return switch (param.getType()) {
+        String value = param.getValue();
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        OutputConfig.VariableType type = param.getType() == null ? OutputConfig.VariableType.String : param.getType();
+        return switch (type) {
             case String -> param.getValue();
             case Long -> Long.valueOf(param.getValue());
             case Integer -> Integer.valueOf(param.getValue());
             case Float -> Float.valueOf(param.getValue());
             case Double -> Double.valueOf(param.getValue());
             case Boolean -> Boolean.valueOf(param.getValue());
+            case Array, Object -> JsonUtils.parse(param.getValue());
             default ->throw new IllegalArgumentException("不支持的参数类型:" + param.getType());
         };
     }
 
     @Override
     public VerifyResult verifyConfig(Map<String, Object> inputs) {
+        VerifyResult result = VerifyResult.valid();
         // 参数名称不允许包含 "_"
-        for (Param param : config.getParams()) {
-            if (param.getName() != null && param.getName().contains("_")) {
-                return VerifyResult.invalid(new VerifyFail("params", "参数名称不允许包含 '_'：" + param.getName()));
+        for (Param param : safeParams()) {
+            if (param.getName() == null || param.getName().isBlank()) {
+                result.addError("params", "参数名称不能为空");
+                continue;
+            }
+            if (param.getType() == null) {
+                result.addError("params." + param.getName(), "参数类型不能为空：" + param.getName());
+                continue;
+            }
+            if (param.getName().contains("_")) {
+                result.addError("params", "参数名称不允许包含 '_'：" + param.getName());
+            }
+            if (Boolean.TRUE.equals(param.getRequired()) && (param.getValue() == null || param.getValue().isBlank())) {
+                result.addError("params." + param.getName(), "必填参数不能为空：" + param.getName());
+            }
+            if ((param.getType() == OutputConfig.VariableType.Array || param.getType() == OutputConfig.VariableType.Object)
+                    && param.getValue() != null && !param.getValue().isBlank()) {
+                try {
+                    JsonUtils.parse(param.getValue());
+                } catch (Exception e) {
+                    result.addError("params." + param.getName(), "参数不是合法 JSON：" + param.getName());
+                }
             }
         }
 
         // 参数名称不允许重复
-        if (config.getParams().stream().map(Param::getName).distinct().count() != config.getParams().size()) {
-            return VerifyResult.invalid(new VerifyFail("params", "参数名称重复"));
+        if (safeParams().stream().map(Param::getName).filter(name -> name != null && !name.isBlank()).distinct().count()
+                != safeParams().stream().map(Param::getName).filter(name -> name != null && !name.isBlank()).count()) {
+            result.addError("params", "参数名称重复");
         }
 
-        return VerifyResult.valid();
+        result.setValid(result.getErrors().isEmpty());
+        return result;
+    }
+
+    private List<Param> safeParams() {
+        return config == null || config.getParams() == null ? List.of() : config.getParams();
     }
 }

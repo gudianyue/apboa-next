@@ -17,7 +17,7 @@ import lombok.Setter;
  **/
 @Getter
 @Setter
-@TableName(TableConst.WORKFLOW_RUN)
+@TableName(value = TableConst.WORKFLOW_RUN, autoResultMap = true)
 public class WorkflowRun extends BaseTenantEntity {
     @QueryDefine(condition = QueryCondition.EQ)
     private String routeId;

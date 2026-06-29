@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
@@ -32,7 +32,7 @@ function stringify(v: unknown) {
     <PanelSection title="节点名称">
       <NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
       />
     </PanelSection>
 
@@ -40,7 +40,7 @@ function stringify(v: unknown) {
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
 
     <PanelSection title="节点配置">
@@ -49,14 +49,14 @@ function stringify(v: unknown) {
           :model-value="String(node.data.config?.cacheId || '')"
           resource-type="cache"
           :resources="resources"
-          @update:model-value="(v) => updateConfig('cacheId', v)"
+          @update:model-value="(v: any) => updateConfig('cacheId', v)"
         />
       </AFormItem>
       <AFormItem label="缓存键" required>
         <AInput
           :value="String(node.data.config?.key || '')"
           placeholder="例如 user:${userId}"
-          @update:value="(v) => updateConfig('key', v)"
+          @update:value="(v: any) => updateConfig('key', v)"
         />
         <template #extra><span class="field-help">支持 Velocity 变量语法。</span></template>
       </AFormItem>
@@ -87,7 +87,7 @@ function stringify(v: unknown) {
           :value="Number(node.data.config?.expire ?? 0)"
           :min="0"
           placeholder="0 表示不过期"
-          @update:value="(v) => updateConfig('expire', v ?? 0)"
+          @update:value="(v: any) => updateConfig('expire', v ?? 0)"
         />
       </AFormItem>
       <AFormItem label="模板格式">
@@ -98,7 +98,7 @@ function stringify(v: unknown) {
             { label: 'Jackson JSON', value: 'JACKSON' },
             { label: 'Velocity 模板', value: 'VELOCITY' },
           ]"
-          @update:value="(v) => updateConfig('formatterType', v)"
+          @update:value="(v: any) => updateConfig('formatterType', v)"
         />
       </AFormItem>
     </PanelSection>

@@ -4,7 +4,6 @@ import {
   CheckCircleOutlined,
   CloudUploadOutlined,
   HistoryOutlined,
-  PlayCircleOutlined,
   SaveOutlined,
 } from '@ant-design/icons-vue'
 
@@ -19,7 +18,6 @@ defineEmits<{
   publish: []
   debug: []
   versions: []
-  runs: []
 }>()
 </script>
 
@@ -53,12 +51,6 @@ defineEmits<{
       <AButton @click="$emit('versions')">
         <template #icon><HistoryOutlined /></template>
         版本
-      </AButton>
-    </ATooltip>
-    <ATooltip title="运行记录">
-      <AButton @click="$emit('runs')">
-        <template #icon><PlayCircleOutlined /></template>
-        运行
       </AButton>
     </ATooltip>
   </div>

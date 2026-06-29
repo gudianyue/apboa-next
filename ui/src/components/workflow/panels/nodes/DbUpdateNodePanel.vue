@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
@@ -31,7 +31,7 @@ const dbParamTypeOptions = [
   'FLOAT',
   'BOOLEAN',
   'BOOL',
-].map((v) => ({ label: v, value: v }))
+].map((v: any) => ({ label: v, value: v }))
 const formatterOptions = [
   { label: '普通字符串', value: 'STRING' },
   { label: 'Jackson JSON', value: 'JACKSON' },
@@ -44,13 +44,13 @@ const formatterOptions = [
     <PanelSection title="节点名称"
       ><NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
     /></PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <AFormItem label="数据源" required
@@ -58,7 +58,7 @@ const formatterOptions = [
           :model-value="String(node.data.config?.datasourceId || '')"
           resource-type="datasource"
           :resources="resources"
-          @update:model-value="(v) => updateConfig('datasourceId', v)"
+          @update:model-value="(v: any) => updateConfig('datasourceId', v)"
       /></AFormItem>
       <AFormItem label="SQL 语句" required
         ><SmartCodeEditor
@@ -70,7 +70,7 @@ const formatterOptions = [
           :show-theme-toggle="false"
           :show-fullscreen="true"
           placeholder="使用 ? 作为参数占位符"
-          @update:model-value="(v) => updateConfig('sql', v)"
+          @update:model-value="(v: any) => updateConfig('sql', v)"
         /><template #extra
           ><span class="field-help">SQL 本体不会整体模板替换，参数值支持模板替换。</span></template
         ></AFormItem
@@ -80,13 +80,13 @@ const formatterOptions = [
           :model-value="node.data.config?.params"
           type="dbParams"
           :options="dbParamTypeOptions"
-          @update:model-value="(v) => updateConfig('params', v)"
+          @update:model-value="(v: any) => updateConfig('params', v)"
       /></AFormItem>
       <AFormItem label="参数模板格式"
         ><ASelect
           :value="node.data.config?.formatterType || 'VELOCITY'"
           :options="formatterOptions"
-          @update:value="(v) => updateConfig('formatterType', v)"
+          @update:value="(v: any) => updateConfig('formatterType', v)"
       /></AFormItem>
     </PanelSection>
     <PanelSection title="输出说明"

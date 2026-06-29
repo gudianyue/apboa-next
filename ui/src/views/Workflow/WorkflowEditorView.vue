@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { Modal, message } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import WorkflowCanvasViewport from '@/components/workflow/editor/WorkflowCanvasViewport.vue'
 import WorkflowCanvasToolbar from '@/components/workflow/editor/WorkflowCanvasToolbar.vue'
 import WorkflowTopActions from '@/components/workflow/editor/WorkflowTopActions.vue'
@@ -9,6 +9,9 @@ import WorkflowTopLeft from '@/components/workflow/editor/WorkflowTopLeft.vue'
 import NodeLibraryPopover from '@/components/workflow/library/NodeLibraryPopover.vue'
 import WorkflowConfigPanel from '@/components/workflow/panels/WorkflowConfigPanel.vue'
 import WorkflowRunDock from '@/components/workflow/panels/WorkflowRunDock.vue'
+import WorkflowValidationPanel from '@/components/workflow/panels/WorkflowValidationPanel.vue'
+import WorkflowPublishModal from '@/components/workflow/version/WorkflowPublishModal.vue'
+import WorkflowVersionModal from '@/components/workflow/version/WorkflowVersionModal.vue'
 import WorkflowNodeContextMenu from '@/components/workflow/context-menu/WorkflowNodeContextMenu.vue'
 import { useWorkflowStore } from '@/stores'
 import * as workflowApi from '@/api/workflow'
@@ -27,6 +30,7 @@ import type {
   WorkflowNodeSchema,
   WorkflowResourceMaps,
   WorkflowRunRequest,
+  WorkflowValidationResult,
 } from '@/types/workflow'
 
 type CanvasRef = InstanceType<typeof WorkflowCanvasViewport>
@@ -46,8 +50,14 @@ const libraryOpen = ref(false)
 const libraryAnchorX = ref<number | undefined>(undefined)
 const libraryAnchorY = ref<number | undefined>(undefined)
 const pendingSourceNodeId = ref<string | null>(null)
+const pendingSourceHandle = ref<string>('output')
 const runDockOpen = ref(false)
-const runInput = ref('{\n  "body": {},\n  "variables": {}\n}')
+const versionModalOpen = ref(false)
+const validationPanelOpen = ref(false)
+const validationResult = ref<WorkflowValidationResult | null>(null)
+const publishModalOpen = ref(false)
+const publishing = ref(false)
+const runInput = ref('{\n  "params": [],\n  "variables": {}\n}')
 const canvasRef = ref<CanvasRef | null>(null)
 const resources = ref<WorkflowResourceMaps>({ caches: [], datasources: [], mqs: [] })
 const history = ref<WorkflowDefinition[]>([])
@@ -58,6 +68,12 @@ const workflowId = computed(() => String(route.params.id || ''))
 const selectedNode = computed(() => nodes.value.find((item) => item.id === selectedNodeId.value) || null)
 const canUndo = computed(() => history.value.length > 0)
 const canRedo = computed(() => future.value.length > 0)
+const nodeNames = computed(() =>
+  nodes.value.reduce<Record<string, string>>((acc, node) => {
+    acc[node.id] = node.data.label || node.id
+    return acc
+  }, {}),
+)
 
 onMounted(async () => {
   await loadResources()
@@ -96,6 +112,18 @@ async function loadWorkflow(id: string) {
   loadDefinition(workflow.value.config || defaultDefinition())
   await nextTick()
   canvasRef.value?.fitAll()
+}
+
+async function refreshWorkflowDetail(reloadCanvas = false) {
+  if (!workflow.value.id) return
+  const response = await workflowApi.workflowDetail(workflow.value.id)
+  workflow.value = response.data.data.workflow || workflow.value
+  locked.value = Boolean(workflow.value.locked)
+  if (reloadCanvas) {
+    loadDefinition(workflow.value.config || defaultDefinition())
+    await nextTick()
+    canvasRef.value?.fitAll()
+  }
 }
 
 function loadDefinition(definition: WorkflowDefinition) {
@@ -202,6 +230,7 @@ function addNode(schema: WorkflowNodeSchema) {
   snapshot()
   const id = `${schema.type.toLowerCase()}-${Date.now()}`
   const sourceId = pendingSourceNodeId.value
+  const sourceHandle = pendingSourceHandle.value || 'output'
   const sourceNode = sourceId ? nodes.value.find((n) => n.id === sourceId) : null
   const position = sourceNode
     ? { x: sourceNode.position.x + 320, y: sourceNode.position.y }
@@ -212,11 +241,12 @@ function addNode(schema: WorkflowNodeSchema) {
       id: `edge-${sourceId}-${id}-${Date.now()}`,
       source: sourceId,
       target: id,
-      sourceHandle: 'output',
+      sourceHandle,
       targetHandle: 'input',
       type: 'default',
     })
     pendingSourceNodeId.value = null
+    pendingSourceHandle.value = 'output'
     libraryAnchorX.value = undefined
     libraryAnchorY.value = undefined
   }
@@ -317,6 +347,8 @@ async function saveWorkflow() {
       version: workflow.value.version || '0',
     })
     workflow.value = response.data.data
+    store.upsertWorkflow(workflow.value)
+    store.markListDirty()
     message.success('工作流已创建')
     if (workflow.value.id) await router.replace(`/workflow/${workflow.value.id}/edit`)
     return
@@ -326,6 +358,9 @@ async function saveWorkflow() {
   try {
     workflow.value.config = toDefinition()
     await workflowApi.workflowUpdate(workflow.value)
+    await refreshWorkflowDetail(false)
+    store.upsertWorkflow(workflow.value)
+    store.markListDirty()
     message.success('已保存')
   } finally {
     saving.value = false
@@ -336,11 +371,15 @@ async function validateWorkflow() {
   await saveWorkflow()
   if (!workflow.value.id) return false
   const result = await store.validate(workflow.value.id)
+  validationResult.value = result
+  validationPanelOpen.value = true
+  runDockOpen.value = false
+  selectedNodeId.value = null
   markValidation(result.valid, result.errors)
   if (result.valid) {
-    message.success('校验通过')
+    message.success(result.warnings?.length ? '校验通过，请关注提醒项' : '校验通过')
   } else {
-    message.error('校验失败，请查看标红节点')
+    message.error('校验失败，请查看校验结果')
   }
   return result.valid
 }
@@ -348,18 +387,24 @@ async function validateWorkflow() {
 async function publishWorkflow() {
   const valid = await validateWorkflow()
   if (!valid || !workflow.value.id) return
-  Modal.confirm({
-    title: '发布工作流',
-    content: '发布后会生成不可变版本，正式运行将使用最新发布版本。',
-    okText: '发布',
-    cancelText: '取消',
-    onOk: async () => {
-      const response = await workflowApi.workflowPublish(workflow.value.id!)
-      workflow.value.status = 'PUBLISHED'
-      workflow.value.version = response.data.data.version
-      message.success('发布成功')
-    },
-  })
+  publishModalOpen.value = true
+}
+
+async function submitPublish(remark?: string) {
+  if (!workflow.value.id) return
+  publishing.value = true
+  try {
+    const response = await workflowApi.workflowPublish(workflow.value.id, remark)
+    workflow.value.status = 'PUBLISHED'
+    workflow.value.version = response.data.data.version
+    await refreshWorkflowDetail(false)
+    store.upsertWorkflow(workflow.value)
+    store.markListDirty()
+    publishModalOpen.value = false
+    message.success('发布成功')
+  } finally {
+    publishing.value = false
+  }
 }
 
 function openDebugPanel() {
@@ -375,7 +420,18 @@ async function debugRun() {
   if (!workflow.value.id) return
   running.value = true
   try {
-    const payload = JSON.parse(runInput.value || '{}') as WorkflowRunRequest
+    let payload: WorkflowRunRequest
+    try {
+      payload = JSON.parse(runInput.value || '{}') as WorkflowRunRequest
+    } catch {
+      message.error('调试输入必须是合法 JSON')
+      return
+    }
+    const inputError = validateDebugPayload(payload)
+    if (inputError) {
+      message.error(inputError)
+      return
+    }
     const result = await store.debugRun(workflow.value.id, payload)
     const statusByNode = new Map(result.nodeExecutions.map((item) => [item.nodeId, item.status]))
     nodes.value = nodes.value.map((node) => ({
@@ -384,11 +440,40 @@ async function debugRun() {
     }))
     message.success(result.run.status === 'SUCCESS' ? '调试运行成功' : '调试运行结束，请查看结果')
   } catch (error) {
-    message.error('调试输入不是合法 JSON，或运行失败')
-    throw error
+    message.error(error instanceof Error ? error.message : '调试运行失败')
   } finally {
     running.value = false
   }
+}
+
+function validateDebugPayload(payload: WorkflowRunRequest) {
+  const params = Array.isArray(payload.params) ? payload.params : []
+  const values = new Map(params.map((item) => [item.name, item.value]))
+  const start = nodes.value.find((node) => node.data.type === 'START')
+  const startParams = Array.isArray(start?.data.config?.params) ? start.data.config.params as Array<Record<string, unknown>> : []
+  for (const param of startParams) {
+    const name = String(param.name || '')
+    if (!name) continue
+    const value = values.get(name)
+    const type = String(param.type || 'String')
+    if (param.required && (value === undefined || value === null || String(value).trim() === '')) {
+      return `${name} 为必填参数`
+    }
+    if (value === undefined || value === null || String(value).trim() === '') continue
+    if (type === 'Object' || type === 'Array') {
+      try {
+        const parsed = typeof value === 'string' ? JSON.parse(value) : value
+        if (type === 'Array' && !Array.isArray(parsed)) return `${name} 必须是 JSON 数组`
+        if (type === 'Object' && (Array.isArray(parsed) || typeof parsed !== 'object' || parsed === null)) return `${name} 必须是 JSON 对象`
+      } catch {
+        return `${name} 不是合法 JSON`
+      }
+    }
+  }
+  if (payload.variables && (Array.isArray(payload.variables) || typeof payload.variables !== 'object')) {
+    return 'variables 必须是 JSON 对象'
+  }
+  return ''
 }
 
 function markValidation(valid: boolean, errors: unknown[]) {
@@ -414,17 +499,17 @@ function markValidation(valid: boolean, errors: unknown[]) {
 
 function showVersions() {
   if (!workflow.value.id) return
-  workflowApi.workflowVersions(workflow.value.id).then((response) => {
-    const versions = response.data.data || []
-    Modal.info({
-      title: '版本记录',
-      content: versions.length ? versions.map((item) => `v${item.version} · ${item.createdAt || ''}`).join('\n') : '暂无版本记录',
-    })
-  })
+  versionModalOpen.value = true
 }
 
-function showRuns() {
-  message.info('运行记录入口已保留，后续可扩展为独立抽屉。')
+async function handleVersionLoaded(nextWorkflow: Workflow) {
+  workflow.value = nextWorkflow
+  locked.value = Boolean(workflow.value.locked)
+  loadDefinition(workflow.value.config || defaultDefinition())
+  await nextTick()
+  canvasRef.value?.fitAll()
+  store.upsertWorkflow(workflow.value)
+  store.markListDirty()
 }
 
 function openContextMenu(payload: { nodeId: string; x: number; y: number }) {
@@ -435,14 +520,38 @@ function closeContextMenu() {
   contextMenu.value.open = false
 }
 
-function openLibraryFromNode(payload: { sourceNodeId: string; x: number; y: number }) {
+function clearPendingAdd() {
+  pendingSourceNodeId.value = null
+  pendingSourceHandle.value = 'output'
+  libraryAnchorX.value = undefined
+  libraryAnchorY.value = undefined
+}
+
+function closeLibrary() {
+  libraryOpen.value = false
+  clearPendingAdd()
+}
+
+function toggleLibrary() {
+  if (libraryOpen.value) {
+    closeLibrary()
+    return
+  }
+  clearPendingAdd()
+  libraryOpen.value = true
+}
+
+function openLibraryFromNode(payload: { sourceNodeId: string; sourceHandle: string; x: number; y: number }) {
   pendingSourceNodeId.value = payload.sourceNodeId
+  pendingSourceHandle.value = payload.sourceHandle || 'output'
   libraryAnchorX.value = payload.x
   libraryAnchorY.value = payload.y
+  selectedNodeId.value = null
   libraryOpen.value = true
 }
 
 function focusNode(nodeId: string) {
+  validationPanelOpen.value = false
   selectedNodeId.value = nodeId
   canvasRef.value?.fitNode(nodeId)
 }
@@ -478,7 +587,6 @@ function focusNode(nodeId: string) {
       @publish="publishWorkflow"
       @debug="openDebugPanel"
       @versions="showVersions"
-      @runs="showRuns"
     />
 
     <WorkflowCanvasToolbar
@@ -487,7 +595,7 @@ function focusNode(nodeId: string) {
       :can-redo="canRedo"
       :has-nodes="nodes.length > 0"
       :library-open="libraryOpen"
-      @add-node="libraryOpen = !libraryOpen"
+      @add-node="toggleLibrary"
       @fit="canvasRef?.fitAll()"
       @zoom-in="canvasRef?.zoomInCanvas()"
       @zoom-out="canvasRef?.zoomOutCanvas()"
@@ -499,9 +607,9 @@ function focusNode(nodeId: string) {
       @clear-selection="selectedNodeId = null"
     />
 
-    <NodeLibraryPopover :open="libraryOpen" :anchor-x="libraryAnchorX" :anchor-y="libraryAnchorY" @close="libraryOpen = false; pendingSourceNodeId = null; libraryAnchorX = undefined; libraryAnchorY = undefined" @add="addNode" />
+    <NodeLibraryPopover :open="libraryOpen" :anchor-x="libraryAnchorX" :anchor-y="libraryAnchorY" @close="closeLibrary" @add="addNode" />
 
-    <div v-if="libraryOpen" class="popover-mask" @click="libraryOpen = false; pendingSourceNodeId = null; libraryAnchorX = undefined; libraryAnchorY = undefined" />
+    <div v-if="libraryOpen" class="popover-mask" @click="closeLibrary" />
 
     <WorkflowConfigPanel
       :node="selectedNode"
@@ -511,14 +619,39 @@ function focusNode(nodeId: string) {
       @close="selectedNodeId = null"
     />
 
+    <WorkflowValidationPanel
+      :open="validationPanelOpen"
+      :result="validationResult"
+      :node-names="nodeNames"
+      @close="validationPanelOpen = false"
+      @focus-node="focusNode"
+    />
+
     <WorkflowRunDock
       v-model:input-text="runInput"
       :open="runDockOpen"
       :result="store.lastRun"
+      :nodes="nodes"
       :loading="running"
       @run="debugRun"
       @close="runDockOpen = false"
       @focus-node="focusNode"
+    />
+
+    <WorkflowVersionModal
+      v-model:open="versionModalOpen"
+      :workflow-id="workflow.id"
+      :workflow-name="workflow.name"
+      :current-version="workflow.version"
+      :status="workflow.status"
+      @loaded="handleVersionLoaded"
+    />
+
+    <WorkflowPublishModal
+      v-model:open="publishModalOpen"
+      :workflow-name="workflow.name"
+      :loading="publishing"
+      @publish="submitPublish"
     />
 
     <WorkflowNodeContextMenu

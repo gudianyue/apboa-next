@@ -7,6 +7,7 @@ import com.hxh.apboa.node.base.inputout.InputConfig;
 import lombok.Getter;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -24,7 +25,7 @@ public class VariableContext {
      * 节点输出
      */
     @Getter
-    private final Map<String, NodeOutput> nodeOutputs = new HashMap<>();
+    private final Map<String, NodeOutput> nodeOutputs = new LinkedHashMap<>();
 
     /**
      * 存储变量

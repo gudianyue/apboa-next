@@ -42,21 +42,30 @@ public abstract class EnhancedNode implements Node {
         context.resetNextNodeId();
         // 初始化输出节点
         NodeOutput output = initOutput();
-        // 解析节点输入
-        Map<String, Object> inputs = resolveInputs(context);
-        output.addExecutionContext("inputs", inputs);
-        // 校验参数
-        VerifyResult verifyResult = verifyConfig(inputs);
-        if (!verifyResult.isValid()) {
-            output.markUnverify(verifyResult);
+        try {
+            // 解析节点输入
+            Map<String, Object> inputs = resolveInputs(context);
+            output.addExecutionContext("inputs", inputs);
+            // 校验参数
+            VerifyResult verifyResult = verifyConfig(inputs);
+            if (!verifyResult.isValid()) {
+                output.markUnverify(verifyResult);
+                return output;
+            }
+            // 节点执行逻辑
+            NodeOutput executedOutput = doExecute(inputs, output, context);
+            if (executedOutput != null) {
+                output = executedOutput;
+            }
+            // 保存节点输出
+            storeOutputs(output, context);
             return output;
+        } catch (Exception e) {
+            output.markFailed(getName() + "执行失败: " + e.getMessage());
+            return output;
+        } finally {
+            context.recordExecution(output);
         }
-        // 节点执行逻辑
-        output = doExecute(inputs, output, context);
-        // 保存节点输出
-        storeOutputs(output, context);
-
-        return output;
     }
 
     @Override

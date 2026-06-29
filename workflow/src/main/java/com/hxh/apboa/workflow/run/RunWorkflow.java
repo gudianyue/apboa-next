@@ -38,6 +38,7 @@ public class RunWorkflow extends Workflow {
             if (nodes.size() == 1) {
                 Node node = nodes.getFirst();
                 NodeOutput output = node.execute(context);
+                assertSuccess(output);
                 // 节点类型为结束节点，结束循环，触发响应
                 if (node.getType() == NodeType.END) {
                     return output.getDefaultOutput();
@@ -64,7 +65,8 @@ public class RunWorkflow extends Workflow {
         List<Node> nextNodes = null;
         // TODO: 待优化，基于虚拟线程，可以搞成 异步执行+阻塞 提高效率，但是要考虑context变量线程隔离的问题
         for (Node node : nodes) {
-            node.execute(context);
+            NodeOutput output = node.execute(context);
+            assertSuccess(output);
             if (nextNodes != null && !nextNodes.isEmpty()) {
                 continue;
             }
@@ -85,8 +87,13 @@ public class RunWorkflow extends Workflow {
         StartNode startNode = (StartNode) getStartNode();
 
         // 完善开始节点的请求参数
-        List<Param> params = startNode.getConfig().getParams();
-        for (ParamItem reqParam : context.getRequestParams().getParams()) {
+        List<Param> params = startNode.getConfig() == null || startNode.getConfig().getParams() == null
+                ? List.of()
+                : startNode.getConfig().getParams();
+        List<ParamItem> requestParams = context.getRequestParams() == null || context.getRequestParams().getParams() == null
+                ? List.of()
+                : context.getRequestParams().getParams();
+        for (ParamItem reqParam : requestParams) {
             for (Param originalParam : params) {
                 if (reqParam.getName().equals(originalParam.getName())) {
                     originalParam.setValue(reqParam.getValue());
@@ -95,8 +102,20 @@ public class RunWorkflow extends Workflow {
             }
         }
 
-        startNode.execute(context);
+        NodeOutput output = startNode.execute(context);
+        assertSuccess(output);
         return getNextNode(startNode, context);
+    }
+
+    private void assertSuccess(NodeOutput output) {
+        if (output == null || output.getStatus() != NodeOutput.ExecutionStatus.SUCCESS) {
+            String nodeName = output == null ? "未知节点" : output.getNodeName();
+            String error = output == null ? "节点未返回执行结果" : output.getErrorMessage();
+            if ((error == null || error.isBlank()) && output != null && output.getVerifyErrors() != null && !output.getVerifyErrors().isEmpty()) {
+                error = output.getVerifyErrors().toString();
+            }
+            throw new RuntimeException(nodeName + "执行失败" + (error == null || error.isBlank() ? "" : ": " + error));
+        }
     }
 
     /**

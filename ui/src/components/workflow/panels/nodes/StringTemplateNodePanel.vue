@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
@@ -26,13 +26,13 @@ function updateConfig(key: string, value: unknown) {
     <PanelSection title="节点名称"
       ><NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
     /></PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <AFormItem label="模板格式"
@@ -42,7 +42,7 @@ function updateConfig(key: string, value: unknown) {
             { label: '字符串', value: 'STRING' },
             { label: 'Velocity', value: 'VELOCITY' },
           ]"
-          @update:value="(v) => updateConfig('templateType', v)"
+          @update:value="(v: any) => updateConfig('templateType', v)"
       /></AFormItem>
       <AFormItem label="模板内容" required
         ><SmartCodeEditor
@@ -54,7 +54,7 @@ function updateConfig(key: string, value: unknown) {
           :show-theme-toggle="false"
           :show-fullscreen="true"
           placeholder="输入模板内容，Velocity 模式使用 ${变量} 语法"
-          @update:model-value="(v) => updateConfig('template', v)"
+          @update:model-value="(v: any) => updateConfig('template', v)"
       /></AFormItem>
     </PanelSection>
     <PanelSection title="输出说明"

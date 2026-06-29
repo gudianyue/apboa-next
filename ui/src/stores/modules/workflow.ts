@@ -23,6 +23,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
   const currentPage = ref(1)
   const pageSize = ref(50)
   const total = ref(0)
+  const listDirty = ref(false)
   const query = ref<WorkflowQuery>({ page: 1, size: 50 })
   const lastValidation = ref<WorkflowValidationResult | null>(null)
   const lastRun = ref<WorkflowRunResult | null>(null)
@@ -62,6 +63,27 @@ export const useWorkflowStore = defineStore('workflow', () => {
       throw error
     } finally {
       loading.value = false
+    }
+  }
+
+  async function refreshFirstPage() {
+    resetPagination()
+    await fetchPage(1)
+    listDirty.value = false
+  }
+
+  function markListDirty() {
+    listDirty.value = true
+  }
+
+  function upsertWorkflow(workflow: Workflow) {
+    if (!workflow.id) return
+    const index = workflows.value.findIndex((item) => item.id === workflow.id)
+    if (index >= 0) {
+      workflows.value[index] = { ...workflows.value[index], ...workflow }
+    } else {
+      workflows.value.unshift(workflow)
+      total.value += 1
     }
   }
 
@@ -107,12 +129,16 @@ export const useWorkflowStore = defineStore('workflow', () => {
     loading,
     hasMore,
     total,
+    listDirty,
     query,
     lastValidation,
     lastRun,
     fetchPage,
+    refreshFirstPage,
     loadMore,
     resetPagination,
+    markListDirty,
+    upsertWorkflow,
     fetchMetadata,
     validate,
     debugRun,

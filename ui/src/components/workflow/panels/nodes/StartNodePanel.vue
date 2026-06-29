@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
@@ -32,7 +32,7 @@ const variableTypeOptions = [
   'Boolean',
   'Array',
   'Object',
-].map((v) => ({ label: v, value: v }))
+].map((v: any) => ({ label: v, value: v }))
 </script>
 
 <template>

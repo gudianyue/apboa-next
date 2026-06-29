@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
@@ -46,14 +46,14 @@ const simpleSymbolOptions = [
     <PanelSection title="节点名称">
       <NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
       />
     </PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <AFormItem label="过滤模式">
@@ -63,7 +63,7 @@ const simpleSymbolOptions = [
             { label: '简单', value: 'SIMPLE' },
             { label: '表达式', value: 'EXPRESSION' },
           ]"
-          @update:value="(v) => updateConfig('mode', v)"
+          @update:value="(v: any) => updateConfig('mode', v)"
         />
       </AFormItem>
       <template v-if="isSimple">
@@ -75,13 +75,13 @@ const simpleSymbolOptions = [
               { label: '数字', value: 'NUMBER' },
               { label: '布尔', value: 'BOOLEAN' },
             ]"
-            @update:value="(v) => updateConfig('supportType', v)"
+            @update:value="(v: any) => updateConfig('supportType', v)"
           />
         </AFormItem>
         <AFormItem label="元素为空时保留">
           <ASwitch
             :checked="Boolean(node.data.config?.itemIsNullUse)"
-            @update:checked="(v) => updateConfig('itemIsNullUse', v)"
+            @update:checked="(v: any) => updateConfig('itemIsNullUse', v)"
           />
         </AFormItem>
         <AFormItem label="简单运算符">
@@ -89,14 +89,14 @@ const simpleSymbolOptions = [
             show-search
             :value="node.data.config?.simpleSymbol"
             :options="simpleSymbolOptions"
-            @update:value="(v) => updateConfig('simpleSymbol', v)"
+            @update:value="(v: any) => updateConfig('simpleSymbol', v)"
           />
         </AFormItem>
         <AFormItem label="过滤条件" required>
           <AInput
             :value="String(node.data.config?.condition || '')"
             placeholder="item 或 item.子元素"
-            @update:value="(v) => updateConfig('condition', v)"
+            @update:value="(v: any) => updateConfig('condition', v)"
           />
         </AFormItem>
         <AFormItem label="比较值">
@@ -104,7 +104,7 @@ const simpleSymbolOptions = [
             :model-value="node.data.config?.compareTo"
             :nodes="nodes"
             :current-node-id="node.id"
-            @update:model-value="(v) => updateConfig('compareTo', v)"
+            @update:model-value="(v: any) => updateConfig('compareTo', v)"
           />
         </AFormItem>
       </template>
@@ -113,7 +113,7 @@ const simpleSymbolOptions = [
           <ASelect
             :value="node.data.config?.evaluatorType || 'GROOVY'"
             :options="[{ label: 'Groovy', value: 'GROOVY' }]"
-            @update:value="(v) => updateConfig('evaluatorType', v)"
+            @update:value="(v: any) => updateConfig('evaluatorType', v)"
           />
         </AFormItem>
         <AFormItem label="过滤条件" required>
@@ -126,7 +126,7 @@ const simpleSymbolOptions = [
             :show-theme-toggle="false"
             :show-fullscreen="true"
             placeholder="变量名仅可为 item"
-            @update:model-value="(v) => updateConfig('condition', v)"
+            @update:model-value="(v: any) => updateConfig('condition', v)"
           />
         </AFormItem>
       </template>

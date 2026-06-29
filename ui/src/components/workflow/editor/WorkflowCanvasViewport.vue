@@ -20,17 +20,40 @@ const emit = defineEmits<{
   selectNode: [nodeId: string | null]
   nodeContext: [payload: { nodeId: string; x: number; y: number }]
   paneClick: []
-  showLibrary: [payload: { sourceNodeId: string; x: number; y: number }]
+  showLibrary: [payload: { sourceNodeId: string; sourceHandle: string; x: number; y: number }]
 }>()
 
 const flow = useVueFlow()
 
+function getSourceHandles(nodeId: string) {
+  const node = nodes.value.find((item) => item.id === nodeId)
+  if (!node || node.data.type === 'END') return []
+  const branchHandles = node.data.schema?.branchHandles || []
+  return branchHandles.length ? branchHandles.map((item) => item.id) : ['output']
+}
+
 function onConnect(connection: Connection) {
   if (props.locked) return
+  if (!connection.source || !connection.target || connection.source === connection.target) return
+  const sourceHandles = getSourceHandles(connection.source)
+  const sourceHandle = connection.sourceHandle || (sourceHandles.length === 1 ? sourceHandles[0] : '')
+  const targetHandle = connection.targetHandle || 'input'
+  if (!sourceHandle || !sourceHandles.includes(sourceHandle) || targetHandle !== 'input') return
+  const edgeExists = edges.value.some(
+    (edge) =>
+      edge.source === connection.source &&
+      edge.target === connection.target &&
+      (edge.sourceHandle || 'output') === sourceHandle &&
+      (edge.targetHandle || 'input') === targetHandle,
+  )
+  if (edgeExists) return
   flow.addEdges([
     {
-      id: `edge-${connection.source}-${connection.target}-${Date.now()}`,
-      ...connection,
+      id: `edge-${connection.source}-${sourceHandle}-${connection.target}-${Date.now()}`,
+      source: connection.source,
+      target: connection.target,
+      sourceHandle,
+      targetHandle,
       type: 'default',
     },
   ])
@@ -42,7 +65,6 @@ function onNodeClick(event: any) {
 
 function onNodeContextMenu(event: any) {
   event.event?.preventDefault()
-  emit('selectNode', event.node.id)
   emit('nodeContext', { nodeId: event.node.id, x: event.event?.clientX || 0, y: event.event?.clientY || 0 })
 }
 
@@ -51,8 +73,8 @@ function onPaneClick() {
   emit('paneClick')
 }
 
-function onNodeAddClick(nodeId: string, position: { x: number; y: number }) {
-  emit('showLibrary', { sourceNodeId: nodeId, ...position })
+function onNodeAddClick(nodeId: string, payload: { x: number; y: number; sourceHandle: string }) {
+  emit('showLibrary', { sourceNodeId: nodeId, ...payload })
 }
 
 function addAtCenter() {

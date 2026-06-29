@@ -256,7 +256,7 @@ export const workflowNodeSchemas: WorkflowNodeSchema[] = [
     return schema({
       type, title: titleMap[type], group: 'data',
       description: '执行使用 ? 占位符的 SQL，并按顺序绑定参数。',
-      icon: 'table', color: '#2f54eb', panelComponent: panelMap[type],
+      icon: 'table', color: '#2f54eb', panelComponent: panelMap[type] || 'DbSelectNodePanel',
       defaultConfig: { params: [], formatterType: 'VELOCITY' },
       fields: dbFields, inputConfigs: input(), outputConfigs: output(type === 'DB_SELECT' ? 'Array' : 'Integer'),
       summary: (config, resources) => {

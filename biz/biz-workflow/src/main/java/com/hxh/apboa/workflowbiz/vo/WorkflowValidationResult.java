@@ -11,10 +11,15 @@ import java.util.List;
 public class WorkflowValidationResult {
     private boolean valid = true;
     private List<WorkflowValidationError> errors = new ArrayList<>();
+    private List<WorkflowValidationError> warnings = new ArrayList<>();
 
     public void addError(String nodeId, String field, String message) {
         valid = false;
         errors.add(new WorkflowValidationError(nodeId, field, message));
+    }
+
+    public void addWarning(String nodeId, String field, String message) {
+        warnings.add(new WorkflowValidationError(nodeId, field, message));
     }
 
     public record WorkflowValidationError(String nodeId, String field, String message) {

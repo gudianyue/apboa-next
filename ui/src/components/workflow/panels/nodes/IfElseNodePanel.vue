@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
@@ -50,7 +50,7 @@ const variableTypeOptions = [
   'Boolean',
   'Array',
   'Object',
-].map((v) => ({ label: v, value: v }))
+].map((v: any) => ({ label: v, value: v }))
 const isExpression = computed(() => (props.node.data.config?.symbol as string) === 'EXPRESSION')
 </script>
 
@@ -59,21 +59,21 @@ const isExpression = computed(() => (props.node.data.config?.symbol as string) =
     <PanelSection title="节点名称">
       <NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
       />
     </PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <AFormItem label="表达式引擎">
         <ASelect
           :value="node.data.config?.evaluatorType || 'GROOVY'"
           :options="[{ label: 'Groovy', value: 'GROOVY' }]"
-          @update:value="(v) => updateConfig('evaluatorType', v)"
+          @update:value="(v: any) => updateConfig('evaluatorType', v)"
         />
       </AFormItem>
       <AFormItem label="计算范围">
@@ -83,7 +83,7 @@ const isExpression = computed(() => (props.node.data.config?.symbol as string) =
             { label: '值本身', value: 'SELF' },
             { label: '长度', value: 'LENGTH' },
           ]"
-          @update:value="(v) => updateConfig('scope', v)"
+          @update:value="(v: any) => updateConfig('scope', v)"
         />
       </AFormItem>
       <AFormItem label="运算符" required>
@@ -91,7 +91,7 @@ const isExpression = computed(() => (props.node.data.config?.symbol as string) =
           show-search
           :value="node.data.config?.symbol || 'EQ'"
           :options="symbolOptions"
-          @update:value="(v) => updateConfig('symbol', v)"
+          @update:value="(v: any) => updateConfig('symbol', v)"
         />
       </AFormItem>
       <AFormItem v-if="!isExpression" label="比较值">
@@ -99,7 +99,7 @@ const isExpression = computed(() => (props.node.data.config?.symbol as string) =
           :model-value="node.data.config?.compareTo"
           :nodes="nodes"
           :current-node-id="node.id"
-          @update:model-value="(v) => updateConfig('compareTo', v)"
+          @update:model-value="(v: any) => updateConfig('compareTo', v)"
         />
       </AFormItem>
       <AFormItem v-if="isExpression" label="条件表达式">
@@ -112,7 +112,7 @@ const isExpression = computed(() => (props.node.data.config?.symbol as string) =
           :show-theme-toggle="false"
           :show-fullscreen="true"
           placeholder="Groovy 表达式"
-          @update:model-value="(v) => updateConfig('conditionExpression', v)"
+          @update:model-value="(v: any) => updateConfig('conditionExpression', v)"
         />
       </AFormItem>
       <AFormItem label="允许输入类型">
@@ -120,27 +120,27 @@ const isExpression = computed(() => (props.node.data.config?.symbol as string) =
           :model-value="node.data.config?.allowInputType"
           type="stringList"
           :options="variableTypeOptions"
-          @update:model-value="(v) => updateConfig('allowInputType', v)"
+          @update:model-value="(v: any) => updateConfig('allowInputType', v)"
         />
       </AFormItem>
       <AFormItem label="输入为空时通过">
         <ASwitch
           :checked="Boolean(node.data.config?.inputIsNullUse)"
-          @update:checked="(v) => updateConfig('inputIsNullUse', v)"
+          @update:checked="(v: any) => updateConfig('inputIsNullUse', v)"
         />
       </AFormItem>
       <AFormItem label="True 分支节点ID">
         <AInput
           :value="String(node.data.config?.trueNextNodeId || '')"
           placeholder="满足条件后执行的节点"
-          @update:value="(v) => updateConfig('trueNextNodeId', v)"
+          @update:value="(v: any) => updateConfig('trueNextNodeId', v)"
         />
       </AFormItem>
       <AFormItem label="False 分支节点ID">
         <AInput
           :value="String(node.data.config?.falseNextNodeId || '')"
           placeholder="不满足条件后执行的节点"
-          @update:value="(v) => updateConfig('falseNextNodeId', v)"
+          @update:value="(v: any) => updateConfig('falseNextNodeId', v)"
         />
       </AFormItem>
     </PanelSection>

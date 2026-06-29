@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
@@ -25,14 +25,14 @@ function updateConfig(key: string, value: unknown) {
     <PanelSection title="节点名称">
       <NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
       />
     </PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <div class="config-desc">从多个候选输入中选择第一个或最后一个非空值。</div>
@@ -43,13 +43,13 @@ function updateConfig(key: string, value: unknown) {
             { label: '第一个', value: 'FIRST' },
             { label: '最后一个', value: 'LAST' },
           ]"
-          @update:value="(v) => updateConfig('strategy', v)"
+          @update:value="(v: any) => updateConfig('strategy', v)"
         />
       </AFormItem>
       <AFormItem label="默认节点ID">
         <AInput
           :value="String(node.data.config?.defaultNextNodeId || '')"
-          @update:value="(v) => updateConfig('defaultNextNodeId', v)"
+          @update:value="(v: any) => updateConfig('defaultNextNodeId', v)"
         />
       </AFormItem>
     </PanelSection>

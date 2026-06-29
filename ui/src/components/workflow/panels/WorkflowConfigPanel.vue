@@ -16,7 +16,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const width = ref(530)
+const width = ref(440)
 const dragging = ref(false)
 
 const maxWidth = computed(() => Math.floor(window.innerWidth * 0.5))
@@ -51,7 +51,7 @@ function beginResize(event: MouseEvent) {
   const startWidth = width.value
   const onMove = (moveEvent: MouseEvent) => {
     const next = startWidth + (startX - moveEvent.clientX)
-    width.value = Math.max(530, Math.min(maxWidth.value, next))
+    width.value = Math.max(440, Math.min(maxWidth.value, next))
   }
   const onUp = () => {
     dragging.value = false
@@ -97,7 +97,7 @@ function beginResize(event: MouseEvent) {
 <style scoped lang="scss">
 .config-panel {
   position: absolute; right: 16px; top: 60px; bottom: 18px; z-index: 16;
-  min-width: 530px; max-width: 50vw;
+  min-width: 440px; max-width: 50vw;
   box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.08); border-radius: 8px; background: #fff;
   display: grid; grid-template-rows: auto minmax(0, 1fr);
 }

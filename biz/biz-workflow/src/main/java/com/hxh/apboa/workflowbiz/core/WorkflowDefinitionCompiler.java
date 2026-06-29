@@ -93,7 +93,7 @@ public class WorkflowDefinitionCompiler {
         JsonNode inputs = nodeJson.path("inputConfigs");
         if (inputs.isArray()) {
             for (JsonNode input : inputs) {
-                node.addInputConfig(objectMapper.convertValue(input, InputConfig.class));
+                node.addInputConfig(compileInputConfig(input));
             }
         }
 
@@ -109,6 +109,32 @@ public class WorkflowDefinitionCompiler {
         }
 
         return node;
+    }
+
+    private InputConfig compileInputConfig(JsonNode inputJson) {
+        InputConfig config = new InputConfig();
+        config.setName(text(inputJson, "name", "input"));
+
+        String typeText = text(inputJson, "type", null);
+        if (typeText != null && !typeText.isBlank()) {
+            config.setType(OutputConfig.VariableType.valueOf(typeText));
+        }
+
+        String classifyText = text(inputJson, "classify", text(inputJson, "sourceType", null));
+        if (classifyText == null || classifyText.isBlank()) {
+            classifyText = InputConfig.InputClassify.NODE_OUTPUT.name();
+        }
+        config.setClassify(InputConfig.InputClassify.valueOf(classifyText));
+
+        JsonNode valueNode = inputJson.get("value");
+        if (valueNode != null && !valueNode.isNull()) {
+            config.setValue(objectMapper.convertValue(valueNode, Object.class));
+        }
+        config.setVariableName(text(inputJson, "variableName", null));
+        config.setSourceNodeId(text(inputJson, "sourceNodeId", text(inputJson, "nodeId", null)));
+        config.setSourceOutputName(text(inputJson, "sourceOutputName", text(inputJson, "outputName", "output")));
+        config.setExpression(text(inputJson, "expression", null));
+        return config;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

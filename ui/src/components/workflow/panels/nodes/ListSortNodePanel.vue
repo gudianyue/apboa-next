@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
@@ -26,20 +26,20 @@ function updateConfig(key: string, value: unknown) {
     <PanelSection title="节点名称"
       ><NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
     /></PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <AFormItem label="表达式引擎"
         ><ASelect
           :value="node.data.config?.evaluatorType || 'GROOVY'"
           :options="[{ label: 'Groovy', value: 'GROOVY' }]"
-          @update:value="(v) => updateConfig('evaluatorType', v)"
+          @update:value="(v: any) => updateConfig('evaluatorType', v)"
       /></AFormItem>
       <AFormItem label="排序表达式" required
         ><SmartCodeEditor
@@ -51,7 +51,7 @@ function updateConfig(key: string, value: unknown) {
           :show-theme-toggle="false"
           :show-fullscreen="false"
           placeholder="提取排序字段的表达式"
-          @update:model-value="(v) => updateConfig('condition', v)"
+          @update:model-value="(v: any) => updateConfig('condition', v)"
       /></AFormItem>
       <AFormItem label="排序方向"
         ><ASegmented
@@ -60,17 +60,17 @@ function updateConfig(key: string, value: unknown) {
             { label: '升序', value: 'ASC' },
             { label: '降序', value: 'DESC' },
           ]"
-          @update:value="(v) => updateConfig('direction', v)"
+          @update:value="(v: any) => updateConfig('direction', v)"
       /></AFormItem>
       <AFormItem label="空值靠前"
         ><ASwitch
           :checked="Boolean(node.data.config?.nullFirst)"
-          @update:checked="(v) => updateConfig('nullFirst', v)"
+          @update:checked="(v: any) => updateConfig('nullFirst', v)"
       /></AFormItem>
       <AFormItem label="严格模式"
         ><ASwitch
           :checked="Boolean(node.data.config?.strictMode)"
-          @update:checked="(v) => updateConfig('strictMode', v)"
+          @update:checked="(v: any) => updateConfig('strictMode', v)"
       /></AFormItem>
     </PanelSection>
     <PanelSection title="输出说明"

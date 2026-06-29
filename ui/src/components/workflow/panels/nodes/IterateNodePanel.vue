@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
@@ -26,14 +26,14 @@ function updateConfig(key: string, value: unknown) {
     <PanelSection title="节点名称">
       <NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
       />
     </PanelSection>
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
       <div class="config-desc">对集合输入逐项执行迭代处理代码。</div>
@@ -44,7 +44,7 @@ function updateConfig(key: string, value: unknown) {
             { label: 'Java', value: 'JAVA' },
             { label: 'JavaScript', value: 'JAVASCRIPT' },
           ]"
-          @update:value="(v) => updateConfig('language', v)"
+          @update:value="(v: any) => updateConfig('language', v)"
         />
       </AFormItem>
       <AFormItem label="迭代代码" required>
@@ -57,7 +57,7 @@ function updateConfig(key: string, value: unknown) {
           :show-theme-toggle="false"
           :show-fullscreen="true"
           placeholder="编写迭代处理逻辑..."
-          @update:model-value="(v) => updateConfig('iterateCode', v)"
+          @update:model-value="(v: any) => updateConfig('iterateCode', v)"
         />
       </AFormItem>
     </PanelSection>

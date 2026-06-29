@@ -4,7 +4,7 @@
  * @author huxuehao
  */
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onActivated, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Modal, message } from 'ant-design-vue'
 import { DatabaseOutlined, SearchOutlined } from '@ant-design/icons-vue'
@@ -22,7 +22,7 @@ import type { WorkflowResourceSummary } from '@/types/workflowResources'
 
 const router = useRouter()
 const store = useWorkflowStore()
-const { workflows, loading, hasMore } = storeToRefs(store)
+const { workflows, loading, hasMore, listDirty } = storeToRefs(store)
 
 const filterName = ref('')
 const filterStatus = ref<'DRAFT' | 'PUBLISHED' | undefined>(undefined)
@@ -227,9 +227,19 @@ watch([filterStatus, filterEnabled], () => {
   search()
 })
 
+function refreshIfDirty() {
+  if (listDirty.value) {
+    resetListAndRebuild()
+    store.listDirty = false
+  }
+}
+
 onMounted(() => {
+  refreshIfDirty()
   loadResourceSummary()
 })
+
+onActivated(refreshIfDirty)
 </script>
 
 <template>

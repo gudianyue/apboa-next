@@ -95,6 +95,11 @@ public class WorkflowController {
         return R.data(workflowService.rollback(id, version));
     }
 
+    @DeleteMapping("/{id}/versions/{version}")
+    public R<Boolean> deleteVersion(@PathVariable("id") Long id, @PathVariable("version") String version) {
+        return R.data(workflowService.deleteVersion(id, version));
+    }
+
     @PostMapping("/{id}/debug-run")
     public R<WorkflowRunResult> debugRun(@PathVariable("id") Long id, @RequestBody(required = false) WorkflowRunRequest request) {
         return R.data(workflowRunService.debugRun(id, request));

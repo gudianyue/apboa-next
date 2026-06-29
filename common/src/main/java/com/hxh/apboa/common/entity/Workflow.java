@@ -17,7 +17,7 @@ import lombok.Setter;
  **/
 @Getter
 @Setter
-@TableName(TableConst.WORKFLOW)
+@TableName(value = TableConst.WORKFLOW, autoResultMap = true)
 public class Workflow extends BaseTenantEntity {
     @QueryDefine(condition = QueryCondition.LIKE)
     private String name;

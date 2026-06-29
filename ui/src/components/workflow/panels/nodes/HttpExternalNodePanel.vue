@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { ref } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
@@ -50,7 +50,7 @@ const formatterOptions = [
     <PanelSection title="节点名称">
       <NodeNameInput
         :model-value="node.data.label"
-        @update:model-value="(v) => updateNode({ label: v })"
+        @update:model-value="(v: any) => updateNode({ label: v })"
       />
     </PanelSection>
 
@@ -58,7 +58,7 @@ const formatterOptions = [
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
       :current-node-id="node.id"
-      @update:model-value="(v) => updateNode({ inputConfigs: v })"
+      @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
 
     <PanelSection title="节点配置">
@@ -67,17 +67,17 @@ const formatterOptions = [
           style="width: 120px"
           :value="getRequest().method || 'GET'"
           :options="
-            ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'].map((v) => ({
+            ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'].map((v: any) => ({
               label: v,
               value: v,
             }))
           "
-          @update:value="(v) => updateRequest('method', v)"
+          @update:value="(v: any) => updateRequest('method', v)"
         />
         <AInput
           :value="String(getRequest().url || '')"
           placeholder="https://api.example.com/users/${id}"
-          @update:value="(v) => updateRequest('url', v)"
+          @update:value="(v: any) => updateRequest('url', v)"
         />
       </div>
 
@@ -92,7 +92,7 @@ const formatterOptions = [
             { label: 'Text Plain', value: 'TEXT_PLAIN' },
             { label: 'Octet Stream', value: 'OCTET_STREAM' },
           ]"
-          @update:value="(v) => updateRequest('contentType', v)"
+          @update:value="(v: any) => updateRequest('contentType', v)"
         />
       </AFormItem>
 
@@ -101,21 +101,21 @@ const formatterOptions = [
           <WorkflowArrayEditors
             :model-value="getRequest().pathParams"
             type="keyValue"
-            @update:model-value="(v) => updateRequest('pathParams', v)"
+            @update:model-value="(v: any) => updateRequest('pathParams', v)"
           />
         </ACollapsePanel>
         <ACollapsePanel key="query" header="Query 参数">
           <WorkflowArrayEditors
             :model-value="getRequest().queryParams"
             type="keyValue"
-            @update:model-value="(v) => updateRequest('queryParams', v)"
+            @update:model-value="(v: any) => updateRequest('queryParams', v)"
           />
         </ACollapsePanel>
         <ACollapsePanel key="headers" header="请求头">
           <WorkflowArrayEditors
             :model-value="getRequest().headers"
             type="keyValue"
-            @update:model-value="(v) => updateRequest('headers', v)"
+            @update:model-value="(v: any) => updateRequest('headers', v)"
           />
         </ACollapsePanel>
       </ACollapse>
@@ -130,7 +130,7 @@ const formatterOptions = [
           :auto-size="{ minRows: 4, maxRows: 12 }"
           placeholder="请求 Body，支持 JSON 字符串或对象"
           @update:value="
-            (v) => {
+            (v: any) => {
               try {
                 updateRequest('body', JSON.parse(v))
               } catch {
@@ -151,7 +151,7 @@ const formatterOptions = [
           <ASelect
             :value="node.data.config?.formatterType || 'STRING'"
             :options="formatterOptions"
-            @update:value="(v) => updateConfig('formatterType', v)"
+            @update:value="(v: any) => updateConfig('formatterType', v)"
           />
         </AFormItem>
         <AFormItem label="连接超时(秒)">
@@ -159,7 +159,7 @@ const formatterOptions = [
             class="full-input"
             :value="Number(node.data.config?.connectTimeout ?? 10)"
             :min="1"
-            @update:value="(v) => updateConfig('connectTimeout', v)"
+            @update:value="(v: any) => updateConfig('connectTimeout', v)"
           />
         </AFormItem>
         <AFormItem label="读取超时(秒)">
@@ -167,7 +167,7 @@ const formatterOptions = [
             class="full-input"
             :value="Number(node.data.config?.readTimeout ?? 30)"
             :min="1"
-            @update:value="(v) => updateConfig('readTimeout', v)"
+            @update:value="(v: any) => updateConfig('readTimeout', v)"
           />
         </AFormItem>
         <AFormItem label="写入超时(秒)">
@@ -175,7 +175,7 @@ const formatterOptions = [
             class="full-input"
             :value="Number(node.data.config?.writeTimeout ?? 30)"
             :min="1"
-            @update:value="(v) => updateConfig('writeTimeout', v)"
+            @update:value="(v: any) => updateConfig('writeTimeout', v)"
           />
         </AFormItem>
         <AFormItem label="最大重试次数">
@@ -183,32 +183,32 @@ const formatterOptions = [
             class="full-input"
             :value="Number(node.data.config?.maxRetries ?? 3)"
             :min="0"
-            @update:value="(v) => updateConfig('maxRetries', v)"
+            @update:value="(v: any) => updateConfig('maxRetries', v)"
           />
         </AFormItem>
         <AFormItem label="重试状态码">
           <WorkflowArrayEditors
             :model-value="node.data.config?.retryStatusCodes"
             type="stringList"
-            @update:model-value="(v) => updateConfig('retryStatusCodes', v)"
+            @update:model-value="(v: any) => updateConfig('retryStatusCodes', v)"
           />
         </AFormItem>
         <AFormItem label="跟随重定向">
           <ASwitch
             :checked="Boolean(node.data.config?.followRedirects ?? true)"
-            @update:checked="(v) => updateConfig('followRedirects', v)"
+            @update:checked="(v: any) => updateConfig('followRedirects', v)"
           />
         </AFormItem>
         <AFormItem label="同步执行">
           <ASwitch
             :checked="Boolean(node.data.config?.syncExecute ?? true)"
-            @update:checked="(v) => updateConfig('syncExecute', v)"
+            @update:checked="(v: any) => updateConfig('syncExecute', v)"
           />
         </AFormItem>
         <AFormItem label="响应体转 JSON">
           <ASwitch
             :checked="Boolean(node.data.config?.bodyToObject ?? true)"
-            @update:checked="(v) => updateConfig('bodyToObject', v)"
+            @update:checked="(v: any) => updateConfig('bodyToObject', v)"
           />
         </AFormItem>
       </div>
