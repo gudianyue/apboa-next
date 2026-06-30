@@ -14,7 +14,7 @@ const nodes = defineModel<WorkflowFlowNode[]>('nodes', { required: true })
 const edges = defineModel<WorkflowFlowEdge[]>('edges', { required: true })
 
 const props = defineProps<{
-  locked: boolean
+  readonly: boolean
 }>()
 
 const emit = defineEmits<{
@@ -35,7 +35,7 @@ function getSourceHandles(nodeId: string) {
 }
 
 function onConnect(connection: Connection) {
-  if (props.locked) return
+  if (props.readonly) return
   if (!connection.source || !connection.target || connection.source === connection.target) return
   const sourceHandles = getSourceHandles(connection.source)
   const sourceHandle = connection.sourceHandle || (sourceHandles.length === 1 ? sourceHandles[0] : '')
@@ -62,29 +62,29 @@ function onConnect(connection: Connection) {
 }
 
 function onNodeClick(event: any) {
-  if (props.locked) return
+  if (props.readonly) return
   emit('selectNode', event.node.id)
 }
 
 function onNodeContextMenu(event: any) {
-  if (props.locked) return
+  if (props.readonly) return
   event.event?.preventDefault()
   emit('nodeContext', { nodeId: event.node.id, x: event.event?.clientX || 0, y: event.event?.clientY || 0 })
 }
 
 function onPaneClick() {
-  if (props.locked) return
+  if (props.readonly) return
   emit('selectNode', null)
   emit('paneClick')
 }
 
 function onNodeAddClick(nodeId: string, payload: { x: number; y: number; sourceHandle: string }) {
-  if (props.locked) return
+  if (props.readonly) return
   emit('showLibrary', { sourceNodeId: nodeId, ...payload })
 }
 
 function onEdgeAddClick(payload: { edgeId: string; x: number; y: number }) {
-  if (props.locked) return
+  if (props.readonly) return
   emit('showLibraryFromEdge', payload)
 }
 
@@ -126,9 +126,9 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
       v-model:nodes="nodes"
       v-model:edges="edges"
       fit-view-on-init
-      :nodes-draggable="!locked"
-      :nodes-connectable="!locked"
-      :edges-updatable="!locked"
+      :nodes-draggable="!readonly"
+      :nodes-connectable="!readonly"
+      :edges-updatable="!readonly"
       :default-edge-options="{ animated: false, type: 'workflow' }"
       @connect="onConnect"
       @node-click="onNodeClick"
@@ -138,12 +138,12 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
       <template #node-workflow="slotProps">
         <WorkflowGraphNode
           v-bind="slotProps"
-          :locked="locked"
+          :locked="readonly"
           @add-node="(pos: any) => onNodeAddClick(String(slotProps.id), pos)"
         />
       </template>
       <template #edge-workflow="slotProps">
-        <WorkflowGraphEdge v-bind="slotProps" :locked="locked" @add-node="onEdgeAddClick" />
+        <WorkflowGraphEdge v-bind="slotProps" :locked="readonly" @add-node="onEdgeAddClick" />
       </template>
       <Background :gap="18" :size="2" color="#DBDCDE" />
       <MiniMap

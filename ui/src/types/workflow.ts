@@ -84,6 +84,8 @@ export interface Workflow {
   enabled?: boolean
   createdAt?: string
   updatedAt?: string
+  createdBy?: string
+  updatedBy?: string
 }
 
 export interface WorkflowVersion {

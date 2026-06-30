@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ArrowLeftOutlined } from '@ant-design/icons-vue'
+import { ArrowLeftOutlined,LoadingOutlined } from '@ant-design/icons-vue'
 
 defineProps<{
   title: string
   status?: string
   version?: string
   saving?: boolean
-  locked?: boolean
+  readonly?: boolean
 }>()
 
 defineEmits<{
@@ -20,13 +20,13 @@ defineEmits<{
     <AButton type="text" class="back-btn" @click="$emit('back')">
       <template #icon><ArrowLeftOutlined /></template>
     </AButton>
-    
+
     <div class="title-row">
       <div class="title-input-wrap">
         <AInput
           class="title-input"
           :value="title"
-          :disabled="locked"
+          :disabled="readonly"
           placeholder="未命名工作流"
           @update:value="(value: string) => $emit('updateTitle', value)"
         />
@@ -35,7 +35,7 @@ defineEmits<{
       <span class="title-meta">
         <span>{{ status === 'PUBLISHED' ? '已发布' : '草稿' }}</span>
         <span>v{{ version || '0' }}</span>
-        <span v-if="saving">保存中</span>
+        <span v-if="saving"> <LoadingOutlined /> 保存中...</span>
       </span>
     </div>
   </div>

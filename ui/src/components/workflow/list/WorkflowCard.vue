@@ -13,6 +13,10 @@ import {
   WarningFilled,
 } from '@ant-design/icons-vue'
 import type { Workflow } from '@/types/workflow'
+import { useAccountStore } from '@/stores'
+
+const accountStore = useAccountStore()
+const hasReadOnly = accountStore.isReadOnly
 
 const props = defineProps<{
   data: Workflow
@@ -64,7 +68,7 @@ const cornerBadgeType = computed(() => {
 })
 
 const menuItems = computed(() => [
-  { key: 'edit', label: '编辑', disabled: isLocked.value, icon: () => h(EditOutlined) },
+  { key: 'edit', label: '编辑', icon: () => h(EditOutlined) },
   { key: 'copy', label: '复制', icon: () => h(CopyOutlined) },
   { key: 'design', label: '设计', icon: () => h(FormOutlined) },
   { type: 'divider' },
@@ -103,7 +107,7 @@ function handleMenu({ key }: { key: string }) {
         {{ data.name || '未命名工作流' }}
       </button>
 
-      <ADropdown :trigger="['hover']">
+      <ADropdown :trigger="['hover']" v-if="!hasReadOnly">
         <AButton type="text" size="small">
           <template #icon><EllipsisOutlined /></template>
         </AButton>

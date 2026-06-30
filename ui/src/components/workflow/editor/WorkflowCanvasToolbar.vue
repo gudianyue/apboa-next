@@ -15,6 +15,7 @@ import {
 
 defineProps<{
   locked: boolean
+  readonly: boolean
   canUndo: boolean
   canRedo: boolean
   hasNodes: boolean
@@ -38,12 +39,12 @@ defineEmits<{
 
 <template>
   <div class="canvas-toolbar" aria-label="画布快捷工具栏">
-    <ATooltip placement="right" title="添加节点">
-      <AButton :type="libraryOpen ? 'primary' : 'text'" :disabled="locked" @click="$emit('addNode')">
+    <ATooltip v-if="!readonly" placement="right" title="添加节点">
+      <AButton :type="libraryOpen ? 'primary' : 'text'" @click="$emit('addNode')">
         <template #icon><PlusCircleOutlined /></template>
       </AButton>
     </ATooltip>
-    <div class="toolbar-divider" />
+    <div v-if="!readonly" class="toolbar-divider" />
     <ATooltip placement="right" title="适配全部节点">
       <AButton type="text" :disabled="!hasNodes" @click="$emit('fit')">
         <template #icon><AimOutlined /></template>
@@ -64,8 +65,8 @@ defineEmits<{
         <template #icon><CompressOutlined /></template>
       </AButton>
     </ATooltip>
-    <div class="toolbar-divider" />
-    <ATooltip placement="right" :title="locked ? '解除画布锁定' : '锁定画布编辑'">
+    <div class="toolbar-divider" v-if="!readonly" />
+    <ATooltip v-if="!readonly" placement="right" :title="locked ? '锁定工作流' : '解锁工作流'">
       <AButton :type="locked ? 'primary' : 'text'" :loading="lockToggling" @click="$emit('toggleLock')">
         <template #icon>
           <LockOutlined v-if="locked" />
@@ -73,22 +74,22 @@ defineEmits<{
         </template>
       </AButton>
     </ATooltip>
-    <ATooltip placement="right" title="撤销">
-      <AButton type="text" :disabled="!canUndo || locked" @click="$emit('undo')">
+    <ATooltip v-if="!readonly" placement="right" title="撤销">
+      <AButton type="text" :disabled="!canUndo" @click="$emit('undo')">
         <template #icon><UndoOutlined /></template>
       </AButton>
     </ATooltip>
-    <ATooltip placement="right" title="重做">
-      <AButton type="text" :disabled="!canRedo || locked" @click="$emit('redo')">
+    <ATooltip v-if="!readonly" placement="right" title="重做">
+      <AButton type="text" :disabled="!canRedo" @click="$emit('redo')">
         <template #icon><RedoOutlined /></template>
       </AButton>
     </ATooltip>
-    <ATooltip placement="right" title="整理布局">
-      <AButton type="text" :disabled="!hasNodes || locked" @click="$emit('layout')">
+    <ATooltip v-if="!readonly" placement="right" title="整理布局">
+      <AButton type="text" :disabled="!hasNodes" @click="$emit('layout')">
         <template #icon><NodeIndexOutlined /></template>
       </AButton>
     </ATooltip>
-    <ATooltip placement="right" title="清空选择">
+    <ATooltip v-if="!readonly" placement="right" title="清空选择">
       <AButton type="text" @click="$emit('clearSelection')">
         <template #icon><ClearOutlined /></template>
       </AButton>

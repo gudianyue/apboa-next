@@ -105,7 +105,7 @@ function editWorkflow(record: Workflow) {
 }
 
 function designWorkflow(record: Workflow) {
-  if (record.id) router.push(`/workflow/${record.id}/edit`)
+  if (record.id) router.push(`/workflow/${record.id}`)
 }
 
 async function submitWorkflowInfo(payload: { name: string; remark?: string }) {

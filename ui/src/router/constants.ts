@@ -87,7 +87,7 @@ export const RoutePaths = {
   AGENT: 'agent',
   WORKFLOW: 'workflow',
   WORKFLOW_NEW: 'workflow/new',
-  WORKFLOW_EDIT: 'workflow/:id/edit',
+  WORKFLOW_EDIT: 'workflow/:id',
 
   // 模型管理
   MODEL: 'model',

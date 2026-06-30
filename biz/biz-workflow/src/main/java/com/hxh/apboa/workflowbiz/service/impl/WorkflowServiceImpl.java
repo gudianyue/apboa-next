@@ -6,6 +6,7 @@ import com.hxh.apboa.common.entity.Workflow;
 import com.hxh.apboa.common.entity.WorkflowRun;
 import com.hxh.apboa.common.entity.WorkflowVersion;
 import com.hxh.apboa.common.enums.workflow.WorkflowStatus;
+import com.hxh.apboa.common.util.RedisUtils;
 import com.hxh.apboa.workflow.run.cache.RunWorkflowCache;
 import com.hxh.apboa.workflowbiz.core.WorkflowDefinitionCompiler;
 import com.hxh.apboa.workflowbiz.mapper.WorkflowMapper;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class WorkflowServiceImpl extends ServiceImpl<WorkflowMapper, Workflow> i
     private final WorkflowValidator workflowValidator;
     private final WorkflowResourceBindingService resourceBindingService;
     private final WorkflowDefinitionCompiler compiler;
+    private final RedisUtils redisUtils;
 
     @Override
     public WorkflowDetailVO detail(Long id) {
@@ -118,7 +122,26 @@ public class WorkflowServiceImpl extends ServiceImpl<WorkflowMapper, Workflow> i
 
     @Override
     public boolean lockWorkflow(Long id, Integer locked) {
-        return lambdaUpdate().set(Workflow::getLocked, locked).eq(Workflow::getId, id).update();
+        Workflow workflow = getById(id);
+        if (workflow == null) {
+            throw new RuntimeException("workflow not found");
+        }
+        // 检查业务锁状态：若已被锁定，则锁定失败
+        if (Integer.valueOf(1).equals(workflow.getLocked())) {
+            return false;
+        }
+        // 分布式锁，防止并发重复锁定
+        String lockKey = "workflow:lock:" + id;
+        String lockValue = UUID.randomUUID().toString();
+        boolean acquired = redisUtils.tryLock(lockKey, lockValue, 10, TimeUnit.SECONDS);
+        if (!acquired) {
+            return false;
+        }
+        try {
+            return lambdaUpdate().set(Workflow::getLocked, locked).eq(Workflow::getId, id).update();
+        } finally {
+            redisUtils.unlock(lockKey, lockValue);
+        }
     }
 
     @Override

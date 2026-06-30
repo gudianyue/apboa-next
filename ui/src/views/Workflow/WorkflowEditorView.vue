@@ -34,9 +34,11 @@ import type {
   WorkflowRunRequest,
   WorkflowValidationResult,
 } from '@/types/workflow'
+import { useAccountStore } from '@/stores'
 
 type CanvasRef = InstanceType<typeof WorkflowCanvasViewport>
 
+const accountStore = useAccountStore()
 const route = useRoute()
 const router = useRouter()
 const store = useWorkflowStore()
@@ -47,7 +49,6 @@ const edges = ref<WorkflowFlowEdge[]>([])
 const selectedNodeId = ref<string | null>(null)
 const saving = ref(false)
 const running = ref(false)
-const locked = ref(false)
 const lockToggling = ref(false)
 const libraryOpen = ref(false)
 const libraryAnchorX = ref<number | undefined>(undefined)
@@ -88,6 +89,14 @@ const nodeNames = computed(() =>
   }, {}),
 )
 
+const readonly = computed(() => {
+  if (accountStore.isReadOnly) {
+    return true
+  }
+  return !!(workflow.value.locked && accountStore.userInfo?.id !== workflow.value.updatedBy);
+
+})
+
 onMounted(async () => {
   await loadResources()
   if (workflowId.value) {
@@ -122,7 +131,6 @@ async function loadResources() {
 async function loadWorkflow(id: string) {
   const response = await workflowApi.workflowDetail(id)
   workflow.value = response.data.data.workflow || {}
-  locked.value = Boolean(workflow.value.locked)
   workflow.value.config = ensureWorkflowDefinition(workflow.value.config)
   loadDefinition(workflow.value.config)
   await nextTick()
@@ -133,7 +141,6 @@ async function refreshWorkflowDetail(reloadCanvas = false) {
   if (!workflow.value.id) return
   const response = await workflowApi.workflowDetail(workflow.value.id)
   workflow.value = response.data.data.workflow || workflow.value
-  locked.value = Boolean(workflow.value.locked)
   if (reloadCanvas) {
     workflow.value.config = ensureWorkflowDefinition(workflow.value.config)
     loadDefinition(workflow.value.config)
@@ -233,7 +240,7 @@ function clone<T>(value: T): T {
 }
 
 function addNode(schema: WorkflowNodeSchema) {
-  if (locked.value) {
+  if (readonly.value) {
     message.warning('画布已锁定，无法添加节点')
     return
   }
@@ -344,7 +351,7 @@ function insertNodeOnEdge(schema: WorkflowNodeSchema, edgeId: string) {
 }
 
 function updateNode(node: WorkflowFlowNode) {
-  if (locked.value) {
+  if (readonly.value) {
     message.warning('工作流已锁定，解锁后再编辑节点配置')
     return
   }
@@ -353,7 +360,7 @@ function updateNode(node: WorkflowFlowNode) {
 }
 
 function deleteNode(nodeId: string) {
-  if (locked.value) {
+  if (readonly.value) {
     message.warning('画布已锁定，无法删除节点')
     return
   }
@@ -366,7 +373,7 @@ function deleteNode(nodeId: string) {
 
 function copyNode(nodeId: string) {
   const source = nodes.value.find((node) => node.id === nodeId)
-  if (!source || locked.value) return
+  if (!source || readonly.value) return
   snapshot()
   const id = `${source.data.type.toLowerCase()}-${Date.now()}`
   nodes.value.push({
@@ -393,7 +400,7 @@ function getLayoutEdgeWeight(edge: WorkflowFlowEdge) {
 }
 
 function autoLayout() {
-  if (!nodes.value.length || locked.value) return
+  if (!nodes.value.length || readonly.value) return
   snapshot()
   const graph = new Graph({ multigraph: true, compound: false })
   graph.setGraph({
@@ -438,7 +445,6 @@ function autoLayout() {
 }
 
 function undo() {
-  if (locked.value) return
   const previous = history.value.pop()
   if (!previous) return
   future.value.push(toDefinition())
@@ -446,20 +452,13 @@ function undo() {
 }
 
 function redo() {
-  if (locked.value) return
   const next = future.value.pop()
   if (!next) return
   history.value.push(toDefinition())
   restoreDefinition(next)
 }
 
-async function saveWorkflow(options: { allowLockedSkip?: boolean } = {}) {
-  if (locked.value && workflow.value.id) {
-    if (!options.allowLockedSkip) {
-      message.warning('工作流已锁定，解锁后才能保存修改')
-    }
-    return Boolean(options.allowLockedSkip)
-  }
+async function saveWorkflow() {
   if (!workflow.value.id && !workflowId.value) {
     const response = await workflowApi.workflowSave({
       ...workflow.value,
@@ -482,7 +481,6 @@ async function saveWorkflow(options: { allowLockedSkip?: boolean } = {}) {
     await refreshWorkflowDetail(false)
     store.upsertWorkflow(workflow.value)
     store.markListDirty()
-    message.success('已保存')
     return true
   } finally {
     saving.value = false
@@ -490,7 +488,7 @@ async function saveWorkflow(options: { allowLockedSkip?: boolean } = {}) {
 }
 
 async function validateWorkflow() {
-  const canContinue = await saveWorkflow({ allowLockedSkip: true })
+  const canContinue = await saveWorkflow()
   if (!canContinue) return false
   if (!workflow.value.id) return false
   const result = await store.validate(workflow.value.id)
@@ -536,7 +534,7 @@ function openDebugPanel() {
 }
 
 async function debugRun() {
-  const canContinue = await saveWorkflow({ allowLockedSkip: true })
+  const canContinue = await saveWorkflow()
   if (!canContinue) return
   if (!workflow.value.id) return
   running.value = true
@@ -623,7 +621,6 @@ function showVersions() {
 
 async function handleVersionLoaded(nextWorkflow: Workflow) {
   workflow.value = nextWorkflow
-  locked.value = Boolean(workflow.value.locked)
   workflow.value.config = ensureWorkflowDefinition(workflow.value.config)
   loadDefinition(workflow.value.config)
   await nextTick()
@@ -655,7 +652,7 @@ function closeLibrary() {
 }
 
 function toggleLibrary() {
-  if (locked.value) return
+  if (readonly.value) return
   if (libraryOpen.value) {
     closeLibrary()
     return
@@ -665,7 +662,7 @@ function toggleLibrary() {
 }
 
 function openLibraryFromNode(payload: { sourceNodeId: string; sourceHandle: string; x: number; y: number }) {
-  if (locked.value) return
+  if (readonly.value) return
   pendingSourceNodeId.value = payload.sourceNodeId
   pendingSourceHandle.value = payload.sourceHandle || 'output'
   pendingEdgeId.value = null
@@ -677,7 +674,7 @@ function openLibraryFromNode(payload: { sourceNodeId: string; sourceHandle: stri
 }
 
 function openLibraryFromEdge(payload: { edgeId: string; x: number; y: number }) {
-  if (locked.value) return
+  if (readonly.value) return
   pendingSourceNodeId.value = null
   pendingSourceHandle.value = 'output'
   pendingEdgeId.value = payload.edgeId
@@ -694,7 +691,7 @@ function focusNode(nodeId: string) {
 }
 
 function updateWorkflowTitle(value: string) {
-  if (locked.value) return
+  if (readonly.value) return
   workflow.value.name = value
 }
 
@@ -704,25 +701,23 @@ async function goBack() {
 }
 
 async function toggleWorkflowLock() {
-  const nextLocked = locked.value ? 0 : 1
+  const nextLocked = workflow.value.locked ? 0 : 1
   if (!workflow.value.id) {
-    locked.value = Boolean(nextLocked)
     workflow.value.locked = nextLocked
     return
   }
   lockToggling.value = true
   try {
     await workflowApi.workflowLock(workflow.value.id, nextLocked)
-    locked.value = Boolean(nextLocked)
     workflow.value.locked = nextLocked
     store.upsertWorkflow({ ...workflow.value })
     store.markListDirty()
-    if (locked.value) {
+    if (workflow.value.locked) {
       selectedNodeId.value = null
       closeLibrary()
     }
     clearAllPanels()
-    message.success(locked.value ? '已锁定编辑' : '已解除锁定')
+    message.success(workflow.value.locked ? '已锁定编辑' : '已解除锁定')
   } finally {
     lockToggling.value = false
   }
@@ -745,7 +740,7 @@ function clearAllPanels() {
       ref="canvasRef"
       v-model:nodes="nodes"
       v-model:edges="edges"
-      :locked="locked"
+      :readonly="readonly"
       @select-node="selectedNodeId = $event"
       @node-context="openContextMenu"
       @pane-click="closeContextMenu"
@@ -758,7 +753,7 @@ function clearAllPanels() {
       :status="workflow.status"
       :version="workflow.version"
       :saving="saving"
-      :locked="locked"
+      :readonly="readonly"
       @back="goBack"
       @update-title="updateWorkflowTitle"
     />
@@ -766,7 +761,7 @@ function clearAllPanels() {
     <WorkflowTopActions
       :saving="saving"
       :running="running"
-      :locked="locked"
+      :readonly="readonly"
       @save="saveWorkflow"
       @validate="validateWorkflow"
       @publish="publishWorkflow"
@@ -775,7 +770,8 @@ function clearAllPanels() {
     />
 
     <WorkflowCanvasToolbar
-      :locked="locked"
+      :locked="workflow.locked ?? false"
+      :readonly="readonly"
       :can-undo="canUndo"
       :can-redo="canRedo"
       :has-nodes="nodes.length > 0"
