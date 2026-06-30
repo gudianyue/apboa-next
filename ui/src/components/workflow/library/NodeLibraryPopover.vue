@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, type CSSProperties } from 'vue'
 import { SearchOutlined } from '@ant-design/icons-vue'
 import { WORKFLOW_GROUPS, workflowNodeSchemas } from '@/config/workflow/nodeSchemas'
 import type { WorkflowNodeSchema } from '@/types/workflow'
@@ -10,6 +10,7 @@ const props = defineProps<{
   open: boolean
   anchorX?: number
   anchorY?: number
+  anchorTopOffset?: number
 }>()
 
 const emit = defineEmits<{
@@ -22,6 +23,10 @@ const hovered = ref<WorkflowNodeSchema | null>(null)
 const detailY = ref(0)
 const libraryRef = ref<HTMLElement | null>(null)
 const detailRef = ref<HTMLElement | null>(null)
+const LIBRARY_WIDTH = 220
+const DETAIL_WIDTH = 220
+const LIBRARY_GAP = 12
+const VIEWPORT_MARGIN = 16
 
 /**
  * 跟踪鼠标垂直位置，用于定位详情面板，底部不超出库面板
@@ -48,6 +53,42 @@ const groups = computed(() => {
       return `${schema.title} ${schema.type} ${schema.description}`.toLowerCase().includes(normalized)
     }),
   })).filter((group) => group.nodes.length > 0)
+})
+
+const anchoredLayout = computed(() => {
+  if (props.anchorX === undefined || props.anchorY === undefined) {
+    return {
+      anchored: false,
+      detailPlacement: 'right',
+      style: {} as CSSProperties,
+    }
+  }
+  const viewportWidth = window.innerWidth || 1280
+  const viewportHeight = window.innerHeight || 720
+  const libraryHeight = Math.min(680, Math.max(320, viewportHeight - 120))
+  const totalWidth = LIBRARY_WIDTH + DETAIL_WIDTH + 5
+  const hasRoomOnRight = props.anchorX + LIBRARY_GAP + totalWidth <= viewportWidth - VIEWPORT_MARGIN
+  const hasRoomOnLeft = props.anchorX - LIBRARY_GAP - totalWidth >= VIEWPORT_MARGIN
+  const placeRight = hasRoomOnRight || !hasRoomOnLeft
+  const preferredLeft = placeRight
+    ? props.anchorX + LIBRARY_GAP
+    : props.anchorX - LIBRARY_GAP - LIBRARY_WIDTH
+  const minTop = VIEWPORT_MARGIN
+  const maxTop = Math.max(minTop, viewportHeight - libraryHeight - VIEWPORT_MARGIN)
+  const preferredTop = props.anchorY - libraryHeight / 2
+  const clampedTop = Math.min(Math.max(preferredTop, minTop), maxTop)
+  const finalTop = Math.min(Math.max(clampedTop + (props.anchorTopOffset || 0), minTop), maxTop)
+  return {
+    anchored: true,
+    detailPlacement: placeRight ? 'right' : 'left',
+    style: {
+      position: 'fixed',
+      left: `${Math.min(Math.max(preferredLeft, VIEWPORT_MARGIN), viewportWidth - LIBRARY_WIDTH - VIEWPORT_MARGIN)}px`,
+      top: `${finalTop}px`,
+      height: `${libraryHeight}px`,
+      transform: 'none',
+    } as CSSProperties,
+  }
 })
 
 /**
@@ -97,8 +138,8 @@ function handleAdd(schema: WorkflowNodeSchema) {
 <template>
   <Transition name="popover">
     <div v-if="props.open" ref="libraryRef" class="node-library"
-      :class="{ anchored: anchorX !== undefined }"
-      :style="anchorX !== undefined ? { position: 'fixed', left: `${anchorX + 12}px`, top: `${anchorY}px`, transform: 'translateY(-50%)' } : {}"
+      :class="{ anchored: anchoredLayout.anchored, 'detail-left': anchoredLayout.detailPlacement === 'left' }"
+      :style="anchoredLayout.style"
       @mousemove="handleMouseMove">
     <div class="library-search">
       <AInput v-model:value="keyword" allow-clear placeholder="搜索节点">
@@ -280,6 +321,11 @@ function handleAdd(schema: WorkflowNodeSchema) {
   color: #8c8c8c;
   font-size: 10px;
   line-height: 1.4;
+}
+
+.node-library.detail-left .node-detail {
+  left: auto;
+  right: calc(100% + 5px);
 }
 </style>
 

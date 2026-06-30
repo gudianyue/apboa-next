@@ -49,8 +49,10 @@ const locked = ref(false)
 const libraryOpen = ref(false)
 const libraryAnchorX = ref<number | undefined>(undefined)
 const libraryAnchorY = ref<number | undefined>(undefined)
+const libraryAnchorTopOffset = ref(0)
 const pendingSourceNodeId = ref<string | null>(null)
 const pendingSourceHandle = ref<string>('output')
+const pendingEdgeId = ref<string | null>(null)
 const runDockOpen = ref(false)
 const versionModalOpen = ref(false)
 const validationPanelOpen = ref(false)
@@ -128,14 +130,14 @@ async function refreshWorkflowDetail(reloadCanvas = false) {
 
 function loadDefinition(definition: WorkflowDefinition) {
   nodes.value = (definition.nodes || []).map(toFlowNode)
-  edges.value = (definition.edges || []).map((edge) => ({ ...edge, type: 'default' }))
+  edges.value = (definition.edges || []).map(toFlowEdge)
   history.value = []
   future.value = []
 }
 
 function restoreDefinition(definition: WorkflowDefinition) {
   nodes.value = (definition.nodes || []).map(toFlowNode)
-  edges.value = (definition.edges || []).map((edge) => ({ ...edge, type: 'default' }))
+  edges.value = (definition.edges || []).map(toFlowEdge)
 }
 
 function toFlowNode(node: WorkflowNodeDefinition): WorkflowFlowNode {
@@ -156,6 +158,10 @@ function toFlowNode(node: WorkflowNodeDefinition): WorkflowFlowNode {
       resources: resources.value,
     },
   }
+}
+
+function toFlowEdge(edge: WorkflowDefinition['edges'][number]): WorkflowFlowEdge {
+  return { ...edge, type: 'workflow' }
 }
 
 function toDefinition(): WorkflowDefinition {
@@ -227,6 +233,10 @@ function addNode(schema: WorkflowNodeSchema) {
     message.warning('画布已锁定，无法添加节点')
     return
   }
+  if (pendingEdgeId.value) {
+    insertNodeOnEdge(schema, pendingEdgeId.value)
+    return
+  }
   snapshot()
   const id = `${schema.type.toLowerCase()}-${Date.now()}`
   const sourceId = pendingSourceNodeId.value
@@ -243,14 +253,90 @@ function addNode(schema: WorkflowNodeSchema) {
       target: id,
       sourceHandle,
       targetHandle: 'input',
-      type: 'default',
+      type: 'workflow',
     })
     pendingSourceNodeId.value = null
     pendingSourceHandle.value = 'output'
+    pendingEdgeId.value = null
     libraryAnchorX.value = undefined
     libraryAnchorY.value = undefined
   }
   selectedNodeId.value = id
+}
+
+function getDefaultSourceHandle(schema: WorkflowNodeSchema) {
+  return schema.branchHandles?.[0]?.id || 'output'
+}
+
+function collectDownstreamNodeIds(startNodeId: string) {
+  const visited = new Set<string>()
+  const queue = [startNodeId]
+  while (queue.length) {
+    const nodeId = queue.shift()!
+    if (visited.has(nodeId)) continue
+    visited.add(nodeId)
+    edges.value
+      .filter((edge) => edge.source === nodeId)
+      .forEach((edge) => {
+        if (!visited.has(edge.target)) queue.push(edge.target)
+      })
+  }
+  return visited
+}
+
+function insertNodeOnEdge(schema: WorkflowNodeSchema, edgeId: string) {
+  if (schema.type === 'START' || schema.type === 'END') {
+    message.warning('开始和结束节点不能插入到连线中')
+    return
+  }
+  const originalEdge = edges.value.find((edge) => edge.id === edgeId)
+  if (!originalEdge) {
+    message.warning('连线已变化，请重新选择插入位置')
+    clearPendingAdd()
+    return
+  }
+  const sourceNode = nodes.value.find((node) => node.id === originalEdge.source)
+  const targetNode = nodes.value.find((node) => node.id === originalEdge.target)
+  if (!sourceNode || !targetNode) {
+    message.warning('连线节点不存在，请重新选择插入位置')
+    clearPendingAdd()
+    return
+  }
+  snapshot()
+  const id = `${schema.type.toLowerCase()}-${Date.now()}`
+  const shiftX = 320
+  const downstreamIds = collectDownstreamNodeIds(originalEdge.target)
+  const position = {
+    x: sourceNode.position.x + shiftX,
+    y: targetNode.position.y,
+  }
+  nodes.value = nodes.value.map((node) =>
+    downstreamIds.has(node.id)
+      ? { ...node, position: { x: node.position.x + shiftX, y: node.position.y } }
+      : node,
+  )
+  nodes.value.push(toFlowNode(createDefinitionNode(id, schema, position)))
+  edges.value = edges.value.filter((edge) => edge.id !== originalEdge.id)
+  edges.value.push(
+    {
+      id: `edge-${originalEdge.source}-${id}-${Date.now()}`,
+      source: originalEdge.source,
+      target: id,
+      sourceHandle: originalEdge.sourceHandle || 'output',
+      targetHandle: 'input',
+      type: 'workflow',
+    },
+    {
+      id: `edge-${id}-${originalEdge.target}-${Date.now()}`,
+      source: id,
+      target: originalEdge.target,
+      sourceHandle: getDefaultSourceHandle(schema),
+      targetHandle: originalEdge.targetHandle || 'input',
+      type: 'workflow',
+    },
+  )
+  selectedNodeId.value = id
+  clearPendingAdd()
 }
 
 function updateNode(node: WorkflowFlowNode) {
@@ -523,8 +609,10 @@ function closeContextMenu() {
 function clearPendingAdd() {
   pendingSourceNodeId.value = null
   pendingSourceHandle.value = 'output'
+  pendingEdgeId.value = null
   libraryAnchorX.value = undefined
   libraryAnchorY.value = undefined
+  libraryAnchorTopOffset.value = 0
 }
 
 function closeLibrary() {
@@ -544,8 +632,21 @@ function toggleLibrary() {
 function openLibraryFromNode(payload: { sourceNodeId: string; sourceHandle: string; x: number; y: number }) {
   pendingSourceNodeId.value = payload.sourceNodeId
   pendingSourceHandle.value = payload.sourceHandle || 'output'
+  pendingEdgeId.value = null
   libraryAnchorX.value = payload.x
   libraryAnchorY.value = payload.y
+  libraryAnchorTopOffset.value = 60
+  selectedNodeId.value = null
+  libraryOpen.value = true
+}
+
+function openLibraryFromEdge(payload: { edgeId: string; x: number; y: number }) {
+  pendingSourceNodeId.value = null
+  pendingSourceHandle.value = 'output'
+  pendingEdgeId.value = payload.edgeId
+  libraryAnchorX.value = payload.x
+  libraryAnchorY.value = payload.y
+  libraryAnchorTopOffset.value = 60
   selectedNodeId.value = null
   libraryOpen.value = true
 }
@@ -568,6 +669,7 @@ function focusNode(nodeId: string) {
       @node-context="openContextMenu"
       @pane-click="closeContextMenu"
       @show-library="openLibraryFromNode"
+      @show-library-from-edge="openLibraryFromEdge"
     />
 
     <WorkflowTopLeft
@@ -607,7 +709,14 @@ function focusNode(nodeId: string) {
       @clear-selection="selectedNodeId = null"
     />
 
-    <NodeLibraryPopover :open="libraryOpen" :anchor-x="libraryAnchorX" :anchor-y="libraryAnchorY" @close="closeLibrary" @add="addNode" />
+    <NodeLibraryPopover
+      :open="libraryOpen"
+      :anchor-x="libraryAnchorX"
+      :anchor-y="libraryAnchorY"
+      :anchor-top-offset="libraryAnchorTopOffset"
+      @close="closeLibrary"
+      @add="addNode"
+    />
 
     <div v-if="libraryOpen" class="popover-mask" @click="closeLibrary" />
 

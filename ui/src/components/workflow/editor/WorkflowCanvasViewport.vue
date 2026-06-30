@@ -2,6 +2,7 @@
 import { Background } from '@vue-flow/background'
 import { MiniMap } from '@vue-flow/minimap'
 import { VueFlow, useVueFlow, type Connection } from '@vue-flow/core'
+import WorkflowGraphEdge from '@/components/workflow/edge/WorkflowGraphEdge.vue'
 import WorkflowGraphNode from '@/components/workflow/node/WorkflowGraphNode.vue'
 import type { WorkflowFlowEdge, WorkflowFlowNode } from '@/types/workflow'
 
@@ -21,6 +22,7 @@ const emit = defineEmits<{
   nodeContext: [payload: { nodeId: string; x: number; y: number }]
   paneClick: []
   showLibrary: [payload: { sourceNodeId: string; sourceHandle: string; x: number; y: number }]
+  showLibraryFromEdge: [payload: { edgeId: string; x: number; y: number }]
 }>()
 
 const flow = useVueFlow()
@@ -54,7 +56,7 @@ function onConnect(connection: Connection) {
       target: connection.target,
       sourceHandle,
       targetHandle,
-      type: 'default',
+      type: 'workflow',
     },
   ])
 }
@@ -75,6 +77,10 @@ function onPaneClick() {
 
 function onNodeAddClick(nodeId: string, payload: { x: number; y: number; sourceHandle: string }) {
   emit('showLibrary', { sourceNodeId: nodeId, ...payload })
+}
+
+function onEdgeAddClick(payload: { edgeId: string; x: number; y: number }) {
+  emit('showLibraryFromEdge', payload)
 }
 
 function addAtCenter() {
@@ -118,7 +124,7 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
       :nodes-draggable="!locked"
       :nodes-connectable="!locked"
       :edges-updatable="!locked"
-      :default-edge-options="{ animated: false, type: 'default' }"
+      :default-edge-options="{ animated: false, type: 'workflow' }"
       @connect="onConnect"
       @node-click="onNodeClick"
       @node-context-menu="onNodeContextMenu"
@@ -126,6 +132,9 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
     >
       <template #node-workflow="slotProps">
         <WorkflowGraphNode v-bind="slotProps" @add-node="(pos: any) => onNodeAddClick(String(slotProps.id), pos)" />
+      </template>
+      <template #edge-workflow="slotProps">
+        <WorkflowGraphEdge v-bind="slotProps" @add-node="onEdgeAddClick" />
       </template>
       <Background :gap="18" :size="2" color="#DBDCDE" />
       <MiniMap
