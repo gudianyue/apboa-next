@@ -640,11 +640,6 @@ async function validateWorkflow() {
   runDockOpen.value = false
   selectedNodeId.value = null
   markValidation(result.valid, result.errors)
-  if (result.valid) {
-    message.success(result.warnings?.length ? '校验通过，请关注提醒项' : '校验通过')
-  } else {
-    message.error('校验失败，请查看校验结果')
-  }
   return result.valid
 }
 
