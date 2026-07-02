@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, provide, defineAsyncComponent } from 'vue'
+import { computed, ref, provide, defineAsyncComponent } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import IconFont from '@/components/common/IconFont.vue'
 import type { IconName } from '@/components/common/icons'
@@ -60,10 +60,6 @@ function getNodeIconName(type: string): IconName {
 const nodeColor = computed(() => props.node?.data.schema?.color || '#1677ff')
 
 provide('workflowEdges', computed(() => props.edges))
-
-watch(() => props.edges, (val) => {
-  console.log('[WorkflowConfigPanel] edges received:', val?.length, 'items')
-}, { immediate: true })
 
 const panelComponent = computed(() => {
   const name = props.node?.data.schema?.panelComponent

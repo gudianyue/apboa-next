@@ -100,7 +100,7 @@ function updateString(index: number, value: string) {
               </template>
               <ATooltip
                 :title="(row as any).description || undefined"
-                :overlay-style="{ maxWidth: 'none', whiteSpace: 'nowrap' }"
+                :overlay-inner-style="{ maxWidth: '150px' }"
               >
                 <span class="desc-icon" :class="{ 'has-content': (row as any).description }" title="描述">
                   <FileTextOutlined />

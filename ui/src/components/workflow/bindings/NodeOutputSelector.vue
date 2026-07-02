@@ -134,7 +134,7 @@ watch(popoverOpen, (open) => {
     :overlay-inner-style="{ padding: 0 }"
   >
     <div class="selector-trigger" :class="{ placeholder: !selectedLabel }">
-      
+
       <span v-if="selectedLabel" class="trigger-text">
         <span class="trigger-icon">
           <IconFont v-if="selectedNode" :name="getIconName(selectedNode.data.type)" :size="14" :color="selectedNode.data.schema?.color || '#1677ff'" />
@@ -242,7 +242,7 @@ watch(popoverOpen, (open) => {
 }
 
 .selector-dropdown {
-  width: 360px;
+  width: 386px;
   padding: 4px 8px;
 }
 

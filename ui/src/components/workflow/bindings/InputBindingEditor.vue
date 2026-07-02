@@ -30,20 +30,14 @@ const injectedEdges = inject<ComputedRef<WorkflowFlowEdge[]>>('workflowEdges', c
 
 // 从 currentNodeId 出发沿边反向 BFS，收集所有上游节点
 const upstreamNodes = computed(() => {
-  console.log('[InputBinding] edges count:', injectedEdges.value?.length, 'currentNodeId:', props.currentNodeId)
-  console.log('[InputBinding] edges:', JSON.parse(JSON.stringify(injectedEdges.value || [])))
-  console.log('[InputBinding] nodes count:', props.nodes?.length)
-
   const edges = injectedEdges.value
   if (!edges || !props.currentNodeId) {
-    console.log('[InputBinding] early return: no edges or no currentNodeId')
     return []
   }
 
   // 构建反向邻接表：target → 所有 source（谁指向我）
   const reverseAdj = new Map<string, string[]>()
   for (const edge of edges) {
-    console.log('[InputBinding] edge:', edge.id, 'source:', edge.source, 'target:', edge.target)
     const list = reverseAdj.get(edge.target)
     if (list) {
       list.push(edge.source)
@@ -51,7 +45,6 @@ const upstreamNodes = computed(() => {
       reverseAdj.set(edge.target, [edge.source])
     }
   }
-  console.log('[InputBinding] reverseAdj:', [...reverseAdj.entries()])
 
   // BFS：从当前节点出发，沿反向邻接表向上追溯
   const visited = new Set<string>()
@@ -78,7 +71,6 @@ const upstreamNodes = computed(() => {
     const node = props.nodes.find((n) => n.id === nodeId)
     if (node) result.push(node)
   }
-  console.log('[InputBinding] upstreamNodes result:', result.map(n => n.data.label))
   return result
 })
 
