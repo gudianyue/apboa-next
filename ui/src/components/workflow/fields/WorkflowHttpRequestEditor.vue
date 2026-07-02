@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
+import BlurTextarea from '@/components/workflow/panels/shared/BlurTextarea.vue'
 import WorkflowArrayEditors from './WorkflowArrayEditors.vue'
 
 const props = defineProps<{
@@ -28,7 +30,7 @@ function update(key: string, value: unknown) {
         :options="['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'].map((value) => ({ label: value, value }))"
         @update:value="(value: string) => update('method', value)"
       />
-      <AInput :value="String(request.url || '')" placeholder="https://api.example.com/users/${id}" @update:value="(value: string) => update('url', value)" />
+      <BlurInput :model-value="String(request.url || '')" placeholder="https://api.example.com/users/${id}" @update:model-value="(value: string) => update('url', value)" />
     </div>
 
     <ASelect
@@ -56,11 +58,11 @@ function update(key: string, value: unknown) {
       </ACollapsePanel>
     </ACollapse>
 
-    <ATextarea
-      :value="typeof request.body === 'string' ? request.body : JSON.stringify(request.body ?? '', null, 2)"
+    <BlurTextarea
+      :model-value="typeof request.body === 'string' ? request.body : JSON.stringify(request.body ?? '', null, 2)"
       :auto-size="{ minRows: 4, maxRows: 12 }"
       placeholder="请求 Body。当前后端 JSON body 接收字符串形式。"
-      @update:value="(value: string) => update('body', value)"
+      @update:model-value="(value: string) => update('body', value)"
     />
   </div>
 </template>

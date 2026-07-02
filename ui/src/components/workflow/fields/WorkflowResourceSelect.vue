@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ApiOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import * as workflowApi from '@/api/workflow'
@@ -16,6 +16,16 @@ const emit = defineEmits<{
 }>()
 
 const checking = ref(false)
+const localValue = ref(props.modelValue)
+
+watch(() => props.modelValue, (val) => {
+  localValue.value = val
+})
+
+function handleChange(value: string) {
+  localValue.value = value
+  emit('update:modelValue', value)
+}
 
 const list = computed(() => {
   if (props.resourceType === 'cache') return props.resources.caches
@@ -47,11 +57,11 @@ async function checkConnect() {
     <ASelect
       show-search
       allow-clear
-      :value="modelValue"
+      :value="localValue"
       :filter-option="(input: string, option: any) => String(option?.label || '').toLowerCase().includes(input.toLowerCase())"
       :options="list.map((item) => ({ label: item.name || item.id, value: item.id }))"
       placeholder="请选择已启用资源"
-      @update:value="(value: string) => emit('update:modelValue', value)"
+      @update:value="handleChange"
     />
     <AButton :loading="checking" :disabled="!selected" @click="checkConnect">
       <template #icon>

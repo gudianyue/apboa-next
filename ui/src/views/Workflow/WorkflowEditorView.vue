@@ -127,7 +127,7 @@ const lockOwnedByMe = computed(() =>
 )
 const readonly = computed(() => {
   if (accountStore.isReadOnly) return true
-  if (!workflow.value.id) return false
+  // if (!workflow.value.id) return false
   return !lockAcquired.value || !lockOwnedByMe.value
 })
 const leaveConfirmMessage = computed(() =>
@@ -932,9 +932,9 @@ function clearAllPanels() {
     />
 
     <WorkflowTopActions
+      v-if="!readonly"
       :saving="saving"
       :running="running"
-      :readonly="readonly"
       @save="saveWorkflow"
       @validate="validateWorkflow"
       @publish="publishWorkflow"
@@ -943,8 +943,8 @@ function clearAllPanels() {
     />
 
     <WorkflowCanvasToolbar
+      v-if="!readonly"
       :locked="Boolean(workflow.locked)"
-      :readonly="readonly"
       :can-undo="canUndo"
       :can-redo="canRedo"
       :has-nodes="nodes.length > 0"

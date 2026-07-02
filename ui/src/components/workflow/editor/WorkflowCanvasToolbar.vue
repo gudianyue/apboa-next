@@ -4,8 +4,6 @@ import {
   ClearOutlined,
   CompressOutlined,
   LockOutlined,
-  ZoomInOutlined,
-  ZoomOutOutlined,
   NodeIndexOutlined,
   PlusCircleOutlined,
   RedoOutlined,
@@ -16,7 +14,6 @@ import { Modal } from 'ant-design-vue';
 
 const props = defineProps<{
   locked: boolean
-  readonly: boolean
   canUndo: boolean
   canRedo: boolean
   hasNodes: boolean
@@ -55,24 +52,14 @@ const handleToggleLock = () => {
 <template>
   <div class="canvas-toolbar" aria-label="画布快捷工具栏">
     <ATooltip placement="right" title="添加节点">
-      <AButton :disabled="readonly" :type="libraryOpen ? 'primary' : 'text'" @click="$emit('addNode')">
+      <AButton :type="libraryOpen ? 'primary' : 'text'" @click="$emit('addNode')">
         <template #icon><PlusCircleOutlined /></template>
       </AButton>
     </ATooltip>
     <div class="toolbar-divider" />
     <ATooltip placement="right" title="适配全部节点">
-      <AButton type="text" :disabled="!hasNodes || readonly" @click="$emit('fit')">
+      <AButton type="text" :disabled="!hasNodes" @click="$emit('fit')">
         <template #icon><AimOutlined /></template>
-      </AButton>
-    </ATooltip>
-    <ATooltip placement="right" title="放大">
-      <AButton type="text" @click="$emit('zoomIn')">
-        <template #icon><ZoomInOutlined /></template>
-      </AButton>
-    </ATooltip>
-    <ATooltip placement="right" title="缩小">
-      <AButton type="text" @click="$emit('zoomOut')">
-        <template #icon><ZoomOutOutlined /></template>
       </AButton>
     </ATooltip>
     <ATooltip placement="right" title="重置缩放">
@@ -82,7 +69,7 @@ const handleToggleLock = () => {
     </ATooltip>
     <div class="toolbar-divider" />
     <ATooltip placement="right" :title="locked ? '锁定工作流' : '解锁工作流'">
-      <AButton :disabled="readonly" :type="locked ? 'primary' : 'text'" :loading="lockToggling" @click="handleToggleLock">
+      <AButton :type="locked ? 'primary' : 'text'" :loading="lockToggling" @click="handleToggleLock">
         <template #icon>
           <LockOutlined v-if="locked" />
           <UnlockOutlined v-else />
@@ -90,22 +77,22 @@ const handleToggleLock = () => {
       </AButton>
     </ATooltip>
     <ATooltip placement="right" title="撤销">
-      <AButton type="text" :disabled="!canUndo || readonly" @click="$emit('undo')">
+      <AButton type="text" :disabled="!canUndo" @click="$emit('undo')">
         <template #icon><UndoOutlined /></template>
       </AButton>
     </ATooltip>
     <ATooltip placement="right" title="重做">
-      <AButton type="text" :disabled="!canRedo || readonly" @click="$emit('redo')">
+      <AButton type="text" :disabled="!canRedo" @click="$emit('redo')">
         <template #icon><RedoOutlined /></template>
       </AButton>
     </ATooltip>
     <ATooltip placement="right" title="整理布局">
-      <AButton type="text" :disabled="!hasNodes || readonly" @click="$emit('layout')">
+      <AButton type="text" :disabled="!hasNodes" @click="$emit('layout')">
         <template #icon><NodeIndexOutlined /></template>
       </AButton>
     </ATooltip>
     <ATooltip placement="right" title="清空选择">
-      <AButton :disabled="readonly" type="text" @click="$emit('clearSelection')">
+      <AButton type="text" @click="$emit('clearSelection')">
         <template #icon><ClearOutlined /></template>
       </AButton>
     </ATooltip>

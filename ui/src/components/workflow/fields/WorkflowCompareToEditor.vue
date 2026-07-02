@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
 import type { WorkflowFlowNode } from '@/types/workflow'
 
 const props = defineProps<{
@@ -47,18 +48,18 @@ function update(key: string, nextValue: unknown) {
         placeholder="选择来源节点"
         @update:value="(next: string) => update('sourceNodeId', next)"
       />
-      <AInput
-        :value="String(value.value ?? 'output')"
+      <BlurInput
+        :model-value="String(value.value ?? 'output')"
         placeholder="输出名，默认 output"
-        @update:value="(next: string) => update('value', next)"
+        @update:model-value="(next: string) => update('value', next)"
       />
     </template>
 
-    <AInput
+    <BlurInput
       v-else
-      :value="String(value.value ?? '')"
+      :model-value="String(value.value ?? '')"
       placeholder="请输入比较值"
-      @update:value="(next: string) => update('value', next)"
+      @update:model-value="(next: string) => update('value', next)"
     />
   </div>
 </template>

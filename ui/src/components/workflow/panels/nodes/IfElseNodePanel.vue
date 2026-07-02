@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowCompareToEditor from '@/components/workflow/fields/WorkflowCompareToEditor.vue'
@@ -130,17 +131,17 @@ const isExpression = computed(() => (props.node.data.config?.symbol as string) =
         />
       </AFormItem>
       <AFormItem label="True 分支节点ID">
-        <AInput
-          :value="String(node.data.config?.trueNextNodeId || '')"
+        <BlurInput
+          :model-value="String(node.data.config?.trueNextNodeId || '')"
           placeholder="满足条件后执行的节点"
-          @update:value="(v: any) => updateConfig('trueNextNodeId', v)"
+          @update:model-value="(v: any) => updateConfig('trueNextNodeId', v)"
         />
       </AFormItem>
       <AFormItem label="False 分支节点ID">
-        <AInput
-          :value="String(node.data.config?.falseNextNodeId || '')"
+        <BlurInput
+          :model-value="String(node.data.config?.falseNextNodeId || '')"
           placeholder="不满足条件后执行的节点"
-          @update:value="(v: any) => updateConfig('falseNextNodeId', v)"
+          @update:model-value="(v: any) => updateConfig('falseNextNodeId', v)"
         />
       </AFormItem>
     </PanelSection>

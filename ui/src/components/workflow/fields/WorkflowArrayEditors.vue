@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { DeleteOutlined, FileTextOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
+import BlurTextarea from '@/components/workflow/panels/shared/BlurTextarea.vue'
 import type { WorkflowFieldOption } from '@/types/workflow'
 
 type EditorType = 'keyValue' | 'dbParams' | 'startParams' | 'stringList' | 'matchList'
@@ -54,11 +56,11 @@ function updateString(index: number, value: string) {
     <div v-if="rows.length" class="array-list">
       <div v-for="(row, index) in rows" :key="index" class="array-row" :class="`row-${type}`">
         <template v-if="type === 'stringList'">
-          <AInput :value="String(row ?? '')" placeholder="请输入值" @update:value="(value: string) => updateString(index, value)" />
+          <BlurInput :model-value="String(row ?? '')" placeholder="请输入值" @update:model-value="(value: string) => updateString(index, value)" />
         </template>
 
         <template v-else-if="type === 'dbParams'">
-          <AInput :value="(row as any).value" placeholder="参数值，支持 ${变量}" @update:value="(value: string) => updateObject(index, 'value', value)" />
+          <BlurInput :model-value="(row as any).value" placeholder="参数值，支持 ${变量}" @update:model-value="(value: string) => updateObject(index, 'value', value)" />
           <ASelect
             :value="(row as any).type || 'STRING'"
             :options="options"
@@ -69,11 +71,11 @@ function updateString(index: number, value: string) {
         <template v-else-if="type === 'startParams'">
           <div class="field-cell">
             <span v-if="index === 0" class="field-title">参数名</span>
-            <AInput :value="(row as any).name" placeholder="参数名" @update:value="(value: string) => updateObject(index, 'name', value)" />
+            <BlurInput :model-value="(row as any).name" placeholder="参数名" @update:model-value="(value: string) => updateObject(index, 'name', value)" />
           </div>
           <div class="field-cell">
             <span v-if="index === 0" class="field-title">默认值</span>
-            <AInput :value="(row as any).value" placeholder="默认值" @update:value="(value: string) => updateObject(index, 'value', value)" />
+            <BlurInput :model-value="(row as any).value" placeholder="默认值" @update:model-value="(value: string) => updateObject(index, 'value', value)" />
           </div>
           <div class="field-cell">
             <span v-if="index === 0" class="field-title">类型</span>
@@ -88,11 +90,11 @@ function updateString(index: number, value: string) {
             <APopover trigger="click" placement="bottomLeft" :overlay-style="{ minWidth: '260px' }">
               <template #content>
                 <div class="desc-popover">
-                  <ATextarea
-                    :value="(row as any).remark"
+                  <BlurTextarea
+                    :model-value="(row as any).remark"
                     placeholder="请输入描述"
                     :rows="3"
-                    @update:value="(value: string) => updateObject(index, 'remark', value)"
+                    @update:model-value="(value: string) => updateObject(index, 'remark', value)"
                   />
                 </div>
               </template>
@@ -109,13 +111,13 @@ function updateString(index: number, value: string) {
         </template>
 
         <template v-else-if="type === 'matchList'">
-          <AInput :value="(row as any).matchValue" placeholder="匹配值" @update:value="(value: string) => updateObject(index, 'matchValue', value)" />
-          <AInput :value="(row as any).nextNodeId" placeholder="后续节点ID" @update:value="(value: string) => updateObject(index, 'nextNodeId', value)" />
+          <BlurInput :model-value="(row as any).matchValue" placeholder="匹配值" @update:model-value="(value: string) => updateObject(index, 'matchValue', value)" />
+          <BlurInput :model-value="(row as any).nextNodeId" placeholder="后续节点ID" @update:model-value="(value: string) => updateObject(index, 'nextNodeId', value)" />
         </template>
 
         <template v-else>
-          <AInput :value="(row as any).key" placeholder="Key" @update:value="(value: string) => updateObject(index, 'key', value)" />
-          <AInput :value="(row as any).value" placeholder="Value" @update:value="(value: string) => updateObject(index, 'value', value)" />
+          <BlurInput :model-value="(row as any).key" placeholder="Key" @update:model-value="(value: string) => updateObject(index, 'key', value)" />
+          <BlurInput :model-value="(row as any).value" placeholder="Value" @update:model-value="(value: string) => updateObject(index, 'value', value)" />
         </template>
 
         <template v-if="type === 'startParams'">

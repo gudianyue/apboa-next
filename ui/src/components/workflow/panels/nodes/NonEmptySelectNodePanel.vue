@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import type { WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
@@ -47,9 +48,9 @@ function updateConfig(key: string, value: unknown) {
         />
       </AFormItem>
       <AFormItem label="默认节点ID">
-        <AInput
-          :value="String(node.data.config?.defaultNextNodeId || '')"
-          @update:value="(v: any) => updateConfig('defaultNextNodeId', v)"
+        <BlurInput
+          :model-value="String(node.data.config?.defaultNextNodeId || '')"
+          @update:model-value="(v: any) => updateConfig('defaultNextNodeId', v)"
         />
       </AFormItem>
     </PanelSection>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import SmartCodeEditor from '@/components/editor/SmartCodeEditor.vue'
+import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
 import type { InputSourceType, WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
 
 const props = defineProps<{
@@ -44,10 +45,10 @@ function removeBinding(index: number) {
   <div class="binding-editor">
     <div v-for="(binding, index) in bindings" :key="index" class="binding-card">
       <div class="binding-head">
-        <AInput
-          :value="binding.name"
+        <BlurInput
+          :model-value="binding.name"
           placeholder="输入名"
-          @update:value="(value: string) => update(index, { name: value })"
+          @update:model-value="(value: string) => update(index, { name: value })"
         />
         <AButton v-if="bindings.length > 1" danger type="text" @click="removeBinding(index)">删除</AButton>
       </div>
@@ -71,11 +72,11 @@ function removeBinding(index: number) {
         @update:value="(value: string) => update(index, { value })"
       />
 
-      <AInput
+      <BlurInput
         v-else-if="binding.sourceType === 'VARIABLE'"
-        :value="binding.variableName"
+        :model-value="binding.variableName"
         placeholder="全局变量名"
-        @update:value="(value: string) => update(index, { variableName: value })"
+        @update:model-value="(value: string) => update(index, { variableName: value })"
       />
 
       <div v-else-if="binding.sourceType === 'NODE_OUTPUT'" class="node-output-grid">
@@ -86,10 +87,10 @@ function removeBinding(index: number) {
           placeholder="选择任意前置或已存在节点"
           @update:value="(value: string) => update(index, { nodeId: value })"
         />
-        <AInput
-          :value="binding.outputName || 'output'"
+        <BlurInput
+          :model-value="binding.outputName || 'output'"
           placeholder="输出名"
-          @update:value="(value: string) => update(index, { outputName: value })"
+          @update:model-value="(value: string) => update(index, { outputName: value })"
         />
         <div class="binding-tip">可选择任意节点输出；连线与循环依赖由保存校验兜底。</div>
       </div>

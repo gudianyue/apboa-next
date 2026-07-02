@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import SmartCodeEditor from '@/components/editor/SmartCodeEditor.vue'
+import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
+import BlurTextarea from '@/components/workflow/panels/shared/BlurTextarea.vue'
 import WorkflowArrayEditors from './WorkflowArrayEditors.vue'
 import WorkflowCompareToEditor from './WorkflowCompareToEditor.vue'
 import WorkflowHttpRequestEditor from './WorkflowHttpRequestEditor.vue'
@@ -44,19 +46,19 @@ function parseJsonLike(value: string) {
       <span class="field-help">{{ field.description }}</span>
     </template>
 
-    <AInput
+    <BlurInput
       v-if="field.control === 'input'"
-      :value="String(value ?? '')"
+      :model-value="String(value ?? '')"
       :placeholder="field.placeholder"
-      @update:value="(next: string) => emit('change', next)"
+      @update:model-value="(next: string) => emit('change', next)"
     />
 
-    <ATextarea
+    <BlurTextarea
       v-else-if="field.control === 'textarea'"
-      :value="String(value ?? '')"
+      :model-value="String(value ?? '')"
       :placeholder="field.placeholder"
       :auto-size="{ minRows: field.rows || 3, maxRows: 12 }"
-      @update:value="(next: string) => emit('change', next)"
+      @update:model-value="(next: string) => emit('change', next)"
     />
 
     <AInputNumber
@@ -177,11 +179,11 @@ function parseJsonLike(value: string) {
       @update:model-value="(next) => emit('change', next)"
     />
 
-    <ATextarea
+    <BlurTextarea
       v-else
-      :value="stringify(value)"
+      :model-value="stringify(value)"
       :auto-size="{ minRows: 3, maxRows: 10 }"
-      @update:value="(next: string) => emit('change', parseJsonLike(next))"
+      @update:model-value="(next: string) => emit('change', parseJsonLike(next))"
     />
   </AFormItem>
 </template>

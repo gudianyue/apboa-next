@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import SmartCodeEditor from '@/components/editor/SmartCodeEditor.vue'
@@ -37,9 +38,9 @@ function updateConfig(key: string, value: unknown) {
     />
     <PanelSection title="节点配置">
       <AFormItem label="循环变量名">
-        <AInput
-          :value="String(node.data.config?.loopVariable ?? 'loopIndex')"
-          @update:value="(v: any) => updateConfig('loopVariable', v)"
+        <BlurInput
+          :model-value="String(node.data.config?.loopVariable ?? 'loopIndex')"
+          @update:model-value="(v: any) => updateConfig('loopVariable', v)"
         />
       </AFormItem>
       <AFormItem label="最大循环次数">
@@ -64,22 +65,22 @@ function updateConfig(key: string, value: unknown) {
         />
       </AFormItem>
       <AFormItem label="迭代数据源变量">
-        <AInput
-          :value="String(node.data.config?.iterateDataSource || '')"
+        <BlurInput
+          :model-value="String(node.data.config?.iterateDataSource || '')"
           placeholder="留空则使用纯计数循环"
-          @update:value="(v: any) => updateConfig('iterateDataSource', v)"
+          @update:model-value="(v: any) => updateConfig('iterateDataSource', v)"
         />
       </AFormItem>
       <AFormItem label="元素变量名">
-        <AInput
-          :value="String(node.data.config?.itemVariable ?? 'item')"
-          @update:value="(v: any) => updateConfig('itemVariable', v)"
+        <BlurInput
+          :model-value="String(node.data.config?.itemVariable ?? 'item')"
+          @update:model-value="(v: any) => updateConfig('itemVariable', v)"
         />
       </AFormItem>
       <AFormItem label="子流程入口节点ID">
-        <AInput
-          :value="String(node.data.config?.entryNodeId || '')"
-          @update:value="(v: any) => updateConfig('entryNodeId', v)"
+        <BlurInput
+          :model-value="String(node.data.config?.entryNodeId || '')"
+          @update:model-value="(v: any) => updateConfig('entryNodeId', v)"
         />
       </AFormItem>
     </PanelSection>

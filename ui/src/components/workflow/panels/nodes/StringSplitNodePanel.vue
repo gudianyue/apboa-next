@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowArrayEditors from '@/components/workflow/fields/WorkflowArrayEditors.vue'
@@ -59,9 +60,9 @@ const showDelimiter = computed(
         />
       </AFormItem>
       <AFormItem v-if="showDelimiter" label="分隔符/正则/长度">
-        <AInput
-          :value="String(node.data.config?.delimiter || '')"
-          @update:value="(v: any) => updateConfig('delimiter', v)"
+        <BlurInput
+          :model-value="String(node.data.config?.delimiter || '')"
+          @update:model-value="(v: any) => updateConfig('delimiter', v)"
         />
       </AFormItem>
       <AFormItem v-if="isMultiDelimiter" label="多个分隔符">
@@ -104,22 +105,22 @@ const showDelimiter = computed(
         />
       </AFormItem>
       <AFormItem label="结果前缀">
-        <AInput
-          :value="String(node.data.config?.prefix || '')"
-          @update:value="(v: any) => updateConfig('prefix', v)"
+        <BlurInput
+          :model-value="String(node.data.config?.prefix || '')"
+          @update:model-value="(v: any) => updateConfig('prefix', v)"
         />
       </AFormItem>
       <AFormItem label="结果后缀">
-        <AInput
-          :value="String(node.data.config?.suffix || '')"
-          @update:value="(v: any) => updateConfig('suffix', v)"
+        <BlurInput
+          :model-value="String(node.data.config?.suffix || '')"
+          @update:model-value="(v: any) => updateConfig('suffix', v)"
         />
       </AFormItem>
       <template v-if="isKeyValue">
         <AFormItem label="键值分隔符">
-          <AInput
-            :value="String(node.data.config?.keyValueDelimiter ?? '=')"
-            @update:value="(v: any) => updateConfig('keyValueDelimiter', v)"
+          <BlurInput
+            :model-value="String(node.data.config?.keyValueDelimiter ?? '=')"
+            @update:model-value="(v: any) => updateConfig('keyValueDelimiter', v)"
           />
         </AFormItem>
         <AFormItem label="键值输出格式">
@@ -139,10 +140,10 @@ const showDelimiter = computed(
           v-if="(node.data.config?.keyValueOutputFormat as string) === 'CUSTOM'"
           label="自定义格式"
         >
-          <AInput
-            :value="String(node.data.config?.keyValueCustomFormat || '')"
+          <BlurInput
+            :model-value="String(node.data.config?.keyValueCustomFormat || '')"
             placeholder="%s===>%s"
-            @update:value="(v: any) => updateConfig('keyValueCustomFormat', v)"
+            @update:model-value="(v: any) => updateConfig('keyValueCustomFormat', v)"
           />
         </AFormItem>
       </template>

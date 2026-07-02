@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowCompareToEditor from '@/components/workflow/fields/WorkflowCompareToEditor.vue'
@@ -93,10 +94,10 @@ const simpleSymbolOptions = [
           />
         </AFormItem>
         <AFormItem label="过滤条件" required>
-          <AInput
-            :value="String(node.data.config?.condition || '')"
+          <BlurInput
+            :model-value="String(node.data.config?.condition || '')"
             placeholder="item 或 item.子元素"
-            @update:value="(v: any) => updateConfig('condition', v)"
+            @update:model-value="(v: any) => updateConfig('condition', v)"
           />
         </AFormItem>
         <AFormItem label="比较值">

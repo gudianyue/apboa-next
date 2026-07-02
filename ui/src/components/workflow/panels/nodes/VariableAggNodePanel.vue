@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import type { WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
@@ -53,9 +54,9 @@ const isString = computed(() => (props.node.data.config?.strategy as string) ===
           @update:checked="(v: any) => updateConfig('excludeNull', v)"
       /></AFormItem>
       <AFormItem v-if="isString" label="字符串拼接符"
-        ><AInput
-          :value="String(node.data.config?.splicingSymbol || '')"
-          @update:value="(v: any) => updateConfig('splicingSymbol', v)"
+        ><BlurInput
+          :model-value="String(node.data.config?.splicingSymbol || '')"
+          @update:model-value="(v: any) => updateConfig('splicingSymbol', v)"
       /></AFormItem>
     </PanelSection>
     <PanelSection title="输出说明"

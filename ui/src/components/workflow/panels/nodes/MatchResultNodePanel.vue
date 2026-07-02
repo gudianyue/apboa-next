@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowArrayEditors from '@/components/workflow/fields/WorkflowArrayEditors.vue'
@@ -60,10 +61,10 @@ function updateConfig(key: string, value: unknown) {
         />
       </AFormItem>
       <AFormItem label="默认节点ID">
-        <AInput
-          :value="String(node.data.config?.defaultNextNodeId || '')"
+        <BlurInput
+          :model-value="String(node.data.config?.defaultNextNodeId || '')"
           placeholder="无匹配时执行的节点"
-          @update:value="(v: any) => updateConfig('defaultNextNodeId', v)"
+          @update:model-value="(v: any) => updateConfig('defaultNextNodeId', v)"
         />
       </AFormItem>
     </PanelSection>

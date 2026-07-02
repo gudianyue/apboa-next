@@ -10,7 +10,6 @@ import {
 defineProps<{
   saving?: boolean
   running?: boolean
-  readonly?: boolean
 }>()
 
 defineEmits<{
@@ -23,7 +22,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div v-if="!readonly" class="top-actions">
+  <div class="top-actions">
     <ATooltip title="保存草稿">
       <AButton :loading="saving" @click="$emit('save')">
         <template #icon><SaveOutlined /></template>

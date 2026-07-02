@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowResourceSelect from '@/components/workflow/fields/WorkflowResourceSelect.vue'
@@ -53,17 +54,17 @@ const formatterOptions = [
         />
       </AFormItem>
       <AFormItem label="Topic / Queue" required>
-        <AInput
-          :value="String(node.data.config?.topicOrQueue || '')"
+        <BlurInput
+          :model-value="String(node.data.config?.topicOrQueue || '')"
           placeholder="Kafka/RocketMQ 为 topic，RabbitMQ 为 queue"
-          @update:value="(v: any) => updateConfig('topicOrQueue', v)"
+          @update:model-value="(v: any) => updateConfig('topicOrQueue', v)"
         />
       </AFormItem>
       <AFormItem label="消息 Key">
-        <AInput
-          :value="String(node.data.config?.key || '')"
+        <BlurInput
+          :model-value="String(node.data.config?.key || '')"
           placeholder="Kafka 分区键、RabbitMQ routing key、RocketMQ tag"
-          @update:value="(v: any) => updateConfig('key', v)"
+          @update:model-value="(v: any) => updateConfig('key', v)"
         />
       </AFormItem>
       <AFormItem label="消息内容">

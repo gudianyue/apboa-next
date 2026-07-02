@@ -1,6 +1,7 @@
 ﻿<script setup lang="ts">
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowResourceSelect from '@/components/workflow/fields/WorkflowResourceSelect.vue'
@@ -45,10 +46,10 @@ function updateConfig(key: string, value: unknown) {
         />
       </AFormItem>
       <AFormItem label="缓存键" required>
-        <AInput
-          :value="String(node.data.config?.key || '')"
+        <BlurInput
+          :model-value="String(node.data.config?.key || '')"
           placeholder="例如 user:${userId}"
-          @update:value="(v: any) => updateConfig('key', v)"
+          @update:model-value="(v: any) => updateConfig('key', v)"
         />
         <template #extra><span class="field-help">支持 Velocity 变量语法。</span></template>
       </AFormItem>

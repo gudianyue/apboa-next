@@ -1,21 +1,35 @@
 <script setup lang="ts">
-defineProps<{
+import { ref, watch } from 'vue'
+
+const props = defineProps<{
   modelValue: string
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
 }>()
+
+const localValue = ref(props.modelValue)
+
+watch(() => props.modelValue, (val) => {
+  localValue.value = val
+})
+
+function handleBlur() {
+  if (localValue.value !== props.modelValue) {
+    emit('update:modelValue', localValue.value)
+  }
+}
 </script>
 
 <template>
   <AFormItem label="" required>
     <AInput
-      :value="modelValue"
+      v-model:value="localValue"
       placeholder="输入节点名称"
       :maxlength="50"
       show-count
-      @update:value="(value: string) => emit('update:modelValue', value)"
+      @blur="handleBlur"
     />
   </AFormItem>
 </template>

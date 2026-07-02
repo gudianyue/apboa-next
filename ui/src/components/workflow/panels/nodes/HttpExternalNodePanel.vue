@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
+import BlurInput from '../shared/BlurInput.vue'
+import BlurTextarea from '../shared/BlurTextarea.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowArrayEditors from '@/components/workflow/fields/WorkflowArrayEditors.vue'
@@ -74,10 +76,10 @@ const formatterOptions = [
           "
           @update:value="(v: any) => updateRequest('method', v)"
         />
-        <AInput
-          :value="String(getRequest().url || '')"
+        <BlurInput
+          :model-value="String(getRequest().url || '')"
           placeholder="https://api.example.com/users/${id}"
-          @update:value="(v: any) => updateRequest('url', v)"
+          @update:model-value="(v: any) => updateRequest('url', v)"
         />
       </div>
 
@@ -121,15 +123,15 @@ const formatterOptions = [
       </ACollapse>
 
       <AFormItem label="Request Body">
-        <ATextarea
-          :value="
+        <BlurTextarea
+          :model-value="
             typeof getRequest().body === 'string'
               ? String(getRequest().body)
               : JSON.stringify(getRequest().body ?? '', null, 2)
           "
           :auto-size="{ minRows: 4, maxRows: 12 }"
           placeholder="请求 Body，支持 JSON 字符串或对象"
-          @update:value="
+          @update:model-value="
             (v: any) => {
               try {
                 updateRequest('body', JSON.parse(v))
