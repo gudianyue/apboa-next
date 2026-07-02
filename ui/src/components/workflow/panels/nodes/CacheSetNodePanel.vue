@@ -6,11 +6,12 @@ import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
 import WorkflowResourceSelect from '@/components/workflow/fields/WorkflowResourceSelect.vue'
 import SmartCodeEditor from '@/components/editor/SmartCodeEditor.vue'
-import type { WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
+import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
 
 const props = defineProps<{
   node: WorkflowFlowNode
   nodes: WorkflowFlowNode[]
+  edges: WorkflowFlowEdge[]
   resources: WorkflowResourceMaps
 }>()
 
@@ -40,6 +41,7 @@ function stringify(v: unknown) {
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
+      :edges="edges"
       :current-node-id="node.id"
       @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />

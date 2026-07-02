@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import InputBindingEditor from '@/components/workflow/bindings/InputBindingEditor.vue'
 import PanelSection from './PanelSection.vue'
-import type { WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
+import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
 
 defineProps<{
   modelValue?: WorkflowInputConfig[]
   nodes: WorkflowFlowNode[]
+  edges?: WorkflowFlowEdge[]
   currentNodeId?: string
 }>()
 
@@ -19,6 +20,7 @@ const emit = defineEmits<{
     <InputBindingEditor
       :model-value="modelValue"
       :nodes="nodes"
+      :edges="edges || []"
       :current-node-id="currentNodeId"
       @update:model-value="(value) => emit('update:modelValue', value)"
     />

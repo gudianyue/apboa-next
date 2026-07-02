@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { computed, ref, defineAsyncComponent } from 'vue'
+import { computed, ref, watch, provide, defineAsyncComponent } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import IconFont from '@/components/common/IconFont.vue'
 import type { IconName } from '@/components/common/icons'
-import type { WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
+import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
 
 const props = defineProps<{
   node: WorkflowFlowNode | null
   nodes: WorkflowFlowNode[]
+  edges: WorkflowFlowEdge[]
   resources: WorkflowResourceMaps
   rightOffset?: number
 }>()
 
-const emit = defineEmits<{
+defineEmits<{
   update: [node: WorkflowFlowNode]
   close: []
 }>()
@@ -57,6 +58,12 @@ function getNodeIconName(type: string): IconName {
 }
 
 const nodeColor = computed(() => props.node?.data.schema?.color || '#1677ff')
+
+provide('workflowEdges', computed(() => props.edges))
+
+watch(() => props.edges, (val) => {
+  console.log('[WorkflowConfigPanel] edges received:', val?.length, 'items')
+}, { immediate: true })
 
 const panelComponent = computed(() => {
   const name = props.node?.data.schema?.panelComponent
@@ -111,6 +118,7 @@ function beginResize(event: MouseEvent) {
           :node="node"
           :nodes="nodes"
           :resources="resources"
+          :edges="edges"
           @update="(updatedNode: WorkflowFlowNode) => $emit('update', updatedNode)"
         />
       </Suspense>

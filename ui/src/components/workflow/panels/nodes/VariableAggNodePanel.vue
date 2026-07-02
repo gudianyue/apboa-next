@@ -5,11 +5,12 @@ import NodeNameInput from '../shared/NodeNameInput.vue'
 import BlurInput from '../shared/BlurInput.vue'
 import InputBindingSection from '../shared/InputBindingSection.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
-import type { WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
+import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
 
 const props = defineProps<{
   node: WorkflowFlowNode
   nodes: WorkflowFlowNode[]
+  edges: WorkflowFlowEdge[]
   resources: WorkflowResourceMaps
 }>()
 const emit = defineEmits<{ update: [node: WorkflowFlowNode] }>()
@@ -34,6 +35,7 @@ const isString = computed(() => (props.node.data.config?.strategy as string) ===
     <InputBindingSection
       :model-value="node.data.inputConfigs"
       :nodes="nodes"
+      :edges="edges"
       :current-node-id="node.id"
       @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />

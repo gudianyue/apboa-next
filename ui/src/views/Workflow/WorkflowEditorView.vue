@@ -976,6 +976,7 @@ function clearAllPanels() {
     <WorkflowConfigPanel
       :node="selectedNode"
       :nodes="nodes"
+      :edges="edges"
       :resources="resources"
       :right-offset="configPanelRightOffset"
       @update="updateNode"

@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
+import type { ComputedRef } from 'vue'
 import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
-import type { WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
+import NodeOutputSelector from './NodeOutputSelector.vue'
+import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
 
 const sourceTypeOptions = [
   { label: '常量', value: 'CONSTANT' as const, description: '直接填写固定值，支持字符串或 JSON 格式' },
@@ -14,6 +16,7 @@ const sourceTypeOptions = [
 const props = defineProps<{
   modelValue?: WorkflowInputConfig[]
   nodes: WorkflowFlowNode[]
+  edges: WorkflowFlowEdge[]
   currentNodeId?: string
 }>()
 
@@ -23,15 +26,61 @@ const emit = defineEmits<{
 
 const bindings = computed(() => (props.modelValue?.length ? props.modelValue : [{ name: 'input', sourceType: 'NODE_OUTPUT' as const }]))
 
-const nodeOptions = computed(() =>
-  props.nodes
-    .filter((node) => node.id !== props.currentNodeId)
-    .map((node) => ({
-      label: `${node.data.label} · ${node.data.schema?.title || node.data.type}`,
-      value: node.id,
-      node,
-    })),
-)
+const injectedEdges = inject<ComputedRef<WorkflowFlowEdge[]>>('workflowEdges', computed(() => []))
+
+// 从 currentNodeId 出发沿边反向 BFS，收集所有上游节点
+const upstreamNodes = computed(() => {
+  console.log('[InputBinding] edges count:', injectedEdges.value?.length, 'currentNodeId:', props.currentNodeId)
+  console.log('[InputBinding] edges:', JSON.parse(JSON.stringify(injectedEdges.value || [])))
+  console.log('[InputBinding] nodes count:', props.nodes?.length)
+
+  const edges = injectedEdges.value
+  if (!edges || !props.currentNodeId) {
+    console.log('[InputBinding] early return: no edges or no currentNodeId')
+    return []
+  }
+
+  // 构建反向邻接表：target → 所有 source（谁指向我）
+  const reverseAdj = new Map<string, string[]>()
+  for (const edge of edges) {
+    console.log('[InputBinding] edge:', edge.id, 'source:', edge.source, 'target:', edge.target)
+    const list = reverseAdj.get(edge.target)
+    if (list) {
+      list.push(edge.source)
+    } else {
+      reverseAdj.set(edge.target, [edge.source])
+    }
+  }
+  console.log('[InputBinding] reverseAdj:', [...reverseAdj.entries()])
+
+  // BFS：从当前节点出发，沿反向邻接表向上追溯
+  const visited = new Set<string>()
+  const queue: string[] = [props.currentNodeId]
+
+  while (queue.length) {
+    const nodeId = queue.shift()!
+    if (visited.has(nodeId)) continue
+    visited.add(nodeId)
+    const sources = reverseAdj.get(nodeId)
+    if (sources) {
+      for (const source of sources) {
+        if (!visited.has(source)) queue.push(source)
+      }
+    }
+  }
+
+  // 排除自身
+  visited.delete(props.currentNodeId)
+
+  // 从 nodes 中匹配
+  const result: WorkflowFlowNode[] = []
+  for (const nodeId of visited) {
+    const node = props.nodes.find((n) => n.id === nodeId)
+    if (node) result.push(node)
+  }
+  console.log('[InputBinding] upstreamNodes result:', result.map(n => n.data.label))
+  return result
+})
 
 function update(index: number, patch: Partial<WorkflowInputConfig>) {
   const next = bindings.value.map((item) => ({ ...item }))
@@ -94,20 +143,13 @@ function removeBinding(index: number) {
         @update:model-value="(value: string) => update(index, { variableName: value })"
       />
 
-      <div v-else-if="binding.sourceType === 'NODE_OUTPUT'" class="node-output-grid">
-        <ASelect
-          show-search
-          :model-value="binding.nodeId"
-          :options="nodeOptions"
-          placeholder="选择任意前置或已存在节点"
-          @update:model-value="(value: string) => update(index, { nodeId: value })"
-        />
-        <BlurInput
-          :model-value="binding.outputName || 'output'"
-          placeholder="输出名"
-          @update:model-value="(value: string) => update(index, { outputName: value })"
-        />
-      </div>
+      <NodeOutputSelector
+        v-else-if="binding.sourceType === 'NODE_OUTPUT'"
+        :upstream-nodes="upstreamNodes"
+        :node-id="binding.nodeId"
+        :output-name="binding.outputName"
+        @select="({ nodeId, outputName }) => update(index, { nodeId, outputName })"
+      />
 
       <ATextarea
         v-else
@@ -137,16 +179,11 @@ function removeBinding(index: number) {
   background: #fff;
 }
 
-.binding-head,
-.node-output-grid {
+.binding-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   align-items: center;
-}
-
-.node-output-grid {
-  grid-template-columns: minmax(0, 1fr) 110px;
 }
 
 .source-type-segmented {
