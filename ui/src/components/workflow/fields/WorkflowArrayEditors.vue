@@ -27,7 +27,7 @@ function addRow() {
   const defaults: Record<EditorType, unknown> = {
     keyValue: { key: '', value: '' },
     dbParams: { value: '', type: 'STRING' },
-    startParams: { position: 'QUERY', name: '', value: '', type: 'String', required: false, remark: '' },
+    startParams: { position: 'QUERY', name: '', value: '', type: 'String', required: false, description: '' },
     stringList: '',
     matchList: { matchValue: '', nextNodeId: '' },
   }
@@ -91,18 +91,18 @@ function updateString(index: number, value: string) {
               <template #content>
                 <div class="desc-popover">
                   <BlurTextarea
-                    :model-value="(row as any).remark"
+                    :model-value="(row as any).description"
                     placeholder="请输入描述"
                     :rows="3"
-                    @update:model-value="(value: string) => updateObject(index, 'remark', value)"
+                    @update:model-value="(value: string) => updateObject(index, 'description', value)"
                   />
                 </div>
               </template>
               <ATooltip
-                :title="(row as any).remark || undefined"
+                :title="(row as any).description || undefined"
                 :overlay-style="{ maxWidth: 'none', whiteSpace: 'nowrap' }"
               >
-                <span class="desc-icon" :class="{ 'has-content': (row as any).remark }" title="描述">
+                <span class="desc-icon" :class="{ 'has-content': (row as any).description }" title="描述">
                   <FileTextOutlined />
                 </span>
               </ATooltip>

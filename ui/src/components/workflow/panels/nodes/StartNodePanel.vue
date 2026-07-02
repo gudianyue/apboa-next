@@ -1,4 +1,5 @@
 ﻿<script setup lang="ts">
+import { computed } from 'vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import OutputDisplay from '../shared/OutputDisplay.vue'
@@ -32,7 +33,16 @@ const variableTypeOptions = [
   'Boolean',
   'Array',
   'Object',
-].map((v: any) => ({ label: v, value: v }))
+].map((v) => ({ label: v, value: v }))
+
+const derivedOutputs = computed(() => {
+  const params = (props.node.data.config?.params as Array<{ name: string; type: string; description?: string }>) || []
+  return params.map((p) => ({
+    name: p.name,
+    type: p.type,
+    description: p.description || '',
+  }))
+})
 </script>
 
 <template>
@@ -54,7 +64,7 @@ const variableTypeOptions = [
     </PanelSection>
 
     <PanelSection title="输出说明">
-      <OutputDisplay :outputs="node.data.outputConfigs || []" />
+      <OutputDisplay :outputs="derivedOutputs" />
     </PanelSection>
   </AForm>
 </template>

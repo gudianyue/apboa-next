@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
-    <div v-if="hovered && !locked" class="node-operation-hint">按住 Ctrl 添加节点</div>
+    <div v-if="hovered && !locked && !isEnd" class="node-operation-hint">按住 Ctrl 添加节点</div>
     <Handle
       v-if="!isStart"
       type="target"
@@ -191,7 +191,11 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   background: #fff;
   color: #262626;
+  box-shadow: 0px 2px 12px rgba(131, 131, 132, 0.05);
   border: 1px solid transparent;
+  transition: 0.15s;
+}
+.graph-node.hovered {
   box-shadow: 0px 2px 12px rgba(131, 131, 132, 0.25);
 }
 .graph-node.selected {

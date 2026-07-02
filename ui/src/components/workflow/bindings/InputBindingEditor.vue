@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import SmartCodeEditor from '@/components/editor/SmartCodeEditor.vue'
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
-import type { InputSourceType, WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
+import type { WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
+
+const sourceTypeOptions = [
+  { label: '常量', value: 'CONSTANT' as const, description: '直接填写固定值，支持字符串或 JSON 格式' },
+  { label: '变量', value: 'VARIABLE' as const, description: '引用工作流全局变量，运行时动态注入' },
+  { label: '节点输出', value: 'NODE_OUTPUT' as const, description: '引用其他节点的输出结果，构建节点间数据流' },
+  { label: '表达式', value: 'EXPRESSION' as const, description: '使用 GroovyShell 表达式动态计算值' },
+]
 
 const props = defineProps<{
   modelValue?: WorkflowInputConfig[]
@@ -53,23 +60,31 @@ function removeBinding(index: number) {
         <AButton v-if="bindings.length > 1" danger type="text" @click="removeBinding(index)">删除</AButton>
       </div>
 
-      <ASegmented
-        :value="binding.sourceType"
-        :options="[
-          { label: '常量', value: 'CONSTANT' },
-          { label: '变量', value: 'VARIABLE' },
-          { label: '节点输出', value: 'NODE_OUTPUT' },
-          { label: '表达式', value: 'EXPRESSION' },
-        ]"
-        @update:value="(value: InputSourceType) => update(index, { sourceType: value })"
-      />
+      <div class="source-type-segmented">
+        <ATooltip
+          v-for="opt in sourceTypeOptions"
+          :key="opt.value"
+          :title="opt.description"
+          placement="topLeft"
+          :overlay-inner-style="{ maxWidth: '170px' }"
+        >
+          <button
+            :class="['segmented-option', { active: binding.sourceType === opt.value }]"
+            type="button"
+            @click="update(index, { sourceType: opt.value })"
+          >
+            <span class="segmented-label">{{ opt.label }}</span>
+            <QuestionCircleOutlined class="segmented-help" />
+          </button>
+        </ATooltip>
+      </div>
 
       <ATextarea
         v-if="binding.sourceType === 'CONSTANT'"
-        :value="typeof binding.value === 'string' ? binding.value : JSON.stringify(binding.value ?? '', null, 2)"
-        :auto-size="{ minRows: 2, maxRows: 6 }"
+        :rows="1"
+        :model-value="typeof binding.value === 'string' ? binding.value : JSON.stringify(binding.value ?? '', null, 2)"
         placeholder="常量值，可填写字符串或 JSON"
-        @update:value="(value: string) => update(index, { value })"
+        @update:model-value="(value: string) => update(index, { value })"
       />
 
       <BlurInput
@@ -82,30 +97,24 @@ function removeBinding(index: number) {
       <div v-else-if="binding.sourceType === 'NODE_OUTPUT'" class="node-output-grid">
         <ASelect
           show-search
-          :value="binding.nodeId"
+          :model-value="binding.nodeId"
           :options="nodeOptions"
           placeholder="选择任意前置或已存在节点"
-          @update:value="(value: string) => update(index, { nodeId: value })"
+          @update:model-value="(value: string) => update(index, { nodeId: value })"
         />
         <BlurInput
           :model-value="binding.outputName || 'output'"
           placeholder="输出名"
           @update:model-value="(value: string) => update(index, { outputName: value })"
         />
-        <div class="binding-tip">可选择任意节点输出；连线与循环依赖由保存校验兜底。</div>
       </div>
 
-      <SmartCodeEditor
+      <ATextarea
         v-else
-        :model-value="binding.expression || ''"
-        language="txt"
-        theme="light"
-        height="160px"
-        :show-change-language="false"
-        :show-theme-toggle="false"
-        :show-fullscreen="false"
-        placeholder="表达式"
-        @update:model-value="(value: string) => update(index, { expression: value })"
+        :rows="1"
+        :model-value="typeof binding.value === 'string' ? binding.value : JSON.stringify(binding.value ?? '', null, 2)"
+        placeholder="支持编写GroovyShell表单式"
+        @update:model-value="(value: string) => update(index, { value })"
       />
     </div>
 
@@ -140,10 +149,48 @@ function removeBinding(index: number) {
   grid-template-columns: minmax(0, 1fr) 110px;
 }
 
-.binding-tip {
-  grid-column: 1 / -1;
-  color: #8c8c8c;
+.source-type-segmented {
+  display: flex;
+  border-radius: 6px;
+  background: #F2F4F7;
+  padding: 2px;
+}
+
+.segmented-option {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.65);
+  transition: all 0.2s;
+  line-height: 1.4;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  &.active {
+    background: #fff;
+    color: rgba(0, 0, 0, 0.88);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.segmented-help {
   font-size: 12px;
+  color: rgba(0, 0, 0, 0.25);
+  transition: color 0.2s;
+
+  .segmented-option:hover & {
+    color: rgba(0, 0, 0, 0.45);
+  }
 }
 
 .add-binding {

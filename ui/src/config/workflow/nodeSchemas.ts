@@ -85,7 +85,7 @@ export const workflowNodeSchemas: WorkflowNodeSchema[] = [
     icon: 'play', color: '#1677ff', panelComponent: 'StartNodePanel',
     defaultConfig: { params: [] },
     fields: [{ name: 'params', label: '输入参数', control: 'startParams', defaultValue: [], options: variableTypeOptions }],
-    inputConfigs: [], outputConfigs: output(),
+    inputConfigs: [], outputConfigs: [],
     summaryComponent: 'StartNodeSummary',
     showSummary: false,
   }),
