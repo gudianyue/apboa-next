@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Background } from '@vue-flow/background'
 import { MiniMap } from '@vue-flow/minimap'
-import { VueFlow, useVueFlow, type Connection } from '@vue-flow/core'
+import { ref, computed } from 'vue'
+import { VueFlow, useVueFlow, type Connection, type GraphNode } from '@vue-flow/core'
 import WorkflowGraphEdge from '@/components/workflow/edge/WorkflowGraphEdge.vue'
 import WorkflowGraphNode from '@/components/workflow/node/WorkflowGraphNode.vue'
 import type { WorkflowFlowEdge, WorkflowFlowNode } from '@/types/workflow'
@@ -26,6 +27,143 @@ const emit = defineEmits<{
 }>()
 
 const flow = useVueFlow()
+const { viewport } = flow
+
+// ========== 对齐辅助线 ==========
+interface AlignGuide {
+  orientation: 'vertical' | 'horizontal'
+  position: number
+  start: number
+  end: number
+}
+
+const alignGuides = ref<AlignGuide[]>([])
+const SNAP_THRESHOLD = 5
+
+/** 将流坐标对齐引导线转换为屏幕坐标（相对于画布容器） */
+const screenGuides = computed(() => {
+  const vp = viewport.value
+  return alignGuides.value.map((g) => {
+    if (g.orientation === 'vertical') {
+      const left = g.position * vp.zoom + vp.x
+      const top = g.start * vp.zoom + vp.y
+      const height = Math.max((g.end - g.start) * vp.zoom, 1)
+      return {
+        key: `v-${Math.round(g.position)}-${Math.round(g.start)}`,
+        style: {
+          left: `${left}px`,
+          top: `${top}px`,
+          width: '1px',
+          height: `${height}px`,
+        },
+      }
+    }
+    const left = g.start * vp.zoom + vp.x
+    const top = g.position * vp.zoom + vp.y
+    const width = Math.max((g.end - g.start) * vp.zoom, 1)
+    return {
+      key: `h-${Math.round(g.position)}-${Math.round(g.start)}`,
+      style: {
+        left: `${left}px`,
+        top: `${top}px`,
+        height: '1px',
+        width: `${width}px`,
+      },
+    }
+  })
+})
+
+function computeAlignment(draggedNode: GraphNode) {
+  const guides: AlignGuide[] = []
+  let snapX = 0
+  let snapY = 0
+
+  const dw = draggedNode.dimensions.width || 0
+  const dh = draggedNode.dimensions.height || 0
+  if (!dw && !dh) return { guides, snapX, snapY }
+
+  const d = {
+    x: draggedNode.position.x,
+    y: draggedNode.position.y,
+    cx: draggedNode.position.x + dw / 2,
+    cy: draggedNode.position.y + dh / 2,
+    r: draggedNode.position.x + dw,
+    b: draggedNode.position.y + dh,
+  }
+
+  const others: GraphNode[] = []
+  for (const n of nodes.value as GraphNode[]) {
+    if (n.id !== draggedNode.id && n.dimensions.width > 0 && n.dimensions.height > 0) {
+      others.push(n)
+    }
+  }
+
+  for (const other of others) {
+    const ow = other.dimensions.width
+    const oh = other.dimensions.height
+    const o = {
+      x: other.position.x,
+      y: other.position.y,
+      cx: other.position.x + ow / 2,
+      cy: other.position.y + oh / 2,
+      r: other.position.x + ow,
+      b: other.position.y + oh,
+    }
+
+    const minY = Math.min(d.y, o.y)
+    const maxB = Math.max(d.b, o.b)
+    const minX = Math.min(d.x, o.x)
+    const maxR = Math.max(d.r, o.r)
+
+    const vPairs: [number, number][] = [
+      [d.x, o.x],
+      [d.cx, o.cx],
+      [d.r, o.r],
+    ]
+    for (const [dv, ov] of vPairs) {
+      const diff = dv - ov
+      if (Math.abs(diff) < SNAP_THRESHOLD) {
+        guides.push({ orientation: 'vertical', position: ov, start: minY, end: maxB })
+        if (!snapX || Math.abs(diff) < Math.abs(snapX)) snapX = -diff
+      }
+    }
+
+    const hPairs: [number, number][] = [
+      [d.y, o.y],
+      [d.cy, o.cy],
+      [d.b, o.b],
+    ]
+    for (const [dv, ov] of hPairs) {
+      const diff = dv - ov
+      if (Math.abs(diff) < SNAP_THRESHOLD) {
+        guides.push({ orientation: 'horizontal', position: ov, start: minX, end: maxR })
+        if (!snapY || Math.abs(diff) < Math.abs(snapY)) snapY = -diff
+      }
+    }
+  }
+
+  return { guides: deduplicateGuides(guides), snapX, snapY }
+}
+
+function deduplicateGuides(guides: AlignGuide[]): AlignGuide[] {
+  const seen = new Set<string>()
+  return guides.filter((g) => {
+    const key = `${g.orientation}-${Math.round(g.position)}-${Math.round(g.start)}-${Math.round(g.end)}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+function onNodeDrag({ node }: { node: GraphNode }) {
+  if (props.readonly) return
+  const { guides } = computeAlignment(node)
+  alignGuides.value = guides
+}
+
+function onNodeDragStop() {
+  alignGuides.value = []
+}
 
 function getSourceHandles(nodeId: string) {
   const node = nodes.value.find((item) => item.id === nodeId)
@@ -61,15 +199,15 @@ function onConnect(connection: Connection) {
   ])
 }
 
-function onNodeClick(event: any) {
+function onNodeClick({ node }: { node: GraphNode }) {
   if (props.readonly) return
-  emit('selectNode', event.node.id)
+  emit('selectNode', node.id)
 }
 
-function onNodeContextMenu(event: any) {
+function onNodeContextMenu({ node, event }: { node: GraphNode; event: MouseEvent | TouchEvent }) {
   if (props.readonly) return
-  event.event?.preventDefault()
-  emit('nodeContext', { nodeId: event.node.id, x: event.event?.clientX || 0, y: event.event?.clientY || 0 })
+  event?.preventDefault()
+  emit('nodeContext', { nodeId: node.id, x: (event as MouseEvent).clientX || 0, y: (event as MouseEvent).clientY || 0 })
 }
 
 function onPaneClick() {
@@ -134,6 +272,8 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
       @node-click="onNodeClick"
       @node-context-menu="onNodeContextMenu"
       @pane-click="onPaneClick"
+      @node-drag="onNodeDrag"
+      @node-drag-stop="onNodeDragStop"
     >
       <template #node-workflow="slotProps">
         <WorkflowGraphNode
@@ -155,6 +295,14 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
         node-stroke-color="#8c8c8c"
       />
     </VueFlow>
+
+    <!-- 对齐辅助线覆盖层（屏幕坐标，在 VueFlow 外部渲染） -->
+    <div
+      v-for="guide in screenGuides"
+      :key="guide.key"
+      class="align-guide-overlay"
+      :style="guide.style"
+    />
   </section>
 </template>
 
@@ -189,5 +337,15 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
   fill: rgba(245, 245, 245, 0.62);
   stroke: #1677ff;
   stroke-width: 1;
+}
+
+/* 对齐辅助线 - 覆盖层 */
+.align-guide-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 15;
+  background: #1677ff;
+  opacity: 0.55;
+  will-change: left, top, width, height;
 }
 </style>
