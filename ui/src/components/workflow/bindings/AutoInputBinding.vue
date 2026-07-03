@@ -255,15 +255,13 @@ onUnmounted(() => {
           <HolderOutlined />
         </span>
         <div class="auto-binding-display selector-trigger">
-          <span class="trigger-text">
-            <span class="trigger-icon">
-              <IconFont
-                :name="getIconName(item.type)"
-                :size="14"
-                :color="item.color"
-              />
-              <span style="margin-left: 4px;">{{ item.label }}</span>
-            </span>
+          <span class="trigger-icon">
+            <IconFont
+              :name="getIconName(item.type)"
+              :size="14"
+              :color="item.color"
+            />
+            <span class="trigger-label">{{ item.label }}</span>
           </span>
         </div>
       </div>
@@ -277,7 +275,10 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .auto-binding-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
+  min-width: 0;
+  overflow: hidden;
 
   &.empty {
     gap: 0;
@@ -288,6 +289,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
 }
 
 .auto-binding-drag-handle {
@@ -323,6 +325,9 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 2px 8px;
   background-color: #F2F4F7;
   border-radius: 6px;
@@ -330,21 +335,26 @@ onUnmounted(() => {
   min-height: 32px;
 }
 
-.trigger-text {
+.trigger-icon {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+.trigger-label {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  margin-left: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #262626;
-}
-
-.trigger-icon {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background-color: #ffffff;
 }
 
 // Sortable 拖拽状态样式

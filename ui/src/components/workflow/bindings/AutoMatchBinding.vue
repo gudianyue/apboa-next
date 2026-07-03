@@ -190,11 +190,9 @@ function updateMatchValue(nextNodeId: string, value: string) {
       <div>→</div>
       <div class="match-next-cell">
         <div class="match-next-display selector-trigger">
-          <span class="trigger-text">
-            <span class="trigger-icon">
-              <IconFont :name="getIconName(item.nodeType)" :size="14" :color="item.nodeColor" />
-              <span style="margin-left: 4px">{{ item.nodeLabel }}</span>
-            </span>
+          <span class="trigger-icon">
+            <IconFont :name="getIconName(item.nodeType)" :size="14" :color="item.nodeColor" />
+            <span class="trigger-label">{{ item.nodeLabel }}</span>
           </span>
         </div>
       </div>
@@ -208,7 +206,9 @@ function updateMatchValue(nextNodeId: string, value: string) {
 <style scoped lang="scss">
 .match-binding-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
+  min-width: 0;
 
   &.empty {
     gap: 0;
@@ -219,6 +219,7 @@ function updateMatchValue(nextNodeId: string, value: string) {
   display: flex;
   gap: 8px;
   align-items: center;
+  min-width: 0;
 }
 
 .match-value-cell {
@@ -240,6 +241,9 @@ function updateMatchValue(nextNodeId: string, value: string) {
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 2px 8px;
   background-color: #f2f4f7;
   border-radius: 6px;
@@ -247,21 +251,26 @@ function updateMatchValue(nextNodeId: string, value: string) {
   min-height: 32px;
 }
 
-.trigger-text {
+.trigger-icon {
   flex: 1;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+.trigger-label {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  margin-left: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #262626;
-}
-
-.trigger-icon {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background-color: #ffffff;
 }
 
 .match-binding-empty {

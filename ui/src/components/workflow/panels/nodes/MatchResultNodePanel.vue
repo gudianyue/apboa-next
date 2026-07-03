@@ -111,6 +111,7 @@ function updateConfig(key: string, value: unknown) {
 
 .prev-node-selector {
   flex: 1;
+  min-width: 0;
 }
 
 .match-binding-wrap {

@@ -277,5 +277,6 @@ const upstreamNodes = computed(() => {
 
 .compare-control, .next-node-selector {
   flex: 1;
+  min-width: 0;
 }
 </style>

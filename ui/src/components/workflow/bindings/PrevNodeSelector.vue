@@ -106,11 +106,9 @@ watch(popoverOpen, (open) => {
     :overlay-inner-style="{ padding: 0 }"
   >
     <div class="selector-trigger" :class="{ placeholder: !selectedLabel }">
-      <span v-if="selectedLabel" class="trigger-text">
-        <span class="trigger-icon">
-          <IconFont v-if="selectedNode" :name="getIconName(selectedNode.data.type)" :size="14" :color="selectedNode.data.schema?.color || '#1677ff'" />
-          <span style="margin-left: 4px;">{{ selectedLabel }}</span>
-        </span>
+      <span v-if="selectedLabel" class="trigger-icon">
+        <IconFont v-if="selectedNode" :name="getIconName(selectedNode.data.type)" :size="14" :color="selectedNode.data.schema?.color || '#1677ff'" />
+        <span class="trigger-label">{{ selectedLabel }}</span>
       </span>
       <span v-else class="trigger-placeholder">选择上游节点...</span>
       <CloseCircleFilled
@@ -165,6 +163,9 @@ watch(popoverOpen, (open) => {
   display: flex;
   align-items: center;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 2px 8px;
   background-color: #F2F4F7;
   border-radius: 6px;
@@ -192,14 +193,20 @@ watch(popoverOpen, (open) => {
 }
 
 .trigger-icon {
-  padding: 6px 8px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 2px 8px;
   border-radius: 6px;
   background-color: #ffffff;
 }
 
-.trigger-text {
+.trigger-label {
   flex: 1;
   min-width: 0;
+  margin-left: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
