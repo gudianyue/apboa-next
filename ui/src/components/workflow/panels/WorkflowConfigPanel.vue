@@ -61,10 +61,16 @@ const nodeColor = computed(() => props.node?.data.schema?.color || '#1677ff')
 
 provide('workflowEdges', computed(() => props.edges))
 
+// 缓存 defineAsyncComponent 结果，相同组件名始终返回同一引用，防止 Vue 因引用变化而销毁重建组件
+const asyncPanelCache = new Map<string, ReturnType<typeof defineAsyncComponent>>()
+
 const panelComponent = computed(() => {
   const name = props.node?.data.schema?.panelComponent
   if (!name) return null
-  return defineAsyncComponent(() => import(`./nodes/${name}.vue`))
+  if (!asyncPanelCache.has(name)) {
+    asyncPanelCache.set(name, defineAsyncComponent(() => import(`./nodes/${name}.vue`)))
+  }
+  return asyncPanelCache.get(name)!
 })
 
 function beginResize(event: MouseEvent) {

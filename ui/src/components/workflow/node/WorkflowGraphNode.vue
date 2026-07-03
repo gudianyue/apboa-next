@@ -79,10 +79,16 @@ function getNodeIconName(type: string): IconName {
 
 const color = computed(() => props.data.schema?.color || '#1677ff')
 const showSummary = computed(() => props.data.schema?.showSummary ?? true)
+// 缓存 defineAsyncComponent 结果，相同组件名始终返回同一引用，防止 Vue 因引用变化而销毁重建组件
+const asyncSummaryCache = new Map<string, ReturnType<typeof defineAsyncComponent>>()
+
 const summaryComponent = computed(() => {
   const name = props.data.schema?.summaryComponent
   if (!name) return null
-  return defineAsyncComponent(() => import(`./summaries/${name}.vue`))
+  if (!asyncSummaryCache.has(name)) {
+    asyncSummaryCache.set(name, defineAsyncComponent(() => import(`./summaries/${name}.vue`)))
+  }
+  return asyncSummaryCache.get(name)!
 })
 const isStart = computed(() => props.data.type === 'START')
 const isEnd = computed(() => props.data.type === 'END')
