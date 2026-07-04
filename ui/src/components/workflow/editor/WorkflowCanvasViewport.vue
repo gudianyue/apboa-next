@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Background } from '@vue-flow/background'
 import { MiniMap } from '@vue-flow/minimap'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { VueFlow, useVueFlow, type Connection, type GraphNode } from '@vue-flow/core'
 import WorkflowGraphEdge from '@/components/workflow/edge/WorkflowGraphEdge.vue'
 import WorkflowGraphNode from '@/components/workflow/node/WorkflowGraphNode.vue'
@@ -50,10 +50,10 @@ const screenGuides = computed(() => {
       const height = Math.max((g.end - g.start) * vp.zoom, 1)
       return {
         key: `v-${Math.round(g.position)}-${Math.round(g.start)}`,
+        class: 'align-guide-overlay align-guide-vertical',
         style: {
           left: `${left}px`,
           top: `${top}px`,
-          width: '1px',
           height: `${height}px`,
         },
       }
@@ -63,10 +63,10 @@ const screenGuides = computed(() => {
     const width = Math.max((g.end - g.start) * vp.zoom, 1)
     return {
       key: `h-${Math.round(g.position)}-${Math.round(g.start)}`,
+      class: 'align-guide-overlay align-guide-horizontal',
       style: {
         left: `${left}px`,
         top: `${top}px`,
-        height: '1px',
         width: `${width}px`,
       },
     }
@@ -80,7 +80,7 @@ function computeAlignment(draggedNode: GraphNode) {
 
   const dw = draggedNode.dimensions.width || 0
   const dh = draggedNode.dimensions.height || 0
-  if (!dw && !dh) return { guides, snapX, snapY }
+  if (!dw || !dh) return { guides, snapX, snapY }
 
   const d = {
     x: draggedNode.position.x,
@@ -157,13 +157,43 @@ function deduplicateGuides(guides: AlignGuide[]): AlignGuide[] {
 
 function onNodeDrag({ node }: { node: GraphNode }) {
   if (props.readonly) return
-  const { guides } = computeAlignment(node)
+  const { guides, snapX, snapY } = computeAlignment(node)
   alignGuides.value = guides
+
+  // 应用吸附：将节点拉近到最近的参考对齐线
+  if (snapX !== 0 || snapY !== 0) {
+    node.position = {
+      x: node.position.x + snapX,
+      y: node.position.y + snapY,
+    }
+  }
 }
 
 function onNodeDragStop() {
   alignGuides.value = []
+  // 双帧兜底：处理 VueFlow 在 stop 之后又同步触发 drag 的边界情况
+  requestAnimationFrame(() => {
+    alignGuides.value = []
+  })
 }
+
+/** 兜底清除辅助线（处理 node-drag-stop 未触发的异常场景） */
+function clearGuides() {
+  alignGuides.value = []
+}
+
+// 全局安全网：捕获阶段监听，确保在 VueFlow stopPropagation 之前拦截
+onMounted(() => {
+  window.addEventListener('mouseup', clearGuides, true)
+  window.addEventListener('pointerup', clearGuides, true)
+  window.addEventListener('blur', clearGuides)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('mouseup', clearGuides, true)
+  window.removeEventListener('pointerup', clearGuides, true)
+  window.removeEventListener('blur', clearGuides)
+})
 
 function getSourceHandles(nodeId: string) {
   const node = nodes.value.find((item) => item.id === nodeId)
@@ -212,6 +242,7 @@ function onNodeContextMenu({ node, event }: { node: GraphNode; event: MouseEvent
 
 function onPaneClick() {
   if (props.readonly) return
+  clearGuides()
   emit('selectNode', null)
   emit('paneClick')
 }
@@ -300,7 +331,7 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
     <div
       v-for="guide in screenGuides"
       :key="guide.key"
-      class="align-guide-overlay"
+      :class="guide.class"
       :style="guide.style"
     />
   </section>
@@ -344,8 +375,14 @@ defineExpose({ addAtCenter, fitAll, zoomInCanvas, zoomOutCanvas, resetZoom, fitN
   position: absolute;
   pointer-events: none;
   z-index: 15;
-  background: #1677ff;
-  opacity: 0.55;
-  will-change: left, top, width, height;
+  transition: opacity 0.12s ease;
+}
+
+.align-guide-vertical {
+  border-left: 1px dashed rgba(22, 119, 255, 0.45);
+}
+
+.align-guide-horizontal {
+  border-top: 1px dashed rgba(22, 119, 255, 0.45);
 }
 </style>
