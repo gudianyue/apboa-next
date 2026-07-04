@@ -3,14 +3,13 @@ import { computed } from 'vue'
 import { DeleteOutlined, FileTextOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
 import BlurTextarea from '@/components/workflow/panels/shared/BlurTextarea.vue'
-import type { WorkflowFieldOption } from '@/types/workflow'
 
 type EditorType = 'keyValue' | 'dbParams' | 'startParams' | 'stringList' | 'matchList'
 
 const props = defineProps<{
   modelValue?: unknown
   type: EditorType
-  options?: WorkflowFieldOption[]
+  options?: any[]
 }>()
 
 const emit = defineEmits<{

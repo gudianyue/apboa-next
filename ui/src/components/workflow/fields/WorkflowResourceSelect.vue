@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { ApiOutlined, CheckCircleOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import * as workflowApi from '@/api/workflow'
-import type { WorkflowResource, WorkflowResourceMaps } from '@/types/workflow'
+import type { WorkflowResourceMaps } from '@/types/workflow'
 
 const props = defineProps<{
   modelValue?: string

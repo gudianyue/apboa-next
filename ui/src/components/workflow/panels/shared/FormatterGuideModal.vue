@@ -8,7 +8,6 @@ const open = ref(false)
 <template>
   <span class="guide-trigger" @click="open = true">
     <QuestionCircleOutlined />
-    <!-- <span class="trigger-text">指南</span> -->
   </span>
 
   <AModal
@@ -24,7 +23,7 @@ const open = ref(false)
       </p>
 
       <!-- 1. 纯文本替换 -->
-      <h3 class="section-heading">1. 纯文本替换</h3>
+      <h3 class="section-heading">1. 纯文本替换（STRING）</h3>
       <p class="section-desc">
         通过 <code>${变量名}</code> 占位符直接将变量替换为其 <code>toString()</code> 结果。
       </p>
@@ -47,7 +46,7 @@ const open = ref(false)
       <hr class="section-divider" />
 
       <!-- 2. JSON 保类型 -->
-      <h3 class="section-heading">2. JSON 保类型</h3>
+      <h3 class="section-heading">2. JSON 保类型（JACKSON）</h3>
       <p class="section-desc">
         模板<b>必须为合法 JSON</b>。<code>${变量名}</code> 仅允许出现在字符串值中。
         替换后<b>保留变量的原始类型</b>——数字仍是数字，布尔仍是布尔。
@@ -80,7 +79,7 @@ const open = ref(false)
       <hr class="section-divider" />
 
       <!-- 3. Velocity 模板 -->
-      <h3 class="section-heading">3. Velocity 模板</h3>
+      <h3 class="section-heading">3. Velocity 模板（VELOCITY）</h3>
       <p class="section-desc">
         基于 Apache Velocity 引擎，支持完整 VTL 语法，渲染结果自动反序列化为 Java 对象。
       </p>

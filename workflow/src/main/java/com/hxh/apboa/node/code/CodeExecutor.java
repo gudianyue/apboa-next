@@ -15,5 +15,5 @@ public interface CodeExecutor {
      * @param inputs 输入参数
      * @return 输出参数
      */
-    Map<String, Object> execute(Map<String, Object> inputs) throws Exception;
+    Object execute(Map<String, Object> inputs) throws Exception;
 }

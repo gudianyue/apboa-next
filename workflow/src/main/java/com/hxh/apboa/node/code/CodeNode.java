@@ -1,5 +1,6 @@
 package com.hxh.apboa.node.code;
 
+import com.hxh.apboa.common.consts.NodeConst;
 import com.hxh.apboa.common.util.FuncUtils;
 import com.hxh.apboa.node.base.EnhancedNode;
 import com.hxh.apboa.node.base.NodeOutput;
@@ -53,10 +54,10 @@ public class CodeNode extends EnhancedNode {
         }
 
         // 执行代码
-        Map<String, Object> codeExecuteResult = codeExecutor.execute(inputs);
+        Object codeExecuteResult = codeExecutor.execute(inputs);
 
         // 保存输出
-        codeExecuteResult.forEach(output::addOutput);
+        output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, codeExecuteResult);
         output.markComplete();
 
         return output;

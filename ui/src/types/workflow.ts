@@ -167,14 +167,6 @@ export interface NodeMetadata {
   group: string
   description: string
   defaultConfig: Record<string, unknown>
-  fields?: Array<{
-    name: string
-    type: string
-    required: boolean
-    defaultValue?: unknown
-    enumValues?: string[]
-    control?: string
-  }>
   outputs: string[]
   branchable: boolean
 }
@@ -184,49 +176,6 @@ export interface WorkflowResource {
   name: string
   type?: string
   enabled?: boolean
-}
-
-export type WorkflowFieldControl =
-  | 'input'
-  | 'textarea'
-  | 'number'
-  | 'switch'
-  | 'select'
-  | 'segmented'
-  | 'code'
-  | 'json'
-  | 'resource'
-  | 'dbParams'
-  | 'keyValueList'
-  | 'stringList'
-  | 'startParams'
-  | 'httpRequest'
-  | 'compareTo'
-  | 'matchList'
-  | 'readonlyJson'
-
-/** @deprecated 配置表单定义已下沉到各节点专属面板组件，保留仅用于兼容 */
-export interface WorkflowFieldOption {
-  label: string
-  value: string | number | boolean
-  description?: string
-}
-
-/** @deprecated 配置表单定义已下沉到各节点专属面板组件，保留仅用于兼容 */
-export interface WorkflowFieldSchema {
-  name: string
-  label: string
-  control: WorkflowFieldControl
-  required?: boolean
-  defaultValue?: unknown
-  placeholder?: string
-  description?: string
-  options?: WorkflowFieldOption[]
-  language?: 'java' | 'javascript' | 'json' | 'txt'
-  resourceType?: 'cache' | 'datasource' | 'mq'
-  min?: number
-  max?: number
-  rows?: number
 }
 
 /** 节点卡片 Summary 项类型 */
@@ -254,13 +203,9 @@ export interface WorkflowNodeSchema {
   summaryComponent?: string
   /** 是否显示卡片底部摘要区域，默认 true。START/END 设为 false */
   showSummary?: boolean
-  /** @deprecated 配置表单定义已下沉到各节点专属面板组件 */
-  fields: WorkflowFieldSchema[]
   inputConfigs: WorkflowInputConfig[]
   outputConfigs: WorkflowOutputConfig[]
   branchHandles?: Array<{ id: string; label: string }>
-  /** @deprecated 摘要渲染已迁移到 summaryComponent */
-  summary?: (config: Record<string, unknown>, resources?: WorkflowResourceMaps) => SummaryItem[]
 }
 
 export interface WorkflowResourceMaps {

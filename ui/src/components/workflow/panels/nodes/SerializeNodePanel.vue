@@ -34,44 +34,78 @@ function updateConfig(key: string, value: unknown) {
       :nodes="nodes"
       :edges="edges"
       :current-node-id="node.id"
+      :max-bindings="1"
+      :readonly-name="true"
       @update:model-value="(v: any) => updateNode({ inputConfigs: v })"
     />
     <PanelSection title="节点配置">
-      <AFormItem label="序列化模式"
-        ><ASegmented
+      <div class="config-row">
+        <span class="config-row-label">序列化模式</span>
+        <ASegmented
           :value="node.data.config?.mode || 'COMPACT'"
           :options="[
             { label: '紧凑', value: 'COMPACT' },
             { label: '美化', value: 'PRETTY' },
           ]"
           @update:value="(v: any) => updateConfig('mode', v)"
-      /></AFormItem>
-      <AFormItem label="格式"
-        ><ASelect
+        />
+      </div>
+      <div class="config-row">
+        <span class="config-row-label">格式</span>
+        <ASelect
           :value="node.data.config?.format || 'JSON'"
           :options="
             ['JSON', 'XML', 'YAML', 'BASE64', 'URL_ENCODED'].map((v: any) => ({ label: v, value: v }))
           "
+          style="width: 160px"
           @update:value="(v: any) => updateConfig('format', v)"
-      /></AFormItem>
-      <AFormItem label="排除 null"
-        ><ASwitch
+        />
+      </div>
+      <div class="config-row">
+        <span class="config-row-label">排除 null</span>
+        <ASwitch
           :checked="Boolean(node.data.config?.excludeNulls)"
           @update:checked="(v: any) => updateConfig('excludeNulls', v)"
-      /></AFormItem>
-      <AFormItem label="排除空字符串"
-        ><ASwitch
+        />
+      </div>
+      <div class="config-row">
+        <span class="config-row-label">排除空字符串</span>
+        <ASwitch
           :checked="Boolean(node.data.config?.excludeEmptyStrings)"
           @update:checked="(v: any) => updateConfig('excludeEmptyStrings', v)"
-      /></AFormItem>
-      <AFormItem label="编码"
-        ><BlurInput
+        />
+      </div>
+      <div class="config-row">
+        <span class="config-row-label">编码</span>
+        <BlurInput
           :model-value="String(node.data.config?.encoding ?? 'UTF-8')"
+          style="width: 160px"
           @update:model-value="(v: any) => updateConfig('encoding', v)"
-      /></AFormItem>
+        />
+      </div>
     </PanelSection>
     <PanelSection title="输出说明"
       ><OutputDisplay :outputs="node.data.outputConfigs || []"
     /></PanelSection>
   </AForm>
 </template>
+
+<style scoped lang="scss">
+.config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.config-row-label {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.88);
+}
+</style>

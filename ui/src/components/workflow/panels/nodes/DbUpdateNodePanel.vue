@@ -71,8 +71,8 @@ const formatterOptions = [
             @update:model-value="(v: any) => updateConfig('datasourceId', v)"
         /></AFormItem>
         <div class="sql-editor-field">
-          <label class="form-label">SQL 语句 <span class="required-mark">*</span></label
-          ><ConfigCodeEditor
+          <label class="form-label"><span class="required-mark">*</span> SQL 语句</label>
+          <ConfigCodeEditor
             :model-value="String(node.data.config?.sql || '')"
             language="sql"
             placeholder="使用 ? 作为参数占位符"
