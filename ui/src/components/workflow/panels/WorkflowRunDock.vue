@@ -473,7 +473,7 @@ function beginResize(event: MouseEvent) {
 }
 
 .debug-section-title.mt {
-  margin-top: 4px;
+  margin-top: 10px;
 }
 
 .param-card {
