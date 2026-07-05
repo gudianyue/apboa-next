@@ -2,40 +2,8 @@
 import { computed, inject, watch, nextTick } from 'vue'
 import type { ComputedRef } from 'vue'
 import IconFont from '@/components/common/IconFont.vue'
-import type { IconName } from '@/components/common/icons'
 import type { WorkflowFlowEdge, WorkflowFlowNode } from '@/types/workflow'
-
-const nodeIconMap: Record<string, IconName> = {
-  START: 'nodestart',
-  END: 'nodeend',
-  IF_ELSE: 'nodeif_else',
-  CACHE_FETCH: 'nodecache',
-  CACHE_SET: 'nodecache',
-  CACHE_REMOVE: 'nodecache',
-  CACHE_REFRESH: 'nodecache',
-  DB_SELECT: 'nodedb_select',
-  DB_INSERT: 'nodedb_insert',
-  DB_UPDATE: 'nodedb_update',
-  DB_DELETE: 'nodedb_delete',
-  MQ_PUSH: 'nodemq_push',
-  HTTP_EXTERNAL: 'nodehttp_external',
-  CODE: 'nodecode',
-  ITERATE: 'nodeiterate',
-  LOOP: 'nodeloop',
-  LIST_FILTER: 'nodelist_filter',
-  LIST_SORT: 'nodelist_sort',
-  STRING_SPLIT: 'nodestring_split',
-  STRING_TEMPLATE: 'nodestring_template',
-  SERIALIZE: 'nodeserialize',
-  UNSERIALIZE: 'nodeunserialize',
-  VARIABLE_AGG: 'nodevariable_agg',
-  NON_EMPTY_SELECT: 'nodenon_empty_select',
-  MATCH_RESULT: 'nodematch_result',
-}
-
-function getIconName(type: string): IconName {
-  return nodeIconMap[type] || 'nodecode'
-}
+import { getNodeIconName } from '@/config/workflow/common'
 
 interface MatchItem {
   matchValue: string
@@ -191,7 +159,7 @@ function updateMatchValue(nextNodeId: string, value: string) {
       <div class="match-next-cell">
         <div class="match-next-display selector-trigger">
           <span class="trigger-icon">
-            <IconFont :name="getIconName(item.nodeType)" :size="14" :color="item.nodeColor" />
+            <IconFont :name="getNodeIconName(item.nodeType)" :size="14" :color="item.nodeColor" />
             <span class="trigger-label">{{ item.nodeLabel }}</span>
           </span>
         </div>

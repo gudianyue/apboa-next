@@ -2,8 +2,8 @@
 import { computed, ref, provide, defineAsyncComponent } from 'vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 import IconFont from '@/components/common/IconFont.vue'
-import type { IconName } from '@/components/common/icons'
 import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowResourceMaps } from '@/types/workflow'
+import { getNodeIconName } from '@/config/workflow/common'
 
 const props = defineProps<{
   node: WorkflowFlowNode | null
@@ -24,38 +24,6 @@ const dragging = ref(false)
 const maxWidth = computed(() =>
   Math.max(442, Math.floor((window.innerWidth - (props.rightOffset || 16) - 48) * 0.55)),
 )
-
-const nodeIconMap: Record<string, IconName> = {
-  START: 'nodestart',
-  END: 'nodeend',
-  IF_ELSE: 'nodeif_else',
-  CACHE_FETCH: 'nodecache',
-  CACHE_SET: 'nodecache',
-  CACHE_REMOVE: 'nodecache',
-  CACHE_REFRESH: 'nodecache',
-  DB_SELECT: 'nodedb_select',
-  DB_INSERT: 'nodedb_insert',
-  DB_UPDATE: 'nodedb_update',
-  DB_DELETE: 'nodedb_delete',
-  MQ_PUSH: 'nodemq_push',
-  HTTP_EXTERNAL: 'nodehttp_external',
-  CODE: 'nodecode',
-  ITERATE: 'nodeiterate',
-  LOOP: 'nodeloop',
-  LIST_FILTER: 'nodelist_filter',
-  LIST_SORT: 'nodelist_sort',
-  STRING_SPLIT: 'nodestring_split',
-  STRING_TEMPLATE: 'nodestring_template',
-  SERIALIZE: 'nodeserialize',
-  UNSERIALIZE: 'nodeunserialize',
-  VARIABLE_AGG: 'nodevariable_agg',
-  NON_EMPTY_SELECT: 'nodenon_empty_select',
-  MATCH_RESULT: 'nodematch_result',
-}
-
-function getNodeIconName(type: string): IconName {
-  return nodeIconMap[type] || 'nodecode'
-}
 
 const nodeColor = computed(() => props.node?.data.schema?.color || '#1677ff')
 

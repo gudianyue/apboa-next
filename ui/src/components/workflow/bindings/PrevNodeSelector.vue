@@ -2,8 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons-vue'
 import IconFont from '@/components/common/IconFont.vue'
-import type { IconName } from '@/components/common/icons'
 import type { WorkflowFlowNode, WorkflowFlowEdge } from '@/types/workflow'
+import { getNodeIconName } from '@/config/workflow/common'
 
 const props = defineProps<{
   nodes: WorkflowFlowNode[]
@@ -19,38 +19,6 @@ const emit = defineEmits<{
 
 const popoverOpen = ref(false)
 const searchText = ref('')
-
-const nodeIconMap: Record<string, IconName> = {
-  START: 'nodestart',
-  END: 'nodeend',
-  IF_ELSE: 'nodeif_else',
-  CACHE_FETCH: 'nodecache',
-  CACHE_SET: 'nodecache',
-  CACHE_REMOVE: 'nodecache',
-  CACHE_REFRESH: 'nodecache',
-  DB_SELECT: 'nodedb_select',
-  DB_INSERT: 'nodedb_insert',
-  DB_UPDATE: 'nodedb_update',
-  DB_DELETE: 'nodedb_delete',
-  MQ_PUSH: 'nodemq_push',
-  HTTP_EXTERNAL: 'nodehttp_external',
-  CODE: 'nodecode',
-  ITERATE: 'nodeiterate',
-  LOOP: 'nodeloop',
-  LIST_FILTER: 'nodelist_filter',
-  LIST_SORT: 'nodelist_sort',
-  STRING_SPLIT: 'nodestring_split',
-  STRING_TEMPLATE: 'nodestring_template',
-  SERIALIZE: 'nodeserialize',
-  UNSERIALIZE: 'nodeunserialize',
-  VARIABLE_AGG: 'nodevariable_agg',
-  NON_EMPTY_SELECT: 'nodenon_empty_select',
-  MATCH_RESULT: 'nodematch_result',
-}
-
-function getIconName(type: string): IconName {
-  return nodeIconMap[type] || 'nodecode'
-}
 
 // 上游节点：直接连接到当前节点的上游节点（target 为当前节点）
 const upstreamNodes = computed(() => {
@@ -107,7 +75,7 @@ watch(popoverOpen, (open) => {
   >
     <div class="selector-trigger" :class="{ placeholder: !selectedLabel }">
       <span v-if="selectedLabel" class="trigger-icon">
-        <IconFont v-if="selectedNode" :name="getIconName(selectedNode.data.type)" :size="14" :color="selectedNode.data.schema?.color || '#1677ff'" />
+        <IconFont v-if="selectedNode" :name="getNodeIconName(selectedNode.data.type)" :size="14" :color="selectedNode.data.schema?.color || '#1677ff'" />
         <span class="trigger-label">{{ selectedLabel }}</span>
       </span>
       <span v-else class="trigger-placeholder">选择上游节点...</span>
@@ -140,7 +108,7 @@ watch(popoverOpen, (open) => {
               :class="{ selected: selectedNodeId === node.id }"
               @click="selectNode(node.id)"
             >
-              <IconFont :name="getIconName(node.data.type)" :size="14" :color="node.data.schema?.color || '#1677ff'" />
+              <IconFont :name="getNodeIconName(node.data.type)" :size="14" :color="node.data.schema?.color || '#1677ff'" />
               <span class="node-row-name">{{ node.data.label }}</span>
               <span class="node-row-type">{{ node.data.type }}</span>
             </div>

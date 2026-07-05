@@ -3,7 +3,7 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 
 import { Handle, Position } from '@vue-flow/core'
 import type { FlowNodeData, WorkflowResourceMaps } from '@/types/workflow'
 import IconFont from '@/components/common/IconFont.vue'
-import type { IconName } from '@/components/common/icons'
+import { getNodeIconName } from '@/config/workflow/common'
 
 const props = defineProps<{
   data: FlowNodeData & { resources?: WorkflowResourceMaps }
@@ -43,38 +43,6 @@ function updateAddModifier(event: KeyboardEvent) {
 
 function clearAddModifier() {
   addModifierPressed.value = false
-}
-
-const nodeIconMap: Record<string, IconName> = {
-  START: 'nodestart',
-  END: 'nodeend',
-  IF_ELSE: 'nodeif_else',
-  CACHE_FETCH: 'nodecache',
-  CACHE_SET: 'nodecache',
-  CACHE_REMOVE: 'nodecache',
-  CACHE_REFRESH: 'nodecache',
-  DB_SELECT: 'nodedb_select',
-  DB_INSERT: 'nodedb_insert',
-  DB_UPDATE: 'nodedb_update',
-  DB_DELETE: 'nodedb_delete',
-  MQ_PUSH: 'nodemq_push',
-  HTTP_EXTERNAL: 'nodehttp_external',
-  CODE: 'nodecode',
-  ITERATE: 'nodeiterate',
-  LOOP: 'nodeloop',
-  LIST_FILTER: 'nodelist_filter',
-  LIST_SORT: 'nodelist_sort',
-  STRING_SPLIT: 'nodestring_split',
-  STRING_TEMPLATE: 'nodestring_template',
-  SERIALIZE: 'nodeserialize',
-  UNSERIALIZE: 'nodeunserialize',
-  VARIABLE_AGG: 'nodevariable_agg',
-  NON_EMPTY_SELECT: 'nodenon_empty_select',
-  MATCH_RESULT: 'nodematch_result',
-}
-
-function getNodeIconName(type: string): IconName {
-  return nodeIconMap[type] || 'nodecode'
 }
 
 const color = computed(() => props.data.schema?.color || '#1677ff')

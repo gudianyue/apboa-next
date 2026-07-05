@@ -2,8 +2,8 @@
 import { computed, ref, watch } from 'vue'
 import { SearchOutlined, CloseCircleFilled } from '@ant-design/icons-vue'
 import IconFont from '@/components/common/IconFont.vue'
-import type { IconName } from '@/components/common/icons'
 import type { WorkflowFlowNode, WorkflowOutputConfig } from '@/types/workflow'
+import { getNodeIconName } from '@/config/workflow/common'
 
 const props = defineProps<{
   upstreamNodes: WorkflowFlowNode[]
@@ -18,38 +18,6 @@ const emit = defineEmits<{
 
 const popoverOpen = ref(false)
 const searchText = ref('')
-
-const nodeIconMap: Record<string, IconName> = {
-  START: 'nodestart',
-  END: 'nodeend',
-  IF_ELSE: 'nodeif_else',
-  CACHE_FETCH: 'nodecache',
-  CACHE_SET: 'nodecache',
-  CACHE_REMOVE: 'nodecache',
-  CACHE_REFRESH: 'nodecache',
-  DB_SELECT: 'nodedb_select',
-  DB_INSERT: 'nodedb_insert',
-  DB_UPDATE: 'nodedb_update',
-  DB_DELETE: 'nodedb_delete',
-  MQ_PUSH: 'nodemq_push',
-  HTTP_EXTERNAL: 'nodehttp_external',
-  CODE: 'nodecode',
-  ITERATE: 'nodeiterate',
-  LOOP: 'nodeloop',
-  LIST_FILTER: 'nodelist_filter',
-  LIST_SORT: 'nodelist_sort',
-  STRING_SPLIT: 'nodestring_split',
-  STRING_TEMPLATE: 'nodestring_template',
-  SERIALIZE: 'nodeserialize',
-  UNSERIALIZE: 'nodeunserialize',
-  VARIABLE_AGG: 'nodevariable_agg',
-  NON_EMPTY_SELECT: 'nodenon_empty_select',
-  MATCH_RESULT: 'nodematch_result',
-}
-
-function getIconName(type: string): IconName {
-  return nodeIconMap[type] || 'nodecode'
-}
 
 function getNodeOutputs(node: WorkflowFlowNode): WorkflowOutputConfig[] {
   if (node.data.type === 'START') {
@@ -140,7 +108,7 @@ watch(popoverOpen, (open) => {
   >
     <div class="selector-trigger" :class="{ placeholder: !selectedLabel }">
       <span v-if="selectedLabel" class="trigger-icon">
-        <IconFont v-if="selectedNode" :name="getIconName(selectedNode.data.type)" :size="14" :color="selectedNode.data.schema?.color || '#1677ff'" />
+        <IconFont v-if="selectedNode" :name="getNodeIconName(selectedNode.data.type)" :size="14" :color="selectedNode.data.schema?.color || '#1677ff'" />
         <span class="trigger-label">{{ selectedLabel }}</span>
       </span>
       <span v-else class="trigger-placeholder">选择节点输出...</span>
@@ -168,7 +136,7 @@ watch(popoverOpen, (open) => {
           <template v-if="groupedItems.length">
             <div v-for="group in groupedItems" :key="group.node.id" class="node-group">
               <div class="node-group-header">
-                <IconFont :name="getIconName(group.node.data.type)" :size="14" :color="group.node.data.schema?.color || '#1677ff'" />
+                <IconFont :name="getNodeIconName(group.node.data.type)" :size="14" :color="group.node.data.schema?.color || '#1677ff'" />
                 <span class="node-group-name">{{ group.node.data.label }}</span>
               </div>
 
