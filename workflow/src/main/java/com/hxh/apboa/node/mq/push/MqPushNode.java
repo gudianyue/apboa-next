@@ -51,7 +51,6 @@ public class MqPushNode extends EnhancedNode {
      * 创建成功输出
      */
     private NodeOutput successNodeOutput(Map<String, Object> inputs, NodeOutput output) throws Exception {
-        // TODO 这个地方不能每次都做MQ配置获取，浪费性能，一定要缓存，直接通过MQ ID获取MQ发送器
         // 获取 MQ 配置
         MqMapper mapper = SpringContextHolder.getBean(MqMapper.class);
         Mq mq = mapper.selectById(config.getMqId());
@@ -72,6 +71,11 @@ public class MqPushNode extends EnhancedNode {
         // 获取 MQ 发送器并推送消息
         MQSender sender = MQSenderFactory.getSender(mq);
         sender.send(resolvedTopic, resolvedKey, finalMessage);
+
+        // 将 MQ 推送信息追加到执行上下文中
+        output.addExecutionContext("topic", resolvedTopic);
+        output.addExecutionContext("messageKey", resolvedKey);
+        output.addExecutionContext("message", finalMessage);
 
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, true);
         output.markComplete();

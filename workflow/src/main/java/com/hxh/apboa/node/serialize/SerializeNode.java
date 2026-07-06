@@ -45,6 +45,9 @@ public class SerializeNode extends EnhancedNode {
         Object input = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
         String result = matchSerializeMode(input);
 
+        // 将序列化信息追加到执行上下文中
+        output.addExecutionContext("serializeFormat", config.getFormat().name());
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, result);
         output.markComplete();
         return output;

@@ -57,6 +57,14 @@ public class ListFilterNode extends EnhancedNode {
             case EXPRESSION -> expressionNodeOutput(iterable, output);
         }
 
+        // 将列表过滤信息追加到执行上下文中
+        output.addExecutionContext("filterMode", config.getMode().name());
+        output.addExecutionContext("filterCondition", config.getCondition());
+        Object result = output.getDefaultOutput();
+        if (result instanceof List<?> list) {
+            output.addExecutionContext("outputCount", list.size());
+        }
+
         output.markComplete();
         return output;
     }

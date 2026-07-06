@@ -51,6 +51,9 @@ public class UnserializeNode extends EnhancedNode {
             output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, result);
         }
 
+        // 将反序列化信息追加到执行上下文中
+        output.addExecutionContext("unserializeFormat", config.getFormat().name());
+
         output.markComplete();
         return output;
     }

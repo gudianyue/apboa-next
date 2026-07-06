@@ -49,6 +49,10 @@ public class MatchResultNode extends EnhancedNode {
         String nextId = evaluateCase(inputs);
         context.setNextNodeId(nextId);
 
+        // 将匹配结果信息追加到执行上下文中
+        output.addExecutionContext("matchType", config.getMatchType().name());
+        output.addExecutionContext("matchedNodeId", nextId);
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, nextId);
         output.markComplete();
         return output;

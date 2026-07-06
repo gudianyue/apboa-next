@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { splitModeLabels } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,7 +10,7 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const modeLabel = splitModeLabels[(props.config.mode as string) || 'SIMPLE'] || '简单分隔符'
+const modeLabel = computed(() => splitModeLabels[(props.config.mode as string) || 'SIMPLE'] || '简单分隔符')
 </script>
 
 <template>

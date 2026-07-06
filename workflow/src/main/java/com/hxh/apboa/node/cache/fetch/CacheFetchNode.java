@@ -63,6 +63,9 @@ public class CacheFetchNode extends EnhancedNode {
         String resolvedKey = resolveTemplate(config.getKey(), inputs);
         String value = operator.get(resolvedKey);
 
+        // 将缓存获取信息追加到执行上下文中
+        output.addExecutionContext("cacheKey", resolvedKey);
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, value);
         output.markComplete();
         return output;

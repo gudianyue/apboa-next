@@ -63,7 +63,6 @@ public class DbUpdateNode extends EnhancedNode implements DBNode {
      * @param inputs 框架解析后的输入参数，按 inputConfigs 配置顺序排列
      */
     private NodeOutput successNodeOutput(Map<String, Object> inputs, NodeOutput output) {
-        // TODO 这个地方不能每次都做数据源获取，浪费性能，一定要缓存，直接通过数据源ID获取DBExecutor
         DatasourceMapper mapper = SpringContextHolder.getBean(DatasourceMapper.class);
         Datasource datasource = mapper.selectById(config.getDatasourceId());
         if (datasource == null) {

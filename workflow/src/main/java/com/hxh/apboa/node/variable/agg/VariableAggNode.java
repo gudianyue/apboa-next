@@ -48,6 +48,10 @@ public class VariableAggNode extends EnhancedNode {
             case STRING -> aggString(inputs, output);
         }
 
+        // 将变量聚合信息追加到执行上下文中
+        output.addExecutionContext("aggStrategy", config.getStrategy().name());
+        output.addExecutionContext("excludeNull", config.isExcludeNull());
+
         output.markComplete();
         return output;
     }

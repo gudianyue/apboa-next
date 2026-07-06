@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { aggStrategyLabels } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,7 +10,7 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const label = aggStrategyLabels[(props.config.strategy as string) || 'MAP'] || 'Map'
+const label = computed(() => aggStrategyLabels[(props.config.strategy as string) || 'MAP'] || 'Map')
 </script>
 
 <template>

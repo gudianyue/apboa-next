@@ -54,6 +54,10 @@ public class StringTemplateNode extends EnhancedNode {
             output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, formatRes.toString());
         }
 
+        // 将字符串模板信息追加到执行上下文中
+        output.addExecutionContext("templateType", config.getTemplateType().name());
+        output.addExecutionContext("template", config.getTemplate());
+
         output.markComplete();
         return output;
     }

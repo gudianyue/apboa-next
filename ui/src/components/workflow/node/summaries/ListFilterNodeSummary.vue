@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { filterModeLabels } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,7 +10,7 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const modeLabel = filterModeLabels[(props.config.mode as string) || 'SIMPLE'] || '简单'
+const modeLabel = computed(() => filterModeLabels[(props.config.mode as string) || 'SIMPLE'] || '简单')
 </script>
 
 <template>

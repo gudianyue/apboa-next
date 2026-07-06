@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import SummaryRow from './SummaryRow.vue'
 
@@ -8,7 +9,7 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const language = (props.config.language as string) || 'JAVA'
+const language = computed(() => (props.config.language as string) || 'JAVA')
 </script>
 
 <template>

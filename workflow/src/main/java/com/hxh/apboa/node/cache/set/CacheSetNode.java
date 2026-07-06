@@ -71,6 +71,11 @@ public class CacheSetNode extends EnhancedNode {
             operator.set(resolvedKey, resolvedValue);
         }
 
+        // 将缓存设置信息追加到执行上下文中
+        output.addExecutionContext("cacheKey", resolvedKey);
+        output.addExecutionContext("cacheValue", resolvedValue);
+        output.addExecutionContext("expireSeconds", config.getExpire());
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, true);
         output.markComplete();
         return output;

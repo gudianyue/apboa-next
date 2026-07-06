@@ -60,6 +60,10 @@ public class StringSplitNode extends EnhancedNode {
             throw new Exception("输入参数必须是字符串");
         }
 
+        // 将字符串分割信息追加到执行上下文中
+        output.addExecutionContext("splitMode", config.getMode().name());
+        output.addExecutionContext("delimiter", config.getDelimiter());
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, applyPostProcessing(resultList));
         output.markComplete();
         return output;

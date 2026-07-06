@@ -86,6 +86,12 @@ public class HttpExternalNode extends EnhancedNode {
             } else {
                 output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, body);
             }
+
+            // 将 HTTP 请求及响应信息追加到执行上下文中
+            output.addExecutionContext("method", config.getRequest().getMethod().name());
+            output.addExecutionContext("url", config.getRequest().getUrl());
+            output.addExecutionContext("statusCode", httpResponse.getCode());
+            output.addExecutionContext("responseBody", body);
         } else {
             // 执行异步
             executeAsync(config.getRequest(), new HttpCallback() {

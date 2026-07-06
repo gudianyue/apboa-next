@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { matchTypeLabels } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,8 +10,8 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const count = Array.isArray(props.config.matches) ? props.config.matches.length : 0
-const matchLabel = matchTypeLabels[(props.config.matchType as string) || 'EQUALS'] || '等于'
+const count = computed(() => Array.isArray(props.config.matches) ? props.config.matches.length : 0)
+const matchLabel = computed(() => matchTypeLabels[(props.config.matchType as string) || 'EQUALS'] || '等于')
 </script>
 
 <template>

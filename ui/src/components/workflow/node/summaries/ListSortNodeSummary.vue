@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { directionLabels } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,8 +10,8 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const dirLabel = directionLabels[(props.config.direction as string) || 'ASC'] || '升序'
-const strictText = props.config.strictMode ? '是' : '否'
+const dirLabel = computed(() => directionLabels[(props.config.direction as string) || 'ASC'] || '升序')
+const strictText = computed(() => props.config.strictMode ? '是' : '否')
 </script>
 
 <template>

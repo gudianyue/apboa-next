@@ -63,6 +63,9 @@ public class CacheRemoveNode extends EnhancedNode {
         String resolvedKey = resolveTemplate(config.getKey(), inputs);
         operator.delete(resolvedKey);
 
+        // 将缓存删除信息追加到执行上下文中
+        output.addExecutionContext("cacheKey", resolvedKey);
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, true);
         output.markComplete();
         return output;

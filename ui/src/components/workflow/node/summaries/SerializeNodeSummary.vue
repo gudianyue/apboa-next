@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { modeLabels } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,8 +10,8 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const format = (props.config.format as string) || 'JSON'
-const modeLabel = modeLabels[(props.config.mode as string) || 'COMPACT'] || '紧凑'
+const format = computed(() => (props.config.format as string) || 'JSON')
+const modeLabel = computed(() => modeLabels[(props.config.mode as string) || 'COMPACT'] || '紧凑')
 </script>
 
 <template>

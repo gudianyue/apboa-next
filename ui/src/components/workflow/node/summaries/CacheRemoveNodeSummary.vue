@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { resourceName } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,7 +10,7 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const cacheName = resourceName(props.resources?.caches || [], props.config.cacheId)
+const cacheName = computed(() => resourceName(props.resources?.caches || [], props.config.cacheId))
 </script>
 
 <template>

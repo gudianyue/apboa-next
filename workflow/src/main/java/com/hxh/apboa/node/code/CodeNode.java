@@ -56,6 +56,10 @@ public class CodeNode extends EnhancedNode {
         // 执行代码
         Object codeExecuteResult = codeExecutor.execute(inputs);
 
+        // 将代码执行信息追加到执行上下文中
+        output.addExecutionContext("language", config.getLanguage());
+        output.addExecutionContext("codeSource", config.getCodeSource());
+
         // 保存输出
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, codeExecuteResult);
         output.markComplete();

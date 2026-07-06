@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import SummaryRow from './SummaryRow.vue'
 
@@ -8,8 +9,8 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const maxIterations = props.config.maxIterations || 1000
-const itemVariable = (props.config.itemVariable as string) || 'item'
+const maxIterations = computed(() => props.config.maxIterations || 1000)
+const itemVariable = computed(() => (props.config.itemVariable as string) || 'item')
 </script>
 
 <template>

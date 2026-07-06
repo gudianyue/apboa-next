@@ -63,6 +63,11 @@ public class ListSortNode extends EnhancedNode {
             inputList.sort(comparator.reversed());
         }
 
+        // 将列表排序信息追加到执行上下文中
+        output.addExecutionContext("sortExpression", config.getCondition());
+        output.addExecutionContext("sortDirection", config.getDirection().name());
+        output.addExecutionContext("inputCount", inputList.size());
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, inputList);
         output.markComplete();
         return output;

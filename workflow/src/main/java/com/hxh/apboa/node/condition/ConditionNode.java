@@ -74,6 +74,16 @@ public class ConditionNode extends EnhancedNode implements BranchableNode {
         } else {
             executionResult = new ExecutionResult(config.getFalseNextNodeId(), false);
         }
+
+        // 将条件判断信息追加到执行上下文中
+        if (config.getSymbol() == EXPRESSION) {
+            output.addExecutionContext("conditionExpression", config.getConditionExpression());
+        } else {
+            output.addExecutionContext("conditionSymbol", config.getSymbol().name());
+        }
+        output.addExecutionContext("evaluationResult", executionResult.result());
+        output.addExecutionContext("branchedToNodeId", executionResult.nextNodeId());
+
         context.setNextNodeId(executionResult.nextNodeId());
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, executionResult.result());
         output.markComplete();

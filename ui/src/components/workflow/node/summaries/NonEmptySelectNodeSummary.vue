@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import { strategyLabels } from './summaryUtils'
 import SummaryRow from './SummaryRow.vue'
@@ -9,7 +10,7 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const label = strategyLabels[(props.config.strategy as string) || 'FIRST'] || '第一个'
+const label = computed(() => strategyLabels[(props.config.strategy as string) || 'FIRST'] || '第一个')
 </script>
 
 <template>

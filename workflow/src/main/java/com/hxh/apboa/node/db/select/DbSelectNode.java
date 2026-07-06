@@ -65,7 +65,6 @@ public class DbSelectNode extends EnhancedNode implements DBNode {
      * @return 节点输出
      */
     private NodeOutput successNodeOutput(Map<String, Object> inputs, NodeOutput output) {
-        // TODO 这个地方不能每次都做数据源获取，浪费性能，一定要缓存，直接通过数据源ID获取DBExecutor
         // 获取数据源配置
         DatasourceMapper mapper = SpringContextHolder.getBean(DatasourceMapper.class);
         Datasource datasource = mapper.selectById(config.getDatasourceId());

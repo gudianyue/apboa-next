@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import SummaryRow from './SummaryRow.vue'
 
@@ -8,8 +9,8 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const symbol = (props.config.symbol as string) || '?'
-const scopeLabel = (props.config.scope as string) === 'LENGTH' ? '长度' : '值本身'
+const symbol = computed(() => (props.config.symbol as string) || '?')
+const scopeLabel = computed(() => (props.config.scope as string) === 'LENGTH' ? '长度' : '值本身')
 </script>
 
 <template>

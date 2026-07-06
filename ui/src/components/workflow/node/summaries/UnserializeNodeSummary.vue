@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import SummaryRow from './SummaryRow.vue'
 
@@ -8,7 +9,7 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const format = (props.config.format as string) || 'JSON'
+const format = computed(() => (props.config.format as string) || 'JSON')
 </script>
 
 <template>

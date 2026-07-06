@@ -64,6 +64,10 @@ public class CacheRefreshNode extends EnhancedNode {
         String resolvedKey = resolveTemplate(config.getKey(), inputs);
         boolean result = operator.expire(resolvedKey, config.getExpire(), TimeUnit.SECONDS);
 
+        // 将缓存刷新信息追加到执行上下文中
+        output.addExecutionContext("cacheKey", resolvedKey);
+        output.addExecutionContext("expireSeconds", config.getExpire());
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, result);
         output.markComplete();
         return output;

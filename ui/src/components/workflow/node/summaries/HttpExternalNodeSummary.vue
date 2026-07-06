@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { WorkflowNodeSchema, WorkflowResourceMaps } from '@/types/workflow'
 import SummaryRow from './SummaryRow.vue'
 
@@ -8,8 +9,8 @@ const props = defineProps<{
   schema: WorkflowNodeSchema
 }>()
 
-const request = (props.config.request || {}) as Record<string, unknown>
-const method = String(request.method || 'GET')
+const request = computed(() => (props.config.request || {}) as Record<string, unknown>)
+const method = computed(() => String(request.value.method || 'GET'))
 </script>
 
 <template>
