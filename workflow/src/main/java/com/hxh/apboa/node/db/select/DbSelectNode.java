@@ -85,6 +85,10 @@ public class DbSelectNode extends EnhancedNode implements DBNode {
         // 执行查询
         List<Map<String, Object>> result = executor.select(config.getSql(), params);
 
+        // 将执行的 SQL 及参数信息追加到执行上下文中
+        output.addExecutionContext("sql", config.getSql());
+        output.addExecutionContext("sqlParams", params);
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, result);
         output.markComplete();
         return output;

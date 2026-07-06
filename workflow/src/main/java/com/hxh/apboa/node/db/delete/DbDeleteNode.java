@@ -79,6 +79,10 @@ public class DbDeleteNode extends EnhancedNode implements DBNode {
         List<Object> params = resolveParams(inputs);
         int affected = executor.delete(config.getSql(), params);
 
+        // 将执行的 SQL 及参数信息追加到执行上下文中
+        output.addExecutionContext("sql", config.getSql());
+        output.addExecutionContext("sqlParams", params);
+
         output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, affected);
         output.markComplete();
         return output;
