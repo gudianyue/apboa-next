@@ -41,7 +41,7 @@ export const workflowNodeSchemas: WorkflowNodeSchema[] = [
     type: 'END', title: '结束', group: 'basic',
     description: '工作流结束节点，按模板生成最终响应。',
     icon: 'stop', color: '#8c8c8c', panelComponent: 'EndNodePanel',
-    defaultConfig: { responseTemplate: '${input}', formatterType: 'JACKSON' },
+    defaultConfig: { responseTemplate: '${input}', formatterType: 'STRING' },
     inputConfigs: input(), outputConfigs: output(),
     summaryComponent: 'EndNodeSummary',
     showSummary: false,

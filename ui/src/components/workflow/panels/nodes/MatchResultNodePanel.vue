@@ -1,4 +1,5 @@
 ﻿<script setup lang="ts">
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import NextNodeSelector from '@/components/workflow/bindings/NextNodeSelector.vue'
@@ -63,14 +64,24 @@ function updateConfig(key: string, value: unknown) {
         </div>
       </div>
       <div class="config-row">
-        <span class="config-row-label">区分大小写</span>
+        <span class="config-row-label">
+          区分大小写
+          <ATooltip title="是否区分大小写进行匹配：开启后精确匹配字符大小写，关闭后忽略大小写">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASwitch
           :checked="Boolean(node.data.config?.caseSensitive ?? true)"
           @update:checked="(v: any) => updateConfig('caseSensitive', v)"
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label" style="margin-right: 120px;">默认输出</span>
+        <span class="config-row-label" style="margin-right: 120px;">
+          默认输出
+          <ATooltip title="当所有匹配条件都不满足时，路由到此处选择的默认节点">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <div class="prev-node-selector">
           <NextNodeSelector
             :nodes="nodes"
@@ -107,6 +118,19 @@ function updateConfig(key: string, value: unknown) {
   flex-shrink: 0;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.88);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.help-icon {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  cursor: help;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.45);
+  }
 }
 
 .prev-node-selector {

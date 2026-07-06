@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import PanelSection from '../shared/PanelSection.vue'
 import FormatterGuideModal from '../shared/FormatterGuideModal.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
@@ -209,7 +210,12 @@ const queryCount = computed(() => {
             </div>
           </div>
           <div class="adv-row">
-            <span class="adv-label">Content-Type</span>
+            <span class="adv-label">
+              Content-Type
+              <ATooltip title="设置 HTTP 请求体的内容类型，决定数据的编码格式">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <ASelect
               class="adv-control"
               :value="getRequest().contentType || 'JSON'"
@@ -226,7 +232,12 @@ const queryCount = computed(() => {
             />
           </div>
           <div class="adv-row">
-            <span class="adv-label">连接超时(秒)</span>
+            <span class="adv-label">
+              连接超时(秒)
+              <ATooltip title="建立 TCP 连接的最大等待时间，超时则本次请求失败">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <AInputNumber
               class="adv-control"
               :value="Number(node.data.config?.connectTimeout ?? 10)"
@@ -235,7 +246,12 @@ const queryCount = computed(() => {
             />
           </div>
           <div class="adv-row">
-            <span class="adv-label">读取超时(秒)</span>
+            <span class="adv-label">
+              读取超时(秒)
+              <ATooltip title="等待服务器响应数据的最大时间，超时则本次请求失败">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <AInputNumber
               class="adv-control"
               :value="Number(node.data.config?.readTimeout ?? 30)"
@@ -244,7 +260,12 @@ const queryCount = computed(() => {
             />
           </div>
           <div class="adv-row">
-            <span class="adv-label">写入超时(秒)</span>
+            <span class="adv-label">
+              写入超时(秒)
+              <ATooltip title="向服务器发送请求数据的最大时间，超时则本次请求失败">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <AInputNumber
               class="adv-control"
               :value="Number(node.data.config?.writeTimeout ?? 30)"
@@ -253,7 +274,12 @@ const queryCount = computed(() => {
             />
           </div>
           <div class="adv-row">
-            <span class="adv-label">最大重试次数</span>
+            <span class="adv-label">
+              最大重试次数
+              <ATooltip title="请求失败后的最大自动重试次数，设为 0 则不重试">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <AInputNumber
               class="adv-control"
               :value="Number(node.data.config?.maxRetries ?? 3)"
@@ -262,28 +288,48 @@ const queryCount = computed(() => {
             />
           </div>
           <div class="adv-row">
-            <span class="adv-label">跟随重定向</span>
+            <span class="adv-label">
+              跟随重定向
+              <ATooltip title="是否自动跟随 3xx 重定向响应，开启后客户端会请求新地址">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <ASwitch
               :checked="Boolean(node.data.config?.followRedirects ?? true)"
               @update:checked="(v: any) => updateConfig('followRedirects', v)"
             />
           </div>
           <div class="adv-row">
-            <span class="adv-label">同步执行</span>
+            <span class="adv-label">
+              同步执行
+              <ATooltip title="开启后同步等待请求结果并返回响应；关闭后异步执行，直接返回固定字符串">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <ASwitch
               :checked="Boolean(node.data.config?.syncExecute ?? true)"
               @update:checked="(v: any) => updateConfig('syncExecute', v)"
             />
           </div>
           <div class="adv-row">
-            <span class="adv-label">响应体转 JSON</span>
+            <span class="adv-label">
+              响应体转 JSON
+              <ATooltip title="是否将响应体自动解析为 JSON 对象，开启后可提取结构化数据">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <ASwitch
               :checked="Boolean(node.data.config?.bodyToObject ?? true)"
               @update:checked="(v: any) => updateConfig('bodyToObject', v)"
             />
           </div>
           <div class="adv-row-block">
-            <span class="adv-label">重试状态码</span>
+            <span class="adv-label">
+              重试状态码
+              <ATooltip title="触发自动重试的 HTTP 状态码列表，留空则默认对 5xx、408、429 重试">
+                <QuestionCircleOutlined class="help-icon" />
+              </ATooltip>
+            </span>
             <WorkflowArrayEditors
               :model-value="node.data.config?.retryStatusCodes"
               type="stringList"
@@ -456,6 +502,19 @@ const queryCount = computed(() => {
   font-size: 13px;
   color: rgba(0, 0, 0, 0.65);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.help-icon {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  cursor: help;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.45);
+  }
 }
 
 .adv-control {
@@ -466,7 +525,9 @@ const queryCount = computed(() => {
   margin-bottom: 8px;
 
   .adv-label {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     margin-bottom: 6px;
     font-size: 13px;
     color: rgba(0, 0, 0, 0.65);

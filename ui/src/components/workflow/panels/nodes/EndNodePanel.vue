@@ -75,7 +75,7 @@ const formatterOptions = [
       <div class="config-row">
         <span class="config-row-label">响应模板格式 <FormatterGuideModal /></span>
         <ASelect
-          :value="node.data.config?.formatterType || 'JACKSON'"
+          :value="node.data.config?.formatterType || 'STRING'"
           :options="formatterOptions"
           style="width: 160px"
           @update:value="(value: string) => updateConfig('formatterType', value)"

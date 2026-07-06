@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import PanelSection from '../shared/PanelSection.vue'
 import FormatterGuideModal from '../shared/FormatterGuideModal.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
@@ -107,7 +108,13 @@ const messagePlaceholder = computed(() =>
     />
 
     <PanelSection title="节点配置">
-      <AFormItem label="MQ 实例" required>
+      <AFormItem required>
+        <template #label>
+          MQ 实例
+          <ATooltip title="选择已配置并启用的消息中间件实例，支持 Kafka、RabbitMQ、RocketMQ 三种类型">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </template>
         <WorkflowResourceSelect
           :model-value="String(node.data.config?.mqId || '')"
           resource-type="mq"
@@ -117,7 +124,13 @@ const messagePlaceholder = computed(() =>
       </AFormItem>
 
       <div class="topic-field">
-        <AFormItem label="Topic / Queue" required>
+        <AFormItem required>
+          <template #label>
+            Topic / Queue
+            <ATooltip title="Kafka / RocketMQ 为 Topic 名称，RabbitMQ 为 Queue 名称。支持 ${变量名} 模板语法">
+              <QuestionCircleOutlined class="help-icon" />
+            </ATooltip>
+          </template>
           <BlurInput
             :model-value="String(node.data.config?.topicOrQueue || '')"
             placeholder="Kafka/RocketMQ 为 topic，RabbitMQ 为 queue"
@@ -128,7 +141,13 @@ const messagePlaceholder = computed(() =>
       </div>
 
       <div class="key-field">
-        <AFormItem label="消息 Key">
+        <AFormItem>
+          <template #label>
+            消息 Key
+            <ATooltip title="Kafka 的分区键、RabbitMQ 的 Routing Key、RocketMQ 的 Tag。可选，支持 ${变量名} 模板语法">
+              <QuestionCircleOutlined class="help-icon" />
+            </ATooltip>
+          </template>
           <BlurInput
             :model-value="String(node.data.config?.key || '')"
             placeholder="Kafka 分区键、RabbitMQ routing key、RocketMQ tag"
@@ -140,7 +159,7 @@ const messagePlaceholder = computed(() =>
 
       <div class="message-field">
         <div class="message-header">
-          <span class="form-label">消息内容 <span class="required-mark">*</span></span>
+          <span class="form-label required-field">消息内容</span>
           <div class="formatter-selector">
             <FormatterGuideModal />
             <ASelect
@@ -187,6 +206,24 @@ const messagePlaceholder = computed(() =>
     height: 100%;
     overflow: hidden;
   }
+
+  :deep(.ant-form-item-label) {
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
+}
+
+.help-icon {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  cursor: help;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.45);
+  }
 }
 
 .topic-field,
@@ -230,11 +267,6 @@ const messagePlaceholder = computed(() =>
   font-size: 14px;
   color: rgba(0, 0, 0, 0.88);
   line-height: 1.5;
-}
-
-.required-mark {
-  color: #ff4d4f;
-  margin-left: 2px;
 }
 
 .formatter-selector {

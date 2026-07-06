@@ -12,6 +12,7 @@ import com.hxh.apboa.node.base.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.db.DBExecutor;
 import com.hxh.apboa.node.base.db.DBExecutorFactory;
+import com.hxh.apboa.node.base.db.DBNode;
 import com.hxh.apboa.node.base.db.DbParam;
 import com.hxh.apboa.node.base.spring.SpringContextHolder;
 import com.hxh.apboa.node.base.template.TemplateFormatter;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
  *
  * @author huxuehao
  **/
-public class DbSelectNode extends EnhancedNode {
+public class DbSelectNode extends EnhancedNode implements DBNode {
 
     @Getter
     private final Config config;
@@ -122,7 +123,7 @@ public class DbSelectNode extends EnhancedNode {
      * 预计算类型转换器：根据 params 中各参数的 type 声明，在构造阶段一次性生成转换函数，
      * 运行时直接调用 lambda，避免每次执行时的字符串比较和分支判断。
      */
-    private static List<Function<Object, Object>> buildConverters(Config config) {
+    private List<Function<Object, Object>> buildConverters(Config config) {
         if (config.getParams() == null || config.getParams().isEmpty()) {
             return List.of();
         }
@@ -131,44 +132,6 @@ public class DbSelectNode extends EnhancedNode {
             converters.add(createConverter(param.getType()));
         }
         return List.copyOf(converters);
-    }
-
-    /**
-     * 根据类型名称创建转换函数，使用 instanceof 快速路径避免不必要的解析。
-     */
-    private static Function<Object, Object> createConverter(String type) {
-        if (type == null || type.isEmpty()) {
-            return v -> v;
-        }
-        return switch (type.toUpperCase()) {
-            case "STRING" -> v -> v == null ? null : v.toString();
-            case "INTEGER", "INT" -> v -> {
-                if (v == null) return null;
-                if (v instanceof Integer) return v;
-                return Integer.valueOf(v.toString());
-            };
-            case "LONG" -> v -> {
-                if (v == null) return null;
-                if (v instanceof Long) return v;
-                return Long.valueOf(v.toString());
-            };
-            case "DOUBLE" -> v -> {
-                if (v == null) return null;
-                if (v instanceof Double) return v;
-                return Double.valueOf(v.toString());
-            };
-            case "FLOAT" -> v -> {
-                if (v == null) return null;
-                if (v instanceof Float) return v;
-                return Float.valueOf(v.toString());
-            };
-            case "BOOLEAN", "BOOL" -> v -> {
-                if (v == null) return null;
-                if (v instanceof Boolean) return v;
-                return Boolean.valueOf(v.toString());
-            };
-            default -> v -> v;
-        };
     }
 
     /**

@@ -50,7 +50,7 @@ function updateConfig(key: string, value: unknown) {
       </AFormItem>
       <div class="cache-key-field">
         <div class="key-header">
-          <span class="key-label">缓存键 <span class="required-mark">*</span></span>
+          <span class="key-label required-field">缓存键</span>
           <div class="formatter-selector">
             <FormatterGuideModal />
             <ASelect
@@ -102,11 +102,6 @@ function updateConfig(key: string, value: unknown) {
   font-size: 14px;
   color: rgba(0, 0, 0, 0.88);
   line-height: 1.5;
-}
-
-.required-mark {
-  color: #ff4d4f;
-  margin-left: 2px;
 }
 
 .formatter-selector {

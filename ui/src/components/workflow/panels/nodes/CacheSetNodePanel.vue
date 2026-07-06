@@ -67,7 +67,7 @@ function stringify(v: unknown) {
       </AFormItem>
       <div class="cache-key-field">
         <div class="key-header">
-          <span class="key-label">缓存键 <span class="required-mark">*</span></span>
+          <span class="key-label required-field">缓存键</span>
           <div class="formatter-selector">
             <FormatterGuideModal />
             <ASelect
@@ -91,7 +91,7 @@ function stringify(v: unknown) {
         <span class="field-help">使用 ${变量名} 引用输入绑定，模板格式控制变量替换方式。</span>
       </div>
       <div class="cache-editor-field">
-        <label class="form-label">缓存值 <span class="required-mark">*</span></label>
+        <label class="form-label required-field">缓存值</label>
         <ConfigCodeEditor
           :model-value="stringify(node.data.config?.value)"
           language="txt"
@@ -160,11 +160,6 @@ function stringify(v: unknown) {
   font-size: 14px;
   font-weight: 400;
   line-height: 1.5;
-}
-
-.required-mark {
-  color: #ff4d4f;
-  margin-left: 2px;
 }
 
 .formatter-selector {

@@ -68,7 +68,12 @@ const isString = computed(() => (props.node.data.config?.strategy as string) ===
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">排除空值</span>
+        <span class="config-row-label">
+          排除空值
+          <ATooltip title="是否在聚合时过滤值为 null 或空的输入绑定，开启后仅聚合有值的输入">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASwitch
           :checked="Boolean(node.data.config?.excludeNull)"
           @update:checked="(v: any) => updateConfig('excludeNull', v)"

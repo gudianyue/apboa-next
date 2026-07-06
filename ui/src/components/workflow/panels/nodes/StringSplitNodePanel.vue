@@ -1,5 +1,6 @@
 ﻿<script setup lang="ts">
 import { computed } from 'vue'
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import BlurInput from '../shared/BlurInput.vue'
@@ -65,7 +66,12 @@ const processingResult = computed(
     />
     <PanelSection title="节点配置">
       <div class="config-row">
-        <span class="config-row-label">分割模式</span>
+        <span class="config-row-label">
+          分割模式
+          <ATooltip title="选择字符串的拆分策略：简单分隔符按字符分割、正则按表达式匹配、固定长度按字符数截断、换行按换行符分割、键值对拆分为 key-value、多个分隔符同时匹配多种符号">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASelect
           :value="node.data.config?.mode"
           :options="[
@@ -81,14 +87,31 @@ const processingResult = computed(
         />
       </div>
       <div v-if="showDelimiter" class="config-row">
-        <span class="config-row-label">{{ delimiterLabel }}</span>
+        <span class="config-row-label">
+          {{ delimiterLabel }}
+          <ATooltip v-if="mode === 'SIMPLE'" title="按指定字符作为分隔符拆分字符串">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+          <ATooltip v-else-if="mode === 'REGEX'" title="按正则表达式匹配拆分字符串">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+          <ATooltip v-else-if="mode === 'FIXED_LENGTH'" title="按指定字符数截断字符串，每段固定长度">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <BlurInput
           :model-value="String(node.data.config?.delimiter || '')"
           style="width: 160px"
           @update:model-value="(v: any) => updateConfig('delimiter', v)"
         />
       </div>
-      <AFormItem v-if="isMultiDelimiter" label="多个分隔符">
+      <AFormItem v-if="isMultiDelimiter">
+        <template #label>
+          多个分隔符
+          <ATooltip title="使用多个符号同时作为分隔符，匹配任意一个即分割">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </template>
         <WorkflowArrayEditors
           :model-value="node.data.config?.delimiters"
           type="stringList"
@@ -96,21 +119,36 @@ const processingResult = computed(
         />
       </AFormItem>
       <div class="config-row">
-        <span class="config-row-label">去除首尾空白</span>
+        <span class="config-row-label">
+          去除首尾空白
+          <ATooltip title="是否对分割后的每个结果去除两端的空白字符">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASwitch
           :checked="Boolean(node.data.config?.trimParts ?? true)"
           @update:checked="(v: any) => updateConfig('trimParts', v)"
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">移除空字符串</span>
+        <span class="config-row-label">
+          移除空字符串
+          <ATooltip title="是否移除分割结果中的空字符串">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASwitch
           :checked="Boolean(node.data.config?.removeEmpty ?? true)"
           @update:checked="(v: any) => updateConfig('removeEmpty', v)"
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">Split limit</span>
+        <span class="config-row-label">
+          Split limit
+          <ATooltip title="控制底层 String.split 的 limit 参数：>0 最多拆分 limit-1 次，=0 移除末尾空串，<0 不作限制且保留所有空串">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <AInputNumber
           :value="Number(node.data.config?.limit ?? -1)"
           style="width: 160px"
@@ -118,7 +156,12 @@ const processingResult = computed(
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">最大结果数</span>
+        <span class="config-row-label">
+          最大结果数
+          <ATooltip title="限制最终输出的结果数量上限，超出部分将被丢弃，设为 -1 表示不限制">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <AInputNumber
           :value="Number(node.data.config?.maxResults ?? -1)"
           style="width: 160px"
@@ -126,14 +169,24 @@ const processingResult = computed(
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">处理分割结果</span>
+        <span class="config-row-label">
+          处理分割结果
+          <ATooltip title="是否对分割后的结果进行额外处理，开启后可添加前后缀">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASwitch
           :checked="processingResult"
           @update:checked="(v: any) => updateConfig('processingResult', v)"
         />
       </div>
       <div v-if="processingResult" class="config-row">
-        <span class="config-row-label">结果前缀</span>
+        <span class="config-row-label">
+          结果前缀
+          <ATooltip title="在每个分割结果前面添加的字符串">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <BlurInput
           :model-value="String(node.data.config?.prefix || '')"
           style="width: 160px"
@@ -141,7 +194,12 @@ const processingResult = computed(
         />
       </div>
       <div v-if="processingResult" class="config-row">
-        <span class="config-row-label">结果后缀</span>
+        <span class="config-row-label">
+          结果后缀
+          <ATooltip title="在每个分割结果后面添加的字符串">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <BlurInput
           :model-value="String(node.data.config?.suffix || '')"
           style="width: 160px"
@@ -150,7 +208,12 @@ const processingResult = computed(
       </div>
       <template v-if="isKeyValue">
         <div class="config-row">
-          <span class="config-row-label">键值分隔符</span>
+          <span class="config-row-label">
+            键值分隔符
+            <ATooltip title="将键值对拆分为 key 和 value 的分隔符号，默认为 =">
+              <QuestionCircleOutlined class="help-icon" />
+            </ATooltip>
+          </span>
           <BlurInput
             :model-value="String(node.data.config?.keyValueDelimiter ?? '=')"
             style="width: 160px"
@@ -158,7 +221,12 @@ const processingResult = computed(
           />
         </div>
         <div class="config-row">
-          <span class="config-row-label">键值输出格式</span>
+          <span class="config-row-label">
+            键值输出格式
+            <ATooltip title="键值对输出的格式化方式：冒号分隔、等号分隔、JSON 对象、箭头映射或自定义格式">
+              <QuestionCircleOutlined class="help-icon" />
+            </ATooltip>
+          </span>
           <ASelect
             :value="node.data.config?.keyValueOutputFormat"
             :options="[
@@ -176,7 +244,12 @@ const processingResult = computed(
           v-if="(node.data.config?.keyValueOutputFormat as string) === 'CUSTOM'"
           class="config-row"
         >
-          <span class="config-row-label">自定义格式</span>
+          <span class="config-row-label">
+            自定义格式
+            <ATooltip title="使用 %s 作为占位符，第一个 %s 代表 key，第二个代表 value，如 %s===>%s">
+              <QuestionCircleOutlined class="help-icon" />
+            </ATooltip>
+          </span>
           <BlurInput
             :model-value="String(node.data.config?.keyValueCustomFormat || '')"
             placeholder="%s===>%s"
@@ -209,5 +282,18 @@ const processingResult = computed(
   flex-shrink: 0;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.88);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.help-icon {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  cursor: help;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.45);
+  }
 }
 </style>

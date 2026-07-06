@@ -1,4 +1,5 @@
 ﻿<script setup lang="ts">
+import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import PanelSection from '../shared/PanelSection.vue'
 import NodeNameInput from '../shared/NodeNameInput.vue'
 import BlurInput from '../shared/BlurInput.vue'
@@ -40,7 +41,12 @@ function updateConfig(key: string, value: unknown) {
     />
     <PanelSection title="节点配置">
       <div class="config-row">
-        <span class="config-row-label">序列化模式</span>
+        <span class="config-row-label">
+          序列化模式
+          <ATooltip title="紧凑模式输出单行无缩进文本，美化模式带缩进和换行">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASegmented
           :value="node.data.config?.mode || 'COMPACT'"
           :options="[
@@ -51,7 +57,12 @@ function updateConfig(key: string, value: unknown) {
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">格式</span>
+        <span class="config-row-label">
+          格式
+          <ATooltip title="序列化的目标格式：JSON / XML / YAML 为结构化文本，Base64 / URL 编码为字符串编码">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASelect
           :value="node.data.config?.format || 'JSON'"
           :options="
@@ -62,21 +73,36 @@ function updateConfig(key: string, value: unknown) {
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">排除 null</span>
+        <span class="config-row-label">
+          排除 null
+          <ATooltip title="序列化时是否过滤值为 null 的字段">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASwitch
           :checked="Boolean(node.data.config?.excludeNulls)"
           @update:checked="(v: any) => updateConfig('excludeNulls', v)"
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">排除空字符串</span>
+        <span class="config-row-label">
+          排除空字符串
+          <ATooltip title="序列化时是否过滤空字符串字段">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <ASwitch
           :checked="Boolean(node.data.config?.excludeEmptyStrings)"
           @update:checked="(v: any) => updateConfig('excludeEmptyStrings', v)"
         />
       </div>
       <div class="config-row">
-        <span class="config-row-label">编码</span>
+        <span class="config-row-label">
+          编码
+          <ATooltip title="当格式为 Base64 或 URL 编码时的字符集，默认为 UTF-8">
+            <QuestionCircleOutlined class="help-icon" />
+          </ATooltip>
+        </span>
         <BlurInput
           :model-value="String(node.data.config?.encoding ?? 'UTF-8')"
           style="width: 160px"
@@ -107,5 +133,18 @@ function updateConfig(key: string, value: unknown) {
   flex-shrink: 0;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.88);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.help-icon {
+  color: rgba(0, 0, 0, 0.25);
+  font-size: 13px;
+  cursor: help;
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.45);
+  }
 }
 </style>
