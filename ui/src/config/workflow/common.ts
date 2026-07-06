@@ -29,6 +29,7 @@ export const nodeIconMap: Record<string, IconName> = {
   VARIABLE_AGG: 'nodevariable_agg',
   NON_EMPTY_SELECT: 'nodenon_empty_select',
   MATCH_RESULT: 'nodematch_result',
+  AGENT: 'nodellm',
 }
 
 /**

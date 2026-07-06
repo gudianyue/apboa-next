@@ -31,6 +31,7 @@ public class WorkflowDefinitionCompiler {
         bind(NodeType.CACHE_REFRESH, com.hxh.apboa.node.cache.refresh.CacheRefreshNode.class, com.hxh.apboa.node.cache.refresh.Config.class);
         bind(NodeType.CACHE_REMOVE, com.hxh.apboa.node.cache.remove.CacheRemoveNode.class, com.hxh.apboa.node.cache.remove.Config.class);
         bind(NodeType.CACHE_SET, com.hxh.apboa.node.cache.set.CacheSetNode.class, com.hxh.apboa.node.cache.set.Config.class);
+        bind(NodeType.AGENT, com.hxh.apboa.node.agent.AgentNode.class, com.hxh.apboa.node.agent.Config.class);
         bind(NodeType.CODE, com.hxh.apboa.node.code.CodeNode.class, com.hxh.apboa.node.code.Config.class);
         bind(NodeType.DB_DELETE, com.hxh.apboa.node.db.delete.DbDeleteNode.class, com.hxh.apboa.node.db.delete.Config.class);
         bind(NodeType.DB_INSERT, com.hxh.apboa.node.db.insert.DbInsertNode.class, com.hxh.apboa.node.db.insert.Config.class);

@@ -211,7 +211,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   width: 26px;
   height: 26px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 .node-avatar :deep(.iconfont) {
   display: inline-flex;

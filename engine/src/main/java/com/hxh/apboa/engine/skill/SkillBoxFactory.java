@@ -54,6 +54,29 @@ public class SkillBoxFactory {
     }
 
     /**
+     * 根据技能包ID列表构建SkillBox。
+     *
+     * @param skillPackageIds 技能包ID列表
+     * @param toolkit         工具箱
+     * @return SkillBox
+     */
+    public SkillBox getSkillBox(List<Long> skillPackageIds, Toolkit toolkit) {
+        Toolkit currentToolkit = toolkit == null ? new Toolkit() : toolkit;
+        SkillBox skillBox = new SkillBox(currentToolkit);
+
+        // 注册智能体基础技能，不启用代码执行能力。
+        skillBox.registerSkill(UserInteractionProtocolSkill.getAgentSkill());
+        skillBox.registerSkill(VisionEnhancementProtocolSkill.getAgentSkill());
+
+        if (skillPackageIds == null || skillPackageIds.isEmpty()) {
+            return skillBox;
+        }
+
+        registerSkills(skillBox, skillPackageIds, currentToolkit);
+        return skillBox;
+    }
+
+    /**
      * 获取SkillBox
      *
      * @param agentDefinition 智能体定义

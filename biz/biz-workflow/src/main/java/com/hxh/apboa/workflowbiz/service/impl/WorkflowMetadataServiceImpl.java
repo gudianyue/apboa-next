@@ -19,6 +19,7 @@ public class WorkflowMetadataServiceImpl implements WorkflowMetadataService {
                 node("MATCH_RESULT", "Match Result", "logic", "Route by equals or contains match.", Map.of("matchType", "EQUALS", "caseSensitive", true), true),
                 node("LOOP", "Loop", "logic", "Repeat a sub workflow until max iterations or termination expression.", Map.of("loopVariable", "loopIndex", "maxIterations", 1000, "itemVariable", "item"), false),
                 node("ITERATE", "Iterate", "logic", "Run custom iterator code against an array input.", Map.of("language", "JAVA"), false),
+                node("AGENT", "Agent", "ai", "Call a blocking ReAct agent with model, prompt, skills, tools, and MCP.", Map.of("formatterType", "STRING", "modelParamsOverrideEnabled", false, "userPrompt", "", "skillPackageIds", List.of(), "toolIds", List.of(), "mcps", List.of(), "maxIterations", 5, "structuredOutputEnabled", false), false),
                 node("HTTP_EXTERNAL", "HTTP Request", "integration", "Call external HTTP APIs with retry and templated parameters.", Map.of("formatterType", "STRING", "connectTimeout", 10, "readTimeout", 30, "writeTimeout", 30, "maxRetries", 3, "followRedirects", true, "syncExecute", true, "bodyToObject", true), false),
                 node("CODE", "Code", "integration", "Execute custom Groovy code.", Map.of("language", "JAVA"), false),
                 node("DB_SELECT", "DB Select", "data", "Run a parameterized SELECT.", Map.of("formatterType", "VELOCITY", "params", List.of()), false),

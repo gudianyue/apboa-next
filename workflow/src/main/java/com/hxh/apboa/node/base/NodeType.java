@@ -88,6 +88,10 @@ public enum NodeType {
      */
     LLM,
     /**
+     * 智能体节点
+     */
+    AGENT,
+    /**
      * 循环节点
      */
     LOOP,

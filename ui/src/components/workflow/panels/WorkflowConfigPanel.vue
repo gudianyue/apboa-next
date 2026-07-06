@@ -160,7 +160,7 @@ function beginResize(event: MouseEvent) {
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 .panel-title {

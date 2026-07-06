@@ -62,6 +62,9 @@ public enum NodeType {
     // LLM
     LLM,
 
+    // 智能体
+    AGENT,
+
     // 测试
     TEST_NODE
 }

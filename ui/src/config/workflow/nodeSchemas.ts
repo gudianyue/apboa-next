@@ -14,6 +14,7 @@ export const WORKFLOW_GROUPS = [
   { key: 'transform', title: '转换' },
   { key: 'list', title: '列表' },
   { key: 'variable', title: '变量' },
+  { key: 'ai', title: '智能' },
 ] as const
 
 const input = (): WorkflowInputConfig[] => [{ name: 'input', sourceType: 'NODE_OUTPUT' }]
@@ -172,6 +173,33 @@ public class DataProcess implements IteratorExecutor {
     defaultConfig: { templateType: 'STRING' },
     inputConfigs: input(), outputConfigs: output('Boolean'),
     summaryComponent: 'MqPushNodeSummary',
+    showSummary: true,
+  }),
+  schema({
+    type: 'AGENT', title: '智能体', group: 'ai',
+    description: '使用模型、提示词、技能、工具和 MCP 发起阻塞式 ReAct Agent 调用。',
+    icon: 'llm', color: '#6172F3', panelComponent: 'AgentNodePanel',
+    defaultConfig: {
+      modelConfigId: undefined,
+      modelParamsOverrideEnabled: false,
+      modelParamsOverride: {},
+      formatterType: 'STRING',
+      systemPrompt: '',
+      userPrompt: '',
+      skillPackageIds: [],
+      toolIds: [],
+      mcps: [],
+      maxIterations: 5,
+      structuredOutputEnabled: false,
+      structuredOutput: {},
+    },
+    inputConfigs: input(),
+    outputConfigs: [
+      { name: 'output', type: 'Object', description: 'Agent 默认输出' },
+      { name: 'text', type: 'String', description: 'Agent 文本输出' },
+      { name: 'structured', type: 'Object', description: 'Agent 结构化输出' },
+    ],
+    summaryComponent: 'AgentNodeSummary',
     showSummary: true,
   }),
   schema({
