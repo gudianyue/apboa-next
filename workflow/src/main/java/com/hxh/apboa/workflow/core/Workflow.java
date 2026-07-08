@@ -2,7 +2,7 @@ package com.hxh.apboa.workflow.core;
 
 import com.hxh.apboa.node.base.Node;
 import com.hxh.apboa.node.base.NodeOutput;
-import com.hxh.apboa.node.base.NodeType;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.context.VariableContext;
 import lombok.Getter;

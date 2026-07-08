@@ -3,7 +3,7 @@ package com.hxh.apboa.workflowbiz.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxh.apboa.node.base.Node;
-import com.hxh.apboa.node.base.NodeType;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.verify.VerifyFail;
 import com.hxh.apboa.node.base.verify.VerifyResult;

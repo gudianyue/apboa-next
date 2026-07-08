@@ -2,7 +2,7 @@ package com.hxh.apboa.workflow.run;
 
 import com.hxh.apboa.node.base.Node;
 import com.hxh.apboa.node.base.NodeOutput;
-import com.hxh.apboa.node.base.NodeType;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.request.ParamItem;
 import com.hxh.apboa.node.start.Param;
@@ -111,7 +111,7 @@ public class RunWorkflow extends Workflow {
         if (output == null || output.getStatus() != NodeOutput.ExecutionStatus.SUCCESS) {
             String nodeName = output == null ? "未知节点" : output.getNodeName();
             String error = output == null ? "节点未返回执行结果" : output.getErrorMessage();
-            if ((error == null || error.isBlank()) && output != null && output.getVerifyErrors() != null && !output.getVerifyErrors().isEmpty()) {
+            if ((error == null || error.isBlank()) && output.getVerifyErrors() != null && !output.getVerifyErrors().isEmpty()) {
                 error = output.getVerifyErrors().toString();
             }
             throw new RuntimeException(nodeName + "执行失败" + (error == null || error.isBlank() ? "" : ": " + error));

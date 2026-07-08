@@ -1,6 +1,7 @@
 package com.hxh.apboa.node.base;
 
 import com.hxh.apboa.common.consts.NodeConst;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.verify.VerifyResult;
 import lombok.Getter;
 import lombok.Setter;

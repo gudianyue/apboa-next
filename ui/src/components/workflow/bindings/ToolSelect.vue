@@ -3,14 +3,17 @@ import { computed, ref, watch } from 'vue'
 import {SearchOutlined, CloseCircleFilled, ToolOutlined} from '@ant-design/icons-vue'
 import type { ToolVO } from '@/types'
 
-const props = defineProps<{
-  modelValue: string[]
+const props = withDefaults(defineProps<{
+  modelValue: string[] | string | null
   tools: ToolVO[]
   categories: string[]
-}>()
+  multiple?: boolean
+}>(), {
+  multiple: true,
+})
 
 const emit = defineEmits<{
-  'update:modelValue': [ids: string[]]
+  'update:modelValue': [value: string[] | string | null]
 }>()
 
 const popoverOpen = ref(false)
@@ -28,8 +31,16 @@ const toolsByCategory = computed(() => {
   return groups
 })
 
+const selectedIdSet = computed<Set<string>>(() => {
+  if (props.multiple) {
+    return new Set((props.modelValue as string[]) || [])
+  }
+  const val = props.modelValue as string | null
+  return val ? new Set([val]) : new Set()
+})
+
 const selectedItems = computed(() =>
-  props.tools.filter((t) => props.modelValue.includes(String(t.id))),
+  props.tools.filter((t) => selectedIdSet.value.has(String(t.id))),
 )
 
 const selectedLabel = computed(() => {
@@ -55,18 +66,36 @@ const filteredGroups = computed(() => {
     .filter((group) => group.items.length > 0)
 })
 
+function isSelected(id: string): boolean {
+  return selectedIdSet.value.has(id)
+}
+
 function toggleItem(id: string) {
-  const next = new Set(props.modelValue)
-  if (next.has(id)) {
-    next.delete(id)
+  if (props.multiple) {
+    const next = new Set(props.modelValue as string[])
+    if (next.has(id)) {
+      next.delete(id)
+    } else {
+      next.add(id)
+    }
+    emit('update:modelValue', [...next])
   } else {
-    next.add(id)
+    // 单选模式：点击已选中项则取消选中，否则替换
+    if ((props.modelValue as string | null) === id) {
+      emit('update:modelValue', null)
+    } else {
+      emit('update:modelValue', id)
+    }
+    popoverOpen.value = false
   }
-  emit('update:modelValue', [...next])
 }
 
 function clearAll() {
-  emit('update:modelValue', [])
+  if (props.multiple) {
+    emit('update:modelValue', [])
+  } else {
+    emit('update:modelValue', null)
+  }
 }
 
 watch(popoverOpen, (open) => {
@@ -88,7 +117,7 @@ watch(popoverOpen, (open) => {
           <ToolOutlined style="color: #399DF2;" />
           {{ selectedLabel }}
         </span>
-        <span v-if="selectedCount > 1" class="trigger-count">+{{ selectedCount - 1 }}</span>
+        <span v-if="multiple && selectedCount > 1" class="trigger-count">+{{ selectedCount - 1 }}</span>
       </span>
       <CloseCircleFilled
         v-if="selectedCount > 0"
@@ -120,11 +149,12 @@ watch(popoverOpen, (open) => {
                 v-for="item in group.items"
                 :key="item.id"
                 class="item-row"
-                :class="{ selected: modelValue.includes(String(item.id)) }"
+                :class="{ selected: isSelected(String(item.id)) }"
                 @click="toggleItem(String(item.id))"
               >
                 <ACheckbox
-                  :checked="modelValue.includes(String(item.id))"
+                  v-if="multiple"
+                  :checked="isSelected(String(item.id))"
                   @click.stop
                   @change="toggleItem(String(item.id))"
                 />

@@ -301,6 +301,15 @@ public class CodeExecute implements CodeExecutor {
     summaryComponent: 'VariableAggNodeSummary',
     showSummary: true,
   }),
+  schema({
+    type: 'TOOL_EXECUTE', title: '工具执行', group: 'integration',
+    description: '调用平台已注册的内置或自定义工具，将输入参数传递给工具并返回执行结果。',
+    icon: 'nodetool', color: '#1677ff', panelComponent: 'ToolExecuteNodePanel',
+    defaultConfig: { toolId: undefined, toolName: undefined },
+    inputConfigs: input(), outputConfigs: output(),
+    summaryComponent: 'ToolExecuteNodeSummary',
+    showSummary: true,
+  }),
 ]
 
 export const workflowNodeSchemaMap = workflowNodeSchemas.reduce<Record<string, WorkflowNodeSchema>>((acc, item) => {

@@ -6,6 +6,90 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4734164",
+      "name": "联网",
+      "font_class": "online_search",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "4958750",
+      "name": "提问",
+      "font_class": "question",
+      "unicode": "e82f",
+      "unicode_decimal": 59439
+    },
+    {
+      "icon_id": "5428219",
+      "name": "业务模块",
+      "font_class": "business",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "5755492",
+      "name": "工具",
+      "font_class": "tool",
+      "unicode": "e679",
+      "unicode_decimal": 59001
+    },
+    {
+      "icon_id": "6570230",
+      "name": "文档",
+      "font_class": "doc",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "9486967",
+      "name": "工作流程",
+      "font_class": "workflow",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "10811795",
+      "name": "清单",
+      "font_class": "list",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "20647546",
+      "name": "知识库",
+      "font_class": "knowledge_base",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "40621753",
+      "name": "变量",
+      "font_class": "variable",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "41885209",
+      "name": "文本处理",
+      "font_class": "text",
+      "unicode": "e766",
+      "unicode_decimal": 59238
+    },
+    {
+      "icon_id": "45599122",
+      "name": "MCP",
+      "font_class": "mcp",
+      "unicode": "e9d8",
+      "unicode_decimal": 59864
+    },
+    {
+      "icon_id": "46765830",
+      "name": "多模态",
+      "font_class": "multimodal",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
       "icon_id": "21053793",
       "name": "缓存",
       "font_class": "cache",

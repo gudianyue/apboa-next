@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxh.apboa.common.consts.NodeConst;
 import com.hxh.apboa.node.base.EnhancedNode;
 import com.hxh.apboa.node.base.NodeOutput;
-import com.hxh.apboa.node.base.NodeType;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.template.TemplateFormatter;
 import com.hxh.apboa.node.base.template.TemplateFormatterFactory;

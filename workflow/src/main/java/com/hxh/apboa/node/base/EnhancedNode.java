@@ -1,5 +1,6 @@
 package com.hxh.apboa.node.base;
 
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.inputout.InputConfig;
 import com.hxh.apboa.node.base.inputout.OutputConfig;

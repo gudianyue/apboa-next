@@ -6,65 +6,129 @@ package com.hxh.apboa.common.enums;
  * @author huxuehao
  **/
 public enum NodeType {
-    // 基础流程控制
+    TEST_NODE, // 测试节点
+    /**
+     * 开始节点
+     */
     START,
+    /**
+     * 结束节点
+     */
     END,
-
-    // 代码执行
-    CODE,
-
-    // HTTP 节点
-    HTTP_EXTERNAL,
-    HTTP_INLINE,
-
-    // 条件分支
-    IF_ELSE,
-    NON_EMPTY_SELECT,
-    MATCH_RESULT,
-
-    // 迭代与循环
-    ITERATE,
-    LOOP,
-
-    // 数据库操作
-    DB_SELECT,
-    DB_INSERT,
-    DB_UPDATE,
-    DB_DELETE,
-
-    // 缓存操作
+    /**
+     * 获取缓存节点
+     */
     CACHE_FETCH,
-    CACHE_SET,
-    CACHE_REMOVE,
+    /**
+     * 刷新缓存节点
+     */
     CACHE_REFRESH,
-
-    // 消息队列
-    MQ_PUSH,
-
-    // 变量聚合
-    VARIABLE_AGG,
-
-    // 列表操作
-    LIST_FILTER,
-    LIST_SORT,
-
-    // 字符串操作
-    STRING_SPLIT,
-    STRING_TEMPLATE,
-
-    // 序列化
+    /**
+     * 删除缓存节点
+     */
+    CACHE_REMOVE,
+    /**
+     * 设置缓存节点
+     */
+    CACHE_SET,
+    /**
+     * 代码节点
+     */
+    CODE,
+    /**
+     * 删除数据库节点
+     */
+    DB_DELETE,
+    /**
+     * 插入数据库节点
+     */
+    DB_INSERT,
+    /**
+     * 查询数据库节点
+     */
+    DB_SELECT,
+    /**
+     * 更新数据库节点
+     */
+    DB_UPDATE,
+    /**
+     * 外部http请求节点
+     */
+    HTTP_EXTERNAL,
+    /**
+     * 内联http请求节点
+     */
+    HTTP_INLINE,
+    /**
+     * 条件判断节点
+     */
+    IF_ELSE,
+    /**
+     * 迭代节点
+     */
+    ITERATE,
+    /**
+     * 序列化节点
+     */
     SERIALIZE,
+    /**
+     * 反序列化节点
+     */
     UNSERIALIZE,
-
-    // 插件
-    PLUGIN,
-
-    // LLM
+    /**
+     * 列表过滤节点
+     */
+    LIST_FILTER,
+    /**
+     * 列表排序节点
+     */
+    LIST_SORT,
+    /**
+     * 语言模型节点
+     */
     LLM,
-
-    // 智能体
+    /**
+     * 智能体节点
+     */
     AGENT,
-
-    // 测试
-    TEST_NODE
+    /**
+     * 循环节点
+     */
+    LOOP,
+    /**
+     * 队列推送节点
+     */
+    MQ_PUSH,
+    /**
+     * 插件节点
+     */
+    PLUGIN,
+    /**
+     * 字符串模板节点
+     */
+    STRING_TEMPLATE,
+    /**
+     * 字符串分割节点
+     */
+    STRING_SPLIT,
+    /**
+     * 变量聚合节点
+     */
+    VARIABLE_AGG,
+    /**
+     * 分类节点（作用和 switch-case 一样）
+     */
+    CLASSIFY,
+    /**
+     * 非空选择节点
+     */
+    NON_EMPTY_SELECT,
+    /**
+     * 匹配结果节点
+     */
+    MATCH_RESULT,
+    /**
+     * 工具执行节点
+     */
+    TOOL_EXECUTE
 }

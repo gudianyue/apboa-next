@@ -8,7 +8,7 @@ import com.hxh.apboa.common.util.JsonUtils;
 import com.hxh.apboa.datasource.mapper.DatasourceMapper;
 import com.hxh.apboa.node.base.EnhancedNode;
 import com.hxh.apboa.node.base.NodeOutput;
-import com.hxh.apboa.node.base.NodeType;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.db.DBExecutor;
 import com.hxh.apboa.node.base.db.DBExecutorFactory;

@@ -5,7 +5,7 @@ import com.hxh.apboa.common.entity.WorkflowVersion;
 import com.hxh.apboa.common.util.FuncUtils;
 import com.hxh.apboa.common.util.JsonUtils;
 import com.hxh.apboa.node.base.Node;
-import com.hxh.apboa.node.base.NodeType;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.inputout.OutputConfig;
 import com.hxh.apboa.node.base.request.ParamItem;
 import com.hxh.apboa.node.start.Config;

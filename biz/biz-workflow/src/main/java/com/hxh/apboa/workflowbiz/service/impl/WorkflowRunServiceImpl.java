@@ -8,6 +8,7 @@ import com.hxh.apboa.common.entity.WorkflowNodeExecution;
 import com.hxh.apboa.common.entity.WorkflowRun;
 import com.hxh.apboa.common.entity.WorkflowVersion;
 import com.hxh.apboa.common.enums.NodeRunStatus;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.common.enums.WorkflowRunStatus;
 import com.hxh.apboa.node.base.NodeOutput;
 import com.hxh.apboa.node.base.context.NodeContext;
@@ -146,7 +147,7 @@ public class WorkflowRunServiceImpl extends ServiceImpl<WorkflowRunMapper, Workf
             execution.setWorkflowRunId(String.valueOf(run.getId()));
             execution.setNodeId(output.getNodeId());
             execution.setNodeTitle(output.getNodeName());
-            execution.setNodeType(com.hxh.apboa.common.enums.NodeType.valueOf(output.getNodeType().name()));
+            execution.setNodeType(NodeType.valueOf(output.getNodeType().name()));
             execution.setInputs(toJson(output.getExecutionContext().get("inputs")));
             execution.setProcessData(toJson(output.getExecutionContext()));
             execution.setOutputs(toJson(output.getAllOutput()));

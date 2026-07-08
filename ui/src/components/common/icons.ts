@@ -46,6 +46,7 @@ export const ICON_DEFS: IconDef[] = [
   { name: 'nodematch_result', label: '匹配结果', unicode: '\\e600' },
   { name: 'nodecache', label: '缓存节点', unicode: '\\e684' },
   { name: 'nodenon_empty_select', label: '非空选择', unicode: '\\e634' },
+  { name: 'nodetool', label: '工具执行', unicode: '\\e679' },
 ]
 
 /**

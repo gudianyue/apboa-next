@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxh.apboa.node.base.EnhancedNode;
 import com.hxh.apboa.node.base.Node;
-import com.hxh.apboa.node.base.NodeType;
+import com.hxh.apboa.common.enums.NodeType;
 import com.hxh.apboa.node.base.inputout.InputConfig;
 import com.hxh.apboa.node.base.inputout.OutputConfig;
 import com.hxh.apboa.workflow.core.Edge;
@@ -51,6 +51,7 @@ public class WorkflowDefinitionCompiler {
         bind(NodeType.STRING_TEMPLATE, com.hxh.apboa.node.string.template.StringTemplateNode.class, com.hxh.apboa.node.string.template.Config.class);
         bind(NodeType.UNSERIALIZE, com.hxh.apboa.node.unserialize.UnserializeNode.class, com.hxh.apboa.node.unserialize.Config.class);
         bind(NodeType.VARIABLE_AGG, com.hxh.apboa.node.variable.agg.VariableAggNode.class, com.hxh.apboa.node.variable.agg.Config.class);
+        bind(NodeType.TOOL_EXECUTE, com.hxh.apboa.node.toolexecute.ToolExecuteNode.class, com.hxh.apboa.node.toolexecute.Config.class);
     }
 
     public static Set<NodeType> supportedTypes() {
