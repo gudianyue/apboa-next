@@ -8,13 +8,16 @@ export interface McpBinding {
   mcpServerId: string
 }
 
-const props = defineProps<{
-  modelValue: McpBinding[]
+const props = withDefaults(defineProps<{
+  modelValue: McpBinding[] | string | null
   servers: McpServerVO[]
-}>()
+  single?: boolean
+}>(), {
+  single: false,
+})
 
 const emit = defineEmits<{
-  'update:modelValue': [bindings: McpBinding[]]
+  'update:modelValue': [value: McpBinding[] | string | null]
 }>()
 
 const popoverOpen = ref(false)
@@ -33,7 +36,13 @@ const serversByProtocol = computed(() => {
   return groups
 })
 
-const selectedIds = computed(() => new Set(props.modelValue.map((b) => String(b.mcpServerId))))
+const selectedIds = computed(() => {
+  if (props.single) {
+    const val = props.modelValue as string | null
+    return val ? new Set([val]) : new Set<string>()
+  }
+  return new Set((props.modelValue as McpBinding[]).map((b) => String(b.mcpServerId)))
+})
 
 const selectedItems = computed(() =>
   props.servers.filter((s) => selectedIds.value.has(String(s.id))),
@@ -72,7 +81,16 @@ function isSelectable(server: McpServerVO) {
 }
 
 function toggleItem(mcpId: string) {
-  const current = [...props.modelValue]
+  if (props.single) {
+    if ((props.modelValue as string | null) === mcpId) {
+      emit('update:modelValue', null)
+    } else {
+      emit('update:modelValue', mcpId)
+    }
+    popoverOpen.value = false
+    return
+  }
+  const current = [...(props.modelValue as McpBinding[])]
   if (selectedIds.value.has(mcpId)) {
     emit('update:modelValue', current.filter((b) => String(b.mcpServerId) !== mcpId))
   } else {
@@ -82,7 +100,7 @@ function toggleItem(mcpId: string) {
 }
 
 function clearAll() {
-  emit('update:modelValue', [])
+  emit('update:modelValue', props.single ? null : [])
 }
 
 watch(popoverOpen, (open) => {
@@ -104,7 +122,7 @@ watch(popoverOpen, (open) => {
           <CloudServerOutlined style="color: #52C41A;"/>
           {{ selectedLabel }}
         </span>
-        <span v-if="selectedCount > 1" class="trigger-count">+{{ selectedCount - 1 }}</span>
+        <span v-if="!single && selectedCount > 1" class="trigger-count">+{{ selectedCount - 1 }}</span>
       </span>
       <CloseCircleFilled
         v-if="selectedCount > 0"
@@ -143,6 +161,7 @@ watch(popoverOpen, (open) => {
                 @click="isSelectable(item) && toggleItem(String(item.id))"
               >
                 <ACheckbox
+                  v-if="!single"
                   :checked="selectedIds.has(String(item.id))"
                   :disabled="!isSelectable(item)"
                   @click.stop

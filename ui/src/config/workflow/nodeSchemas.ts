@@ -14,7 +14,7 @@ export const WORKFLOW_GROUPS = [
   { key: 'transform', title: '转换' },
   { key: 'list', title: '列表' },
   { key: 'variable', title: '变量' },
-  { key: 'ai', title: '智能' },
+  { key: 'business', title: '业务' },
 ] as const
 
 const input = (): WorkflowInputConfig[] => [{ name: 'input', sourceType: 'NODE_OUTPUT' }]
@@ -176,9 +176,9 @@ public class DataProcess implements IteratorExecutor {
     showSummary: true,
   }),
   schema({
-    type: 'AGENT', title: '智能体', group: 'ai',
+    type: 'AGENT', title: '智能体', group: 'integration',
     description: '使用模型、提示词、技能、工具和 MCP 发起阻塞式 ReAct Agent 调用。',
-    icon: 'llm', color: '#6172F3', panelComponent: 'AgentNodePanel',
+    icon: 'llm', color: '#eb2f96', panelComponent: 'AgentNodePanel',
     defaultConfig: {
       modelConfigId: undefined,
       modelParamsOverrideEnabled: false,
@@ -203,9 +203,27 @@ public class DataProcess implements IteratorExecutor {
     showSummary: true,
   }),
   schema({
+    type: 'TOOL_EXECUTE', title: '工具执行', group: 'integration',
+    description: '调用平台已注册的内置或自定义工具，将输入参数传递给工具并返回执行结果。',
+    icon: 'nodetool', color: '#eb2f96', panelComponent: 'ToolExecuteNodePanel',
+    defaultConfig: { toolId: undefined, toolName: undefined },
+    inputConfigs: input(), outputConfigs: output(),
+    summaryComponent: 'ToolExecuteNodeSummary',
+    showSummary: true,
+  }),
+  schema({
+    type: 'MCP_CALL', title: 'MCP 调用', group: 'integration',
+    description: '调用指定 MCP 服务上的工具，将输入参数传递给工具并返回执行结果。',
+    icon: 'nodemcp', color: '#eb2f96', panelComponent: 'McpNodePanel',
+    defaultConfig: { mcpServerId: undefined, mcpToolId: undefined, mcpServerName: undefined, mcpToolName: undefined },
+    inputConfigs: input(), outputConfigs: output(),
+    summaryComponent: 'McpNodeSummary',
+    showSummary: true,
+  }),
+  schema({
     type: 'HTTP_EXTERNAL', title: 'HTTP 请求', group: 'integration',
     description: '调用 HTTP 请求接口，支持参数、Header、Body、超时、重试和响应解析。',
-    icon: 'api', color: '#1677ff', panelComponent: 'HttpExternalNodePanel',
+    icon: 'api', color: '#eb2f96', panelComponent: 'HttpExternalNodePanel',
     defaultConfig: { formatterType: 'STRING', connectTimeout: 10, readTimeout: 30, writeTimeout: 30, maxRetries: 3, retryStatusCodes: [], followRedirects: true, syncExecute: true, bodyToObject: true, request: { method: 'GET', contentType: 'JSON', pathParams: [], queryParams: [], headers: [], body: '' } },
     inputConfigs: input(), outputConfigs: output(),
     summaryComponent: 'HttpExternalNodeSummary',
@@ -299,15 +317,6 @@ public class CodeExecute implements CodeExecutor {
     defaultConfig: { strategy: 'MAP', excludeNull: false, splicingSymbol: '' },
     inputConfigs: input(), outputConfigs: output(),
     summaryComponent: 'VariableAggNodeSummary',
-    showSummary: true,
-  }),
-  schema({
-    type: 'TOOL_EXECUTE', title: '工具执行', group: 'integration',
-    description: '调用平台已注册的内置或自定义工具，将输入参数传递给工具并返回执行结果。',
-    icon: 'nodetool', color: '#1677ff', panelComponent: 'ToolExecuteNodePanel',
-    defaultConfig: { toolId: undefined, toolName: undefined },
-    inputConfigs: input(), outputConfigs: output(),
-    summaryComponent: 'ToolExecuteNodeSummary',
     showSummary: true,
   }),
 ]

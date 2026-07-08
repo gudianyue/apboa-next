@@ -52,6 +52,7 @@ public class WorkflowDefinitionCompiler {
         bind(NodeType.UNSERIALIZE, com.hxh.apboa.node.unserialize.UnserializeNode.class, com.hxh.apboa.node.unserialize.Config.class);
         bind(NodeType.VARIABLE_AGG, com.hxh.apboa.node.variable.agg.VariableAggNode.class, com.hxh.apboa.node.variable.agg.Config.class);
         bind(NodeType.TOOL_EXECUTE, com.hxh.apboa.node.toolexecute.ToolExecuteNode.class, com.hxh.apboa.node.toolexecute.Config.class);
+        bind(NodeType.MCP_CALL, com.hxh.apboa.node.mcp.McpNode.class, com.hxh.apboa.node.mcp.Config.class);
     }
 
     public static Set<NodeType> supportedTypes() {

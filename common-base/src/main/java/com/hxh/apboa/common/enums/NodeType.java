@@ -130,5 +130,9 @@ public enum NodeType {
     /**
      * 工具执行节点
      */
-    TOOL_EXECUTE
+    TOOL_EXECUTE,
+    /**
+     * mcp调用节点
+     */
+    MCP_CALL
 }

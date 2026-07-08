@@ -31,6 +31,7 @@ export const nodeIconMap: Record<string, IconName> = {
   MATCH_RESULT: 'nodematch_result',
   AGENT: 'nodellm',
   TOOL_EXECUTE: 'nodetool',
+  MCP_CALL: 'nodemcp',
 }
 
 /**
