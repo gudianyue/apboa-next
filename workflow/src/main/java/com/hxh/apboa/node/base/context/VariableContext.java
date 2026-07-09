@@ -1,14 +1,15 @@
 package com.hxh.apboa.node.base.context;
 
+import com.hxh.apboa.common.util.JsonUtils;
 import com.hxh.apboa.node.base.NodeOutput;
+import com.hxh.apboa.node.base.WorkflowUtils;
 import com.hxh.apboa.node.base.expression.ExpressionEvaluator;
 import com.hxh.apboa.node.base.expression.ExpressionEvaluatorFactory;
 import com.hxh.apboa.node.base.inputout.InputConfig;
+import com.hxh.apboa.node.base.inputout.OutputConfig;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 描述：变量上下文
@@ -75,7 +76,8 @@ public class VariableContext {
      * 求值常量
      */
     private Object evaluateConstant(InputConfig inputConfig) {
-        return inputConfig.getValue();
+        OutputConfig.VariableType type = inputConfig.getType();
+        return WorkflowUtils.convertType(inputConfig.getValue(), type);
     }
 
     /**

@@ -1,8 +1,10 @@
 package com.hxh.apboa.node.base;
 
+import com.hxh.apboa.common.util.JsonUtils;
 import com.hxh.apboa.node.base.inputout.OutputConfig;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 描述：
@@ -23,5 +25,44 @@ public class WorkflowUtils {
         if (value instanceof Boolean) return OutputConfig.VariableType.Boolean;
         if (value instanceof List)    return OutputConfig.VariableType.Array;
         return OutputConfig.VariableType.Object;
+    }
+
+    public static Object convertType(Object value, OutputConfig.VariableType type) {
+        switch (type) {
+            case String -> {
+                return value.toString();
+            }
+            case Long -> {
+                return Long.valueOf(value.toString());
+            }
+            case Integer -> {
+                return Integer.valueOf(value.toString());
+            }
+            case Float -> {
+                return Float.valueOf(value.toString());
+            }
+            case Double -> {
+                return Double.valueOf(value.toString());
+            }
+            case Boolean -> {
+                return Boolean.valueOf(value.toString());
+            }
+            case Array -> {
+                try {
+                    return JsonUtils.parse(value.toString(), List.class);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Invalid array format: " + value, e);
+                }
+            }
+            case Object -> {
+                try {
+                    return JsonUtils.parse(value.toString(), Map.class);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Invalid object format: " + value, e);
+                }
+            }
+        }
+
+        return value;
     }
 }

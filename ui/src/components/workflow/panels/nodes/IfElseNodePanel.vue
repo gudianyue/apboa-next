@@ -165,11 +165,11 @@ const upstreamNodes = computed(() => {
             />
           </div>
           <div v-if="isExpression" class="config-row expression-row">
-            <span class="config-row-label">条件表达式</span>
+            <span class="config-row-label" style="margin-right: 10px">条件表达式</span>
             <ATextarea
               :rows="1"
               :model-value="String(node.data.config?.conditionExpression || '')"
-              placeholder="Groovy 表达式"
+              :placeholder="`Groovy 表达式，变量名 ${node.data.inputConfigs?.[0]?.name || '未知'}`"
               class="expression-input"
               @update:model-value="(v: any) => updateConfig('conditionExpression', v)"
             />
@@ -204,11 +204,11 @@ const upstreamNodes = computed(() => {
               />
             </div>
           </div>
-          <div class="advanced-toggle" @click="showAdvanced = !showAdvanced">
+          <div class="advanced-toggle" @click="showAdvanced = !showAdvanced" v-if="!isExpression">
             <CaretRightOutlined :class="{ rotated: showAdvanced }" class="toggle-icon" />
             <span>高级选项</span>
           </div>
-          <div v-show="showAdvanced" class="advanced-options">
+          <div v-show="showAdvanced" class="advanced-options" v-if="!isExpression">
             <div class="config-row">
               <span class="config-row-label">计算对象</span>
               <ASegmented

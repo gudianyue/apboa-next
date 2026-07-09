@@ -86,10 +86,10 @@ const groupedItems = computed(() => {
 
 // 区分当前流程和主流程来源
 const localGroups = computed(() =>
-  groupedItems.value.filter((g) => !(g.node.data as any)._parentSource),
+  groupedItems.value.filter((g) => !(g.node.data as any)._parentSource && g.node.data.type !== 'MATCH_RESULT'),
 )
 const parentGroups = computed(() =>
-  groupedItems.value.filter((g) => !!(g.node.data as any)._parentSource),
+  groupedItems.value.filter((g) => (g.node.data as any)._parentSource && g.node.data.type !== 'MATCH_RESULT'),
 )
 
 function selectOutput(nodeId: string, outputName: string) {

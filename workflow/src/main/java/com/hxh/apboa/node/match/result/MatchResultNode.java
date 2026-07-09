@@ -99,10 +99,15 @@ public class MatchResultNode extends EnhancedNode {
 
 
     private String evaluateContains(Map<String, Object> inputs) {
-        Object input = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
+        Object input = null;
+        for (Map.Entry<String, Object> entry : inputs.entrySet()) {
+            input = entry.getValue();
+        }
+
         if (input == null) {
             return config.getDefaultNextNodeId();
         }
+
         OutputConfig.VariableType inputType = WorkflowUtils.inferType(input);
         return switch (inputType) {
             case String -> {

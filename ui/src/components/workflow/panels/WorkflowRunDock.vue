@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, inject, ref, watch } from 'vue'
 import type { Ref } from 'vue'
+import { watchDebounced } from '@vueuse/core'
 import { CloseOutlined, PlayCircleOutlined, BugOutlined, ReloadOutlined, CopyOutlined, CheckCircleFilled, CloseCircleFilled, PlayCircleFilled, ExclamationCircleFilled } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import ConfigCodeEditor from '@/components/editor/ConfigCodeEditor.vue'
@@ -36,7 +37,12 @@ const startParams = computed<Array<Record<string, unknown>>>(() => {
 const hasStartParams = computed(() => startParams.value.length > 0)
 const runStatus = computed(() => props.result?.run?.status)
 const finalOutput = computed(() => props.result?.output ?? props.result?.run?.outputs ?? null)
-const inputIssues = computed(() => collectInputIssues())
+const inputIssues = ref<string[]>([])
+watchDebounced(
+  [startParams, paramValues, variablesText, inputText],
+  () => { inputIssues.value = collectInputIssues() },
+  { debounce: 300, deep: true },
+)
 const workflowVariables = inject<Ref<WorkflowVariable[]>>('workflowVariables', ref([]))
 const hasCustomVariables = computed(() => workflowVariables.value.length > 0)
 
@@ -64,7 +70,13 @@ function resetFromStartParams() {
   startParams.value.forEach((param) => {
     const name = String(param.name || '')
     if (!name) return
-    next[name] = param.value ?? defaultValueByType(String(param.type || 'String'))
+    const type = String(param.type || 'String')
+    const rawValue = param.value ?? defaultValueByType(type)
+    if (type === 'Array' || type === 'Object') {
+      next[name] = typeof rawValue === 'string' ? rawValue : JSON.stringify(rawValue, null, 2)
+    } else {
+      next[name] = rawValue
+    }
   })
   paramValues.value = next
   syncInputText()
@@ -72,7 +84,7 @@ function resetFromStartParams() {
 
 function defaultValueByType(type: string) {
   if (type === 'Boolean') return false
-  if (['Long', 'Integer', 'Float', 'Double'].includes(type)) return ''
+  if (['Long', 'Integer', 'Float', 'Double'].includes(type)) return 0
   if (type === 'Array') return '[]'
   if (type === 'Object') return '{}'
   return ''
@@ -80,11 +92,14 @@ function defaultValueByType(type: string) {
 
 function variableDefaultValue(type: string): unknown {
   switch (type) {
-    case 'string': return ''
-    case 'number': return 0
-    case 'boolean': return false
-    case 'object': return {}
-    case 'array': return []
+    case 'String': return ''
+    case 'Long': return 0
+    case 'Integer': return 0
+    case 'Float': return 0
+    case 'Double': return 0
+    case 'Boolean': return false
+    case 'Object': return {}
+    case 'Array': return []
     default: return ''
   }
 }
@@ -92,11 +107,14 @@ function variableDefaultValue(type: string): unknown {
 function isValueTypeMatch(value: unknown, type: string): boolean {
   if (value === undefined || value === null) return true
   switch (type) {
-    case 'string': return typeof value === 'string'
-    case 'number': return typeof value === 'number'
-    case 'boolean': return typeof value === 'boolean'
-    case 'object': return typeof value === 'object' && !Array.isArray(value)
-    case 'array': return Array.isArray(value)
+    case 'String': return typeof value === 'string'
+    case 'Long': return typeof value === 'number'
+    case 'Integer': return typeof value === 'number'
+    case 'Float': return typeof value === 'number'
+    case 'Double': return typeof value === 'number'
+    case 'Boolean': return typeof value === 'boolean'
+    case 'Object': return typeof value === 'object' && !Array.isArray(value)
+    case 'Array': return Array.isArray(value)
     default: return true
   }
 }
@@ -201,7 +219,19 @@ function runWithValidation() {
 
 function normalizeValue(value: unknown, type: string) {
   if (type === 'Boolean') return Boolean(value)
-  if (type === 'Array' || type === 'Object') return typeof value === 'string' ? value : JSON.stringify(value ?? (type === 'Array' ? [] : {}))
+  if (['Integer', 'Float', 'Double'].includes(type)) {
+    const num = Number(value)
+    return Number.isFinite(num) ? num : 0
+  }
+  if (type === 'Long') {
+    return value == null ? '0' : String(value)
+  }
+  if (type === 'Array' || type === 'Object') {
+    if (typeof value === 'string') {
+      try { return JSON.parse(value) } catch { return type === 'Array' ? [] : {} }
+    }
+    return value ?? (type === 'Array' ? [] : {})
+  }
   return value == null ? '' : String(value)
 }
 
@@ -315,8 +345,8 @@ function beginResize(event: MouseEvent) {
                 </div>
                 <ASwitch
                   v-if="param.type === 'Boolean'"
+                  style="width: 30px;"
                   v-model:checked="paramValues[String(param.name)]"
-                  size="small"
                 />
                 <AInput
                   v-else-if="param.type !== 'Object' && param.type !== 'Array'"

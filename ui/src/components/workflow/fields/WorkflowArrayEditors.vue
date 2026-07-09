@@ -165,7 +165,7 @@ function updateString(index: number, value: string) {
 }
 
 .row-startParams {
-  grid-template-columns: minmax(90px, 2fr) minmax(90px, 2fr) minmax(80px, 1fr) 60px 22px 28px;
+  grid-template-columns: minmax(85px, 2fr) minmax(85px, 2fr) minmax(100px, 1fr) 60px 22px 22px;
 }
 
 .array-empty {

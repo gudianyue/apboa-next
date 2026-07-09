@@ -178,7 +178,7 @@ watch(
       if (!existingIds.has(nodeId)) {
         const nodeForOutput = props.nodes.find((n) => n.id === nodeId)
         const firstOutputName = nodeForOutput ? getNodeOutputs(nodeForOutput)[0]?.name : undefined
-        filtered.push({ name: 'input', sourceType: 'NODE_OUTPUT', nodeId, outputName: firstOutputName })
+        filtered.push({ name: 'input_' + nodeId, sourceType: 'NODE_OUTPUT', nodeId, outputName: firstOutputName })
       }
     }
 

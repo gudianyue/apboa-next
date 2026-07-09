@@ -17,7 +17,7 @@ export const WORKFLOW_GROUPS = [
   { key: 'business', title: '业务' },
 ] as const
 
-const input = (): WorkflowInputConfig[] => [{ name: 'input', sourceType: 'NODE_OUTPUT' }]
+const input = (): WorkflowInputConfig[] => [{ name: 'input', sourceType: 'NODE_OUTPUT', type: 'String' }]
 const output = (type = 'Object'): WorkflowOutputConfig[] => [{ name: 'output', type, description: '节点默认输出' }]
 
 function groupTitle(group: string) {
@@ -63,6 +63,7 @@ export const workflowNodeSchemas: WorkflowNodeSchema[] = [
     icon: 'iterate', color: '#fa8c16', panelComponent: 'IterateNodePanel',
     defaultConfig: { language: 'JAVA', iterateCode: `package com.hxh.apboa.node.iterate.load;
 
+import java.util.*;
 import com.hxh.apboa.node.iterate.IteratorExecutor;
 
 /**

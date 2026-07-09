@@ -99,9 +99,11 @@ public class IterateNode extends EnhancedNode implements LoopableNode {
 
     @Override
     public VerifyResult verifyConfig(Map<String, Object> inputs) {
-        Object input = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
-        if (!(input instanceof Iterable<?>)) {
-            return VerifyResult.invalid(new VerifyFail("input", "输入必须是一个迭代器"));
+        if (inputs.get("is_debug_verify") == null) {
+            Object input = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
+            if (!(input instanceof Iterable<?>)) {
+                return VerifyResult.invalid(new VerifyFail("input", "输入必须是一个迭代器"));
+            }
         }
 
         // 代码语言

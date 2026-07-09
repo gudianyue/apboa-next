@@ -58,35 +58,41 @@ public class NonEmptySelectNode extends EnhancedNode {
     private void selectFirst(NodeOutput output, NodeContext context) {
         List<InputConfig> improveInputs = getInputConfigs();
         for (InputConfig improveInput : improveInputs) {
-            Object value = improveInput.getValue();
+            Object value = context.getVariables().resolveInput(improveInput);
             if (FuncUtils.isNotEmpty(value)) {
-                context.setNextNodeId(improveInput.getSourceNodeId());
-                output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, improveInput.getSourceNodeId());
+                output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, value);
                 return;
             }
         }
 
-        context.setNextNodeId(config.getDefaultNextNodeId());
-        output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, config.getDefaultNextNodeId());
+        for (InputConfig improveInput : improveInputs) {
+            if (improveInput.getSourceNodeId().equals(config.getDefaultNextNodeId())) {
+                Object value = context.getVariables().resolveInput(improveInput);
+                output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, value);
+            }
+        }
     }
 
     /**
      * 选择最后一个
      */
     private void selectLast(NodeOutput output, NodeContext context) {
-        context.resetNextNodeId();
         List<InputConfig> improveInputs = getInputConfigs();
         for (InputConfig improveInput : improveInputs) {
-            Object value = improveInput.getValue();
+            Object value = context.getVariables().resolveInput(improveInput);
             if (FuncUtils.isNotEmpty(value)) {
-                context.setNextNodeId(improveInput.getSourceNodeId());
+                output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, value);
             }
         }
 
-        if (context.getNextNodeId() == null) {
-            context.setNextNodeId(config.getDefaultNextNodeId());
+        if (!output.hasOutput(NodeConst.DEFAULT_OUTPUT_NAME)) {
+            for (InputConfig improveInput : improveInputs) {
+                if (improveInput.getSourceNodeId().equals(config.getDefaultNextNodeId())) {
+                    Object value = context.getVariables().resolveInput(improveInput);
+                    output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, value);
+                }
+            }
         }
-        output.addOutput(NodeConst.DEFAULT_OUTPUT_NAME, context.getNextNodeId());
     }
 
     /**
@@ -104,10 +110,5 @@ public class NonEmptySelectNode extends EnhancedNode {
         }
 
         return VerifyResult.valid();
-    }
-
-    @Override
-    public String getNextNodeId(NodeContext context) {
-        return context.getNextNodeId();
     }
 }

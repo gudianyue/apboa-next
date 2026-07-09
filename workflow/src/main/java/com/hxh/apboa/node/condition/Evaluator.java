@@ -5,7 +5,6 @@ import com.hxh.apboa.common.util.FuncUtils;
 import com.hxh.apboa.node.base.NodeOutput;
 import com.hxh.apboa.node.base.WorkflowUtils;
 import com.hxh.apboa.node.base.context.NodeContext;
-import com.hxh.apboa.node.base.inputout.InputConfig;
 import com.hxh.apboa.node.base.inputout.OutputConfig;
 
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.Objects;
  **/
 public class Evaluator {
 
-    public static boolean evaluate(Config config, Map<String, Object> inputs, InputConfig inputConfig, NodeContext context) {
+    public static boolean evaluate(Config config, Map<String, Object> inputs, NodeContext context) {
         // 输入值
         Object inputValue = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
         // 输入值是否为空
@@ -27,14 +26,15 @@ public class Evaluator {
             return config.getInputIsNullUse();
         }
 
-
-
         // 比较值
         Object compareValue;
         CompareTo compareTo = config.getCompareTo();
         CompareTo.Type compareToType = compareTo.getType();
         if (compareToType == CompareTo.Type.CONSTANT) {
-            compareValue = compareTo.getValue();
+            // 推演出输入值类型
+            OutputConfig.VariableType inputValueType = WorkflowUtils.inferType(inputValue);
+            // 将比较值转换为输入值类型
+            compareValue = WorkflowUtils.convertType(compareTo.getValue(), inputValueType);
         } else if (compareToType == CompareTo.Type.VARIABLE) {
             // 获取目标节点输出
             NodeOutput nodeOutput = context.getVariables().getNodeOutputs().get(compareTo.getSourceNodeId());

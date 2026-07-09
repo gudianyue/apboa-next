@@ -66,7 +66,7 @@ public class StartNode extends EnhancedNode implements StartableNode {
     private void putOutput(NodeOutput output) {
         // 将请求的参数添加到输出中
         safeParams().forEach(param ->
-                output.addOutput(createOutputName(param), createOutputValue(param))
+                output.addOutput(createOutputName(param), param.getValue())
         );
     }
 
@@ -80,29 +80,29 @@ public class StartNode extends EnhancedNode implements StartableNode {
         return param.getName();
     }
 
-    /**
-     * 创建输出参数值
-     *
-     * @param param 参数
-     * @return 转换后的参数值
-     */
-    private Object createOutputValue(Param  param) {
-        String value = param.getValue();
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        OutputConfig.VariableType type = param.getType() == null ? OutputConfig.VariableType.String : param.getType();
-        return switch (type) {
-            case String -> param.getValue();
-            case Long -> Long.valueOf(param.getValue());
-            case Integer -> Integer.valueOf(param.getValue());
-            case Float -> Float.valueOf(param.getValue());
-            case Double -> Double.valueOf(param.getValue());
-            case Boolean -> Boolean.valueOf(param.getValue());
-            case Array, Object -> JsonUtils.parse(param.getValue());
-            default ->throw new IllegalArgumentException("不支持的参数类型:" + param.getType());
-        };
-    }
+//    /**
+//     * 创建输出参数值
+//     *
+//     * @param param 参数
+//     * @return 转换后的参数值
+//     */
+//    private Object createOutputValue(Param  param) {
+//        String value = param.getValue();
+//        if (value == null || value.isBlank()) {
+//            return null;
+//        }
+//        OutputConfig.VariableType type = param.getType() == null ? OutputConfig.VariableType.String : param.getType();
+//        return switch (type) {
+//            case String -> param.getValue();
+//            case Long -> Long.valueOf(param.getValue().toString());
+//            case Integer -> Integer.valueOf(param.getValue());
+//            case Float -> Float.valueOf(param.getValue());
+//            case Double -> Double.valueOf(param.getValue());
+//            case Boolean -> Boolean.valueOf(param.getValue());
+//            case Array, Object -> JsonUtils.parse(param.getValue());
+//            default ->throw new IllegalArgumentException("不支持的参数类型:" + param.getType());
+//        };
+//    }
 
     @Override
     public VerifyResult verifyConfig(Map<String, Object> inputs) {
@@ -120,16 +120,8 @@ public class StartNode extends EnhancedNode implements StartableNode {
             if (param.getName().contains("_")) {
                 result.addError("params", "参数名称不允许包含 '_'：" + param.getName());
             }
-            if (Boolean.TRUE.equals(param.getRequired()) && (param.getValue() == null || param.getValue().isBlank())) {
+            if (Boolean.TRUE.equals(param.getRequired()) && param.getValue() == null) {
                 result.addError("params." + param.getName(), "必填参数不能为空：" + param.getName());
-            }
-            if ((param.getType() == OutputConfig.VariableType.Array || param.getType() == OutputConfig.VariableType.Object)
-                    && param.getValue() != null && !param.getValue().isBlank()) {
-                try {
-                    JsonUtils.parse(param.getValue());
-                } catch (Exception e) {
-                    result.addError("params." + param.getName(), "参数不是合法 JSON：" + param.getName());
-                }
             }
         }
 

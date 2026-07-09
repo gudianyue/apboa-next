@@ -9,10 +9,10 @@ import type { VariableType, WorkflowVariable } from '@/types/workflow'
 // ========== 系统变量 ==========
 
 const systemVariables: WorkflowVariable[] = [
-  { id: 'sys_1', name: 'tenantId', type: 'number', source: 'system', description: '当前租户ID' },
-  { id: 'sys_2', name: 'tenantCode', type: 'string', source: 'system', description: '当前租户编号' },
-  { id: 'sys_3', name: 'userId', type: 'number', source: 'system', description: '当前用户ID' },
-  { id: 'sys_4', name: 'userName', type: 'string', source: 'system', description: '当前用户名称' },
+  { id: 'sys_1', name: 'tenantId', type: 'Long', source: 'system', description: '当前租户ID' },
+  { id: 'sys_2', name: 'tenantCode', type: 'String', source: 'system', description: '当前租户编号' },
+  { id: 'sys_3', name: 'userId', type: 'Long', source: 'system', description: '当前用户ID' },
+  { id: 'sys_4', name: 'userName', type: 'String', source: 'system', description: '当前用户名称' },
 ]
 
 // ========== 注入数据 ==========
@@ -29,17 +29,20 @@ const debouncedSearchText = ref('')
 const adding = ref(false)
 const editingId = ref<string | null>(null)
 const editName = ref('')
-const editType = ref<VariableType>('string')
+const editType = ref<VariableType>('String')
 const listRef = ref<HTMLDivElement | null>(null)
 
 // ========== 类型选项 ==========
 
 const typeOptions: { value: VariableType; label: string }[] = [
-  { value: 'string', label: 'string' },
-  { value: 'number', label: 'number' },
-  { value: 'boolean', label: 'boolean' },
-  { value: 'object', label: 'object' },
-  { value: 'array', label: 'array' },
+  { label: 'string', value: 'String' },
+  { label: 'long', value: 'Long' },
+  { label: 'integer', value: 'Integer' },
+  { label: 'float', value: 'Float' },
+  { label: 'double', value: 'Double' },
+  { label: 'boolean', value: 'Boolean' },
+  { label: 'array', value: 'Array' },
+  { label: 'object', value: 'Object' },
 ]
 
 // ========== 搜索防抖 ==========

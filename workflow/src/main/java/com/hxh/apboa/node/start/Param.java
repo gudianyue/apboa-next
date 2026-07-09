@@ -19,7 +19,7 @@ public class Param {
     /**
      * 参数值
      */
-    private String value;
+    private Object value;
     /**
      * 参数类型
      */

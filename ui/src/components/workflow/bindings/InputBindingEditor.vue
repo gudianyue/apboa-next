@@ -5,13 +5,24 @@ import { QuestionCircleOutlined } from '@ant-design/icons-vue'
 import BlurInput from '@/components/workflow/panels/shared/BlurInput.vue'
 import NodeOutputSelector from './NodeOutputSelector.vue'
 import VariableSelector from './VariableSelector.vue'
-import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowInputConfig } from '@/types/workflow'
+import type { WorkflowFlowEdge, WorkflowFlowNode, WorkflowInputConfig, ConstantType } from '@/types/workflow'
 
 const sourceTypeOptions = [
   { label: '常量', value: 'CONSTANT' as const, description: '直接填写固定值，支持字符串或 JSON 格式' },
   { label: '变量', value: 'VARIABLE' as const, description: '引用工作流全局变量，运行时动态注入' },
   { label: '节点输出', value: 'NODE_OUTPUT' as const, description: '引用其他节点的输出结果，构建节点间数据流' },
   { label: '表达式', value: 'EXPRESSION' as const, description: '使用 GroovyShell 表达式动态计算值' },
+]
+
+const constantTypeOptions: { label: string; value: ConstantType }[] = [
+  { label: 'string', value: 'String' },
+  { label: 'long', value: 'Long' },
+  { label: 'integer', value: 'Integer' },
+  { label: 'float', value: 'Float' },
+  { label: 'double', value: 'Double' },
+  { label: 'boolean', value: 'Boolean' },
+  { label: 'array', value: 'Array' },
+  { label: 'object', value: 'Object' },
 ]
 
 const props = withDefaults(defineProps<{
@@ -99,7 +110,7 @@ function update(index: number, patch: Partial<WorkflowInputConfig>) {
 }
 
 function addBinding() {
-  emit('update:modelValue', [...bindings.value, { name: `input${bindings.value.length + 1}`, sourceType: 'NODE_OUTPUT' }])
+  emit('update:modelValue', [...bindings.value, { name: `input${bindings.value.length + 1}`, sourceType: 'NODE_OUTPUT', type: 'String' }])
 }
 
 function removeBinding(index: number) {
@@ -118,6 +129,13 @@ function removeBinding(index: number) {
           @update:model-value="(value: string) => update(index, { name: value })"
         />
         <span v-else class="binding-name-readonly">{{ binding.name }}</span>
+        <ASelect
+          v-if="binding.sourceType === 'CONSTANT'"
+          :value="binding.type || 'String'"
+          :options="constantTypeOptions"
+          style="width: 100px; margin-left: 8px;"
+          @change="(value: ConstantType) => update(index, { type: value })"
+        />
         <AButton v-if="bindings.length > 1" danger type="text" @click="removeBinding(index)" style="margin-left: 5px; background-color: #FFF2F0;">删除</AButton>
       </div>
 
@@ -143,7 +161,7 @@ function removeBinding(index: number) {
       <ATextarea
         v-if="binding.sourceType === 'CONSTANT'"
         :rows="1"
-        :value="typeof binding.value === 'string' ? binding.value : JSON.stringify(binding.value ?? '', null, 2)"
+        :value="binding.value"
         placeholder="常量值，可填写字符串或 JSON"
         @update:value="(value: string) => update(index, { value })"
       />
@@ -167,7 +185,7 @@ function removeBinding(index: number) {
       <ATextarea
         v-else
         :rows="1"
-        :value="typeof binding.value === 'string' ? binding.value : JSON.stringify(binding.value ?? '', null, 2)"
+        :value="binding.value"
         placeholder="支持编写GroovyShell表单式"
         @update:value="(value: string) => update(index, { value })"
       />
@@ -194,8 +212,8 @@ function removeBinding(index: number) {
 
 .binding-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  //gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0px;
   align-items: center;
 }
 

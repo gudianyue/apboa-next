@@ -9,7 +9,6 @@ import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.expression.ExpressionEvaluator;
 import com.hxh.apboa.node.base.expression.ExpressionEvaluatorFactory;
 import com.hxh.apboa.node.base.feature.BranchableNode;
-import com.hxh.apboa.node.base.inputout.InputConfig;
 import com.hxh.apboa.node.base.verify.VerifyFail;
 import com.hxh.apboa.node.base.verify.VerifyResult;
 import lombok.Getter;
@@ -31,7 +30,6 @@ public class ConditionNode extends EnhancedNode implements BranchableNode {
     // 节点配置
     @Getter
     private Config config;
-    private static final String ITEM_NAME = "item";
 
     public ConditionNode(String id, String name, Config config) {
         super(id, name, NodeType.IF_ELSE);
@@ -59,13 +57,11 @@ public class ConditionNode extends EnhancedNode implements BranchableNode {
      * 成功节点输出
      */
     private NodeOutput successNodeOutput(Map<String, Object> inputs,NodeOutput output, NodeContext context) {
-        InputConfig inputConfig = inputConfigs.getFirst();
-
         boolean b;
         if (config.getSymbol() == EXPRESSION) {
             b = evaluateCondition(config.getConditionExpression(), inputs);
         } else {
-            b = Evaluator.evaluate(config, inputs, inputConfig, context);
+            b = Evaluator.evaluate(config, inputs, context);
         }
 
         ExecutionResult executionResult;
@@ -96,7 +92,7 @@ public class ConditionNode extends EnhancedNode implements BranchableNode {
     private boolean evaluateCondition(String condition, Map<String, Object> inputs) {
         Object inputValue = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
         HashMap<String, Object> variables = new HashMap<>() {{
-            put(ITEM_NAME, inputValue);
+            put(NodeConst.DEFAULT_INPUT_NAME, inputValue);
         }};
         try {
             ExpressionEvaluator evaluator = ExpressionEvaluatorFactory.getEvaluator(config.getEvaluatorType());

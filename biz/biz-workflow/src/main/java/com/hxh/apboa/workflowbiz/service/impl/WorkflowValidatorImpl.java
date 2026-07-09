@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hxh.apboa.node.base.Node;
 import com.hxh.apboa.common.enums.NodeType;
-import com.hxh.apboa.node.base.context.NodeContext;
 import com.hxh.apboa.node.base.verify.VerifyFail;
 import com.hxh.apboa.node.base.verify.VerifyResult;
 import com.hxh.apboa.workflow.run.RunWorkflow;
@@ -123,7 +122,7 @@ public class WorkflowValidatorImpl implements WorkflowValidator {
             RunWorkflow workflow = compiler.compile("validate", definition);
             workflow.injectWorkflowToLoopNodes();
             for (Node node : workflow.getNodes()) {
-                VerifyResult verifyResult = node.verifyConfig(Map.of());
+                VerifyResult verifyResult = node.verifyConfig(Map.of("is_debug_verify", true));
                 if (!verifyResult.isValid()) {
                     for (VerifyFail error : verifyResult.getErrors()) {
                         result.addError(node.getId(), error.getField(), error.getMessage());

@@ -63,6 +63,7 @@ export interface WorkflowInputConfig {
   nodeId?: string
   outputName?: string
   expression?: string
+  type?: ConstantType
 }
 
 export interface WorkflowOutputConfig {
@@ -215,7 +216,8 @@ export interface WorkflowResourceMaps {
   mqs: WorkflowResource[]
 }
 
-export type VariableType = 'string' | 'number' | 'boolean' | 'object' | 'array'
+export type VariableType = 'String' | 'Long' | 'Integer' | 'Float' | 'Double' | 'Boolean' | 'Array' | 'Object'
+export type ConstantType = 'String' | 'Long' | 'Integer' | 'Float' | 'Double' | 'Boolean' | 'Array' | 'Object'
 
 export interface WorkflowVariable {
   id: string

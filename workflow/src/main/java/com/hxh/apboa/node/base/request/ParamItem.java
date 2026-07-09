@@ -24,5 +24,5 @@ public class ParamItem {
     /**
      * 参数值
      */
-    private String value;
+    private Object value;
 }

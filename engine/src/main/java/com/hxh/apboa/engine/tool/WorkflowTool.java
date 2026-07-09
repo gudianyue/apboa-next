@@ -92,7 +92,7 @@ public class WorkflowTool implements AgentTool {
         for (Param param : params) {
             String name = param.getName();
             String description = param.getRemark();
-            String defaultValue = param.getValue();
+            Object defaultValue = param.getValue();
 
             properties.put(name, new HashMap<>(){{
                 put("type", typeOptions.get(param.getType()));
@@ -178,7 +178,7 @@ public class WorkflowTool implements AgentTool {
 
             paramItems.add(ParamItem.builder()
                     .name(name)
-                    .value(String.valueOf(value))
+                    .value(value)
                     .build());
         });
 
