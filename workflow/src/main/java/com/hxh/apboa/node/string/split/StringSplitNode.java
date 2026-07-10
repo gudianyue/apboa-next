@@ -260,8 +260,10 @@ public class StringSplitNode extends EnhancedNode {
             return VerifyResult.invalid(new VerifyFail("delimiters", "多个分隔符不能为空"));
         }
 
-        if (!(inputs.get(NodeConst.DEFAULT_INPUT_NAME) instanceof String)) {
-            return VerifyResult.invalid(new VerifyFail("input", "输入数据必须是字符串"));
+        if (inputs.get("is_debug_verify") == null) {
+            if (!(inputs.get(NodeConst.DEFAULT_INPUT_NAME) instanceof String)) {
+                return VerifyResult.invalid(new VerifyFail("input", "输入数据必须是字符串"));
+            }
         }
 
         if (config.getMode() == null) {

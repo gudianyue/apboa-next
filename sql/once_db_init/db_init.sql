@@ -975,4 +975,17 @@ CREATE TABLE `workflow_plugin` (
   KEY `idx_workflow_plugin_resource` (`plugin_id`)
 ) COMMENT='Workflow plugin binding';
 
+DROP TABLE IF EXISTS `agent_workflows`;
+CREATE TABLE `agent_workflows` (
+`id` bigint NOT NULL,
+`agent_definition_id` bigint NOT NULL,
+`workflow_id` bigint NOT NULL,
+`tenant_id` bigint NOT NULL,
+PRIMARY KEY (`id`) USING BTREE,
+UNIQUE KEY `uk_agent_workflow` (`tenant_id`,`agent_definition_id`,`workflow_id`),
+KEY `idx_agent_id` (`agent_definition_id`) USING BTREE,
+KEY `idx_workflow_id` (`workflow_id`) USING BTREE,
+KEY `idx_tenant_id` (`tenant_id`)
+) COMMENT='智能体与工具关联表';
+
 SET FOREIGN_KEY_CHECKS = 1;

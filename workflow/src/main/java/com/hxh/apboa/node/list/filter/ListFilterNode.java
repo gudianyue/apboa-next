@@ -155,9 +155,11 @@ public class ListFilterNode extends EnhancedNode {
 
     @Override
     public VerifyResult verifyConfig(Map<String, Object> inputs) {
-        Object o = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
-        if (!(o instanceof Iterable<?>)) {
-            return VerifyResult.invalid(new VerifyFail("input", "输入数据必须是可迭代对象"));
+        if (inputs.get("is_debug_verify") == null) {
+            Object o = inputs.get(NodeConst.DEFAULT_INPUT_NAME);
+            if (!(o instanceof Iterable<?>)) {
+                return VerifyResult.invalid(new VerifyFail("input", "输入数据必须是可迭代对象"));
+            }
         }
 
         if (FuncUtils.isEmpty( config.getCondition())) {

@@ -2,7 +2,9 @@ package com.hxh.apboa.node.list.filter;
 
 import com.hxh.apboa.common.util.FuncUtils;
 import com.hxh.apboa.node.base.NodeOutput;
+import com.hxh.apboa.node.base.WorkflowUtils;
 import com.hxh.apboa.node.base.context.NodeContext;
+import com.hxh.apboa.node.base.inputout.OutputConfig;
 
 import java.util.Objects;
 
@@ -27,7 +29,10 @@ public class SimpleEvaluator {
         CompareTo compareTo = config.getCompareTo();
         CompareTo.Type compareToType = compareTo.getType();
         if (compareToType == CompareTo.Type.CONSTANT) {
-            compareValue = compareTo.getValue();
+            // 推演出输入值类型
+            OutputConfig.VariableType inputValueType = WorkflowUtils.inferType(inputValue);
+            // 将比较值转换为输入值类型
+            compareValue = WorkflowUtils.convertType(compareTo.getValue(), inputValueType);
         } else if (compareToType == CompareTo.Type.VARIABLE) {
             // 获取目标节点输出
             NodeOutput nodeOutput = context.getVariables().getNodeOutputs().get(compareTo.getSourceNodeId());
