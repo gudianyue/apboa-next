@@ -1,6 +1,6 @@
 > **镜像仓库声明**
 >
-> 本 GitHub 仓库是 [Apboa Next](https://gitee.com/studious_tiger/apboa-next) 的再发布/镜像仓库，仅用于代码索引与 AI 辅助解析，不代表原作者的官方 GitHub 仓库。版权、再发布与免责说明详见 [NOTICE.md](NOTICE.md) 与 [DISCLAIMER.md](DISCLAIMER.md)。
+> 本 GitHub 仓库是 [Apboa Next](https://gitee.com/studioustiger/apboa-next) 的再发布/镜像仓库，仅用于代码索引与 AI 辅助解析，不代表原作者的官方 GitHub 仓库。版权、再发布与免责说明详见 [NOTICE.md](NOTICE.md) 与 [DISCLAIMER.md](DISCLAIMER.md)。
 
 <h1 align="center">Apboa Next</h1>
 
