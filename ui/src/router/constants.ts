@@ -64,6 +64,22 @@ export const RouteNames = {
   CHAT_HISTORY: 'ChatHistory',
   COMMUNICATION: 'Communication',
 
+  // 设置管理
+  SETTINGS_ACCOUNT: 'SettingsAccount',
+  SETTINGS_TENANT: 'SettingsTenant',
+  SETTINGS_TENANT_DISCOVERY: 'SettingsTenantDiscovery',
+  SETTINGS_SYSTEM_PARAMS: 'SettingsSystemParams',
+  SETTINGS_SYSTEM_INTRO: 'SettingsSystemIntro',
+  SETTINGS_API_KEYS: 'SettingsApiKeys',
+
+  // 运维管理
+  OPS_MONITOR: 'OpsMonitor',
+  OPS_STORAGE: 'OpsStorage',
+
+  // 审查管理
+  REVIEW_AGENT: 'ReviewAgent',
+  REVIEW_WORKFLOW: 'ReviewWorkflow',
+
   // 错误页面
   NOT_FOUND: 'NotFound'
 } as const
@@ -125,6 +141,22 @@ export const RoutePaths = {
   CHAT: '/chat',
   CHAT_HISTORY: '/chat/history',
   COMMUNICATION: '/communication',
+
+  // 设置管理
+  SETTINGS_ACCOUNT: 'settings/account',
+  SETTINGS_TENANT: 'settings/tenant',
+  SETTINGS_TENANT_DISCOVERY: 'settings/tenant-discovery',
+  SETTINGS_SYSTEM_PARAMS: 'settings/system-params',
+  SETTINGS_SYSTEM_INTRO: 'settings/system-intro',
+  SETTINGS_API_KEYS: 'settings/api-keys',
+
+  // 运维管理
+  OPS_MONITOR: 'ops/monitor',
+  OPS_STORAGE: 'ops/storage',
+
+  // 审查管理
+  REVIEW_AGENT: 'review/agent',
+  REVIEW_WORKFLOW: 'review/workflow',
 
   // 错误页面
   NOT_FOUND: '/:pathMatch(.*)*',

@@ -307,7 +307,7 @@ $doc-toc-width: 240px;
   line-height: 1.4;
 
   &:hover {
-    background-color: #f5f7fa;
+    background-color: #F5F6F8;
   }
 
   &.active {
