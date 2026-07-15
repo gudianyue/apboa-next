@@ -188,27 +188,29 @@ const handleMenuClick = (item: MenuItem) => {
 </script>
 
 <template>
-  <div class="side-menu">
-    <template v-for="item in menuConfig" :key="item.key">
-      <!-- 分类 -->
-      <div v-if="item.type === 'category'" class="menu-category">
-        {{ item.label }}
-      </div>
-      <!-- 菜单项 -->
-      <div
-        v-else
-        class="menu-item"
-        :class="{ active: activeMenu === item.key }"
-        @click="handleMenuClick(item)"
-      >
-        <component
-          v-if="item.icon"
-          :is="item.icon"
-          class="menu-icon"
-        />
-        <span class="menu-label">{{ item.label }}</span>
-      </div>
-    </template>
+  <div class="side-menu-wrapper">
+    <div class="side-menu">
+      <template v-for="item in menuConfig" :key="item.key">
+        <!-- 分类 -->
+        <div v-if="item.type === 'category'" class="menu-category">
+          {{ item.label }}
+        </div>
+        <!-- 菜单项 -->
+        <div
+          v-else
+          class="menu-item"
+          :class="{ active: activeMenu === item.key }"
+          @click="handleMenuClick(item)"
+        >
+          <component
+            v-if="item.icon"
+            :is="item.icon"
+            class="menu-icon"
+          />
+          <span class="menu-label">{{ item.label }}</span>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -239,13 +241,13 @@ const handleMenuClick = (item: MenuItem) => {
   margin: 2px 0;
 
   &:hover {
-    background-color: #e7e7e7;
+    background-color: #E9EAEA;
     color: #666;
   }
 
   &.active {
     color: #000000;
-    background-color: #e7e7e7;
+    background-color: #E9EAEA;
 
     .menu-icon {
       color: #000000;

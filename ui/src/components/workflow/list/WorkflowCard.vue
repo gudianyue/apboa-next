@@ -128,8 +128,8 @@ function handleMenu({ key }: { key: string }) {
 
     <footer class="card-footer">
       <div class="tags">
-        <ATag :bordered="false">{{ statusText }}</ATag>
-        <ATag color="default" :bordered="false">v{{ data.version || '0' }}</ATag>
+        <ATag :bordered="false" class="tag">{{ statusText }}</ATag>
+        <ATag color="default" class="tag" :bordered="false">v{{ data.version || '0' }}</ATag>
       </div>
       <div class="time">更新于 {{ formattedTime }}</div>
     </footer>
@@ -138,20 +138,20 @@ function handleMenu({ key }: { key: string }) {
 
 <style scoped lang="scss">
 .workflow-card {
+  min-height: 180px;
+  padding: var(--spacing-md);
+  background-color: #FFFFFF;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid #ebebeb;
+  transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  min-height: 180px;
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-lg);
-  background: var(--color-bg-white);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  transition: all var(--transition-base);
-}
 
-.workflow-card:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  &:hover {
+    box-shadow: 0 4px 6px -5px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
 }
 
 .card-header {

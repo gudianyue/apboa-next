@@ -287,7 +287,7 @@ async function handleTest(id: string) {
 
   .modal-toolbar {
     position: sticky;
-    top: 0px;
+    top: 0;
     z-index: 10;
     background-color: #F5F6F8;
     margin: calc(-1 * var(--spacing-md)) calc(-1 * var(--spacing-md)) 0;

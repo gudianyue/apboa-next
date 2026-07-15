@@ -158,16 +158,16 @@ function handleConfigClick() {
 .provider-card {
   min-height: 180px;
   padding: var(--spacing-md);
-  background-color: var(--color-bg-white);
+  background-color: #FFFFFF;
   border-radius: var(--border-radius-lg);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #ebebeb;
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
 
   &:hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px -5px rgba(0, 0, 0, 0.3);
     transform: translateY(-2px);
   }
 

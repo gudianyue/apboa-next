@@ -176,7 +176,7 @@ const handleLogout = () => {
 
 <style scoped lang="scss">
 .sidebar {
-  width: 260px;
+  width: 280px;
   height: 100vh;
   border-right: 1px solid #f0f0f0;
   display: flex;
@@ -264,7 +264,7 @@ const handleLogout = () => {
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #e7e7e7;
+    background-color: #E9EAEA;
     color: #1a1a1a;
   }
 }
@@ -333,17 +333,32 @@ const handleLogout = () => {
 
 /* 滚动条样式 */
 .sidebar-menu {
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
   &::-webkit-scrollbar-track {
-    background: transparent;
+    background-color: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #d9d9d9;
-    border-radius: 4px;
+    background-color: transparent;
+  }
+
+  &:hover::-webkit-scrollbar {
+    width: 6px;
+    height: 8px;
+  }
+
+  &:hover::-webkit-scrollbar-track {
+    background-color: var(--color-bg-base);
+    border-radius: var(--border-radius-base);
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-base);
+    border-radius: var(--border-radius-base);
+    transition: background-color var(--transition-fast);
+  }
+
+  &:hover::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-text-secondary);
   }
 }
 </style>
