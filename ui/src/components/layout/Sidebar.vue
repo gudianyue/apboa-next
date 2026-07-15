@@ -112,8 +112,8 @@ const roleName = computed(() => {
   <div class="sidebar flex flex-col" :class="{ collapsed: collapsed }">
     <!-- 顶部Logo区域 -->
     <div class="sidebar-logo">
-      <img v-if="!collapsed" src="@/assets/logo/logo_3.png" alt="logo" width="130">
-      <img v-else src="@/assets/logo/logo_1.png" alt="logo" width="38">
+      <img v-if="!collapsed" src="@/assets/logo/logo_3.png" alt="logo" width="125">
+      <img v-else src="@/assets/logo/logo_1.png" alt="logo" width="35">
       <ATooltip v-if="!collapsed" :title="collapsed ? '展开菜单' : '收起菜单'" placement="right">
         <div class="collapse-btn" @click="toggleCollapsed">
           <MenuFoldOutlined v-if="!collapsed" />
@@ -260,7 +260,7 @@ const roleName = computed(() => {
 }
 
 .sidebar-tenant {
-  padding: 12px 16px;
+  padding: 20px 16px 5px 16px;
 }
 
 .expand {
@@ -387,8 +387,8 @@ const roleName = computed(() => {
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background-color: #1677ff;
   color: white;
