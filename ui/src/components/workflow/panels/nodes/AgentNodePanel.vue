@@ -212,8 +212,9 @@ async function handleOverrideToggle(checked: boolean) {
   }
 }
 
-function handleMcpBindingsChange(bindings: McpBinding[]) {
-  updateConfig('mcps', bindings.map((b) => ({
+function handleMcpBindingsChange(bindings: string | McpBinding[] | null) {
+  const list = Array.isArray(bindings) ? bindings : []
+  updateConfig('mcps', list.map((b) => ({
     mcpServerId: b.mcpServerId,
     exposureMode: McpToolExposureMode.ALL_GLOBAL,
     mcpToolIds: [],
@@ -432,7 +433,7 @@ onMounted(async () => {
                 :model-value="arrayConfig('toolIds')"
                 :tools="allTools"
                 :categories="toolCategories"
-                @update:model-value="(ids: string[]) => updateConfig('toolIds', ids)"
+                @update:model-value="(ids: string | string[] | null) => updateConfig('toolIds', ids)"
               />
             </template>
             <div v-else class="empty-action">
