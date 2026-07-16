@@ -289,7 +289,7 @@ onMounted(async () => {
 <template>
   <div ref="panelRoot" class="agent-node-panel" :class="{ 'editor-maximized': isEditorMaximized }">
     <div v-if="loading" class="loading-overlay">
-      <ASpin :spinning="true" />
+      <ApboaLoading />
     </div>
     <AForm layout="vertical">
         <PanelSection title="节点名称">
@@ -519,13 +519,9 @@ onMounted(async () => {
   height: 100vh;
   margin-bottom: -100vh;
   background: rgba(255, 255, 255, 0.65);
-}
-
-.loading-overlay :deep(.ant-spin) {
-  position: absolute !important;
-  top: calc(50% - 120px) !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .checkbox-grid,
