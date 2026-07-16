@@ -247,8 +247,8 @@ function handleMenuClick({ key }: { key: string }) {
       transition: background-color var(--transition-base), color var(--transition-base);
 
       img {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
         object-fit: contain;
         filter: grayscale(100%);
         opacity: 0.5;

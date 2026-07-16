@@ -99,7 +99,7 @@ function handleClose() {
         />
       </div>
 
-      <ASpin :spinning="loading">
+      <ApboaSpin :spinning="loading">
         <AEmpty v-if="!tools.length" description="暂无工具目录" />
         <template v-else>
           <AEmpty v-if="!filteredTools.length" description="未找到匹配的工具" />
@@ -149,7 +149,7 @@ function handleClose() {
             </div>
           </div>
         </template>
-      </ASpin>
+      </ApboaSpin>
     </div>
   </ApboaModal>
 </template>

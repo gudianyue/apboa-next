@@ -6,7 +6,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { EllipsisOutlined } from '@ant-design/icons-vue'
-import modelProviderAvatar from '@/assets/avatar/model-provider.png'
+import { getProviderLogo } from '@/utils/providerLogo'
 import type { ModelProviderVO } from '@/types'
 import { useAccountStore } from '@/stores'
 import {
@@ -69,6 +69,13 @@ const providerTypeText = computed(() => {
 })
 
 /**
+ * 根据baseUrl智能匹配品牌Logo
+ */
+const providerLogo = computed(() => {
+  return getProviderLogo(props.data.baseUrl)
+})
+
+/**
  * 操作菜单项
  */
 const hasReadOnly = accountStore.isReadOnly
@@ -125,7 +132,7 @@ function handleConfigClick() {
 <template>
   <div class="provider-card">
     <div class="card-header flex items-center gap-sm">
-      <div class="card-avatar flex-center" :class="{ disabled: !data.enabled }"><img :src="modelProviderAvatar" alt="model" /></div>
+      <div class="card-avatar flex-center" :class="{ disabled: !data.enabled }"><img :src="providerLogo" alt="model" /></div>
       <div class="card-name flex-1 truncate" :title="data.name" @click="emit('view', data.id as string)">{{ data.name }}</div>
       <ADropdown :trigger="['hover']">
         <AButton type="text" size="small">
@@ -181,8 +188,8 @@ function handleConfigClick() {
       flex-shrink: 0;
 
       img {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
         object-fit: contain;
       }
     }

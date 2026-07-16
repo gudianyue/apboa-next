@@ -168,7 +168,7 @@ watch(() => route.path, async () => {
   <div class="doc-md-page">
     <!-- 加载状态 -->
     <div v-if="loading" class="doc-md-loading">
-      <ASpin size="large" tip="加载文档中..." />
+      <ApboaSpin size="large" tip="加载文档中..." />
     </div>
 
     <!-- 主内容区 -->

@@ -279,8 +279,8 @@ function handleMenuClick({ key }: { key: string }) {
       flex-shrink: 0;
 
       img {
-        width: 30px;
-        height: 30px;
+        width: 28px;
+        height: 28px;
         object-fit: contain;
       }
     }

@@ -82,7 +82,7 @@ onMounted(() => {
     <!-- 欢迎信息 -->
     <div class="welcome-section">
       <h1 class="welcome-title">
-        欢迎回来，{{ accountStore.userInfo?.username || '用户' }}
+        欢迎回来，{{ accountStore.userInfo?.nickname || '用户' }}
       </h1>
       <p class="welcome-desc">
         这是您的工作台，可以快速访问常用功能和查看系统状态。

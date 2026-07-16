@@ -145,7 +145,7 @@ function completeLogin(remember: boolean) {
   }
   location.reload()
   setTimeout(() => {
-    router.push(RoutePaths.AGENT)
+    router.push(RoutePaths.DASHBOARD)
   }, 100)
 }
 
