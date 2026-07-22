@@ -261,9 +261,9 @@ onMounted(() => {
 <template>
   <div class="tool-page">
     <section class="intro-section">
-      <h3 class="intro-title">工具管理</h3>
+      <h3 class="intro-title">工具</h3>
       <p class="intro-desc text-secondary">
-        工具管理模块是智能体能力的“执行层扩展中枢”，通过将内部系统能力、外部API服务、自定义业务逻辑封装为标准化工具，赋予智能体感知环境、执行操作、处理复杂任务的能力。精心设计的工具生态能让智能体从“对话助手”升级为“行动伙伴”。
+        工具模块是智能体能力的“执行层扩展中枢”，通过将内部系统能力、外部API服务、自定义业务逻辑封装为标准化工具，赋予智能体感知环境、执行操作、处理复杂任务的能力。精心设计的工具生态能让智能体从“对话助手”升级为“行动伙伴”。
       </p>
     </section>
 
@@ -279,7 +279,7 @@ onMounted(() => {
         <ASelect
           v-model:value="selectedCategory"
           placeholder="选择分类"
-          style="width: 200px; border: rgba(14,14,14,0.1) solid 1px !important; border-radius: 6px;"
+          style="width: 200px;border-radius: 6px;"
         >
           <ASelectOption v-for="opt in categoryOptions" :key="opt.value" :value="opt.value">
             {{ opt.label }}
@@ -289,7 +289,7 @@ onMounted(() => {
         <AInput
           v-model:value="keyword"
           placeholder="搜索工具名称"
-          style="width: 300px; border: rgba(14,14,14,0.1) solid 1px !important;"
+          style="width: 300px;"
           @pressEnter="handleSearch"
         >
           <template #suffix>
